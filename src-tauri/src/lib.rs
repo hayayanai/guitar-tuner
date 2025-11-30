@@ -110,8 +110,6 @@ fn start_listening(app: tauri::AppHandle, device_name: String) -> Result<(), Str
 
     // 周波数安定化用のバッファ
     let mut freq_history: Vec<f32> = Vec::with_capacity(10);
-    let mut last_sent_freq: f32 = 0.0;
-    let mut frame_count: u32 = 0;
 
     loop {
       // 停止フラグがセットされたらスレッドを終了
@@ -163,8 +161,6 @@ fn start_listening(app: tauri::AppHandle, device_name: String) -> Result<(), Str
       let level = ((db + 80.0) / 80.0).clamp(0.0, 1.0); // -80dB〜0dB を 0〜1 に正規化
       let _ = app_handle_clone.emit("input_level", level);
 
-      frame_count += 1;
-
       // RMS閾値（ノイズフロア以下はスキップ）
       if rms < 0.001 {
         continue;
@@ -172,17 +168,17 @@ fn start_listening(app: tauri::AppHandle, device_name: String) -> Result<(), Str
 
       // Blackman-Harris窓を適用してからゼロパディング
       let mut windowed: Vec<f32> = mono.iter().take(fft_size).cloned().collect();
+      let fft_size_f = fft_size as f32;
       for (i, v) in windowed.iter_mut().enumerate() {
         let n = i as f32;
-        let N = fft_size as f32;
         let a0 = 0.35875;
         let a1 = 0.48829;
         let a2 = 0.14128;
         let a3 = 0.01168;
         let w = a0
-          - a1 * (2.0 * std::f32::consts::PI * n / N).cos()
-          + a2 * (4.0 * std::f32::consts::PI * n / N).cos()
-          - a3 * (6.0 * std::f32::consts::PI * n / N).cos();
+          - a1 * (2.0 * std::f32::consts::PI * n / fft_size_f).cos()
+          + a2 * (4.0 * std::f32::consts::PI * n / fft_size_f).cos()
+          - a3 * (6.0 * std::f32::consts::PI * n / fft_size_f).cos();
         *v *= w;
       }
 
@@ -315,7 +311,6 @@ fn start_listening(app: tauri::AppHandle, device_name: String) -> Result<(), Str
 
               // 常に送信（微細な変化も反映）
               let _ = app_handle_clone.emit("frequency", median_freq);
-              last_sent_freq = median_freq;
             }
           }
         }
