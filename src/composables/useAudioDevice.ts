@@ -55,8 +55,11 @@ export function useAudioDevice() {
       // 保存されたチャンネルモードを復元
       const savedChannelMode = localStorage.getItem('channelMode');
       if (savedChannelMode) {
-        channelMode.value = parseInt(savedChannelMode) as ChannelMode;
-        await invoke('set_channel_mode', { mode: channelMode.value });
+        const parsed = parseInt(savedChannelMode);
+        if ([0, 1, 2].includes(parsed)) {
+          channelMode.value = parsed as ChannelMode;
+          await invoke('set_channel_mode', { mode: channelMode.value });
+        }
       }
 
       const saved = localStorage.getItem('selectedDevice');

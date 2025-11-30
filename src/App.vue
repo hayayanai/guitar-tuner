@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { toRef } from 'vue';
 import {
   DeviceSelector,
   ChannelSelector,
@@ -29,7 +28,7 @@ const {
   updateChannelMode,
 } = useAudioDevice();
 
-const { noteInfo, tuningStatus, centDisplay } = useNoteInfo(toRef(() => frequency.value));
+const { noteInfo, tuningStatus, centDisplay } = useNoteInfo(frequency);
 
 function handleChannelChange(mode: ChannelMode) {
   updateChannelMode(mode);

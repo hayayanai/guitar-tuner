@@ -99,13 +99,19 @@ pub fn calculate_noise_floor(spectrum: &[f32]) -> f32 {
 }
 
 /// 周波数解析範囲のbin番号を計算
+/// 戻り値: (min_bin, max_bin) - 常に min_bin < max_bin を保証
 pub fn calculate_frequency_bins(sample_rate: usize, padded_size: usize) -> (usize, usize) {
     let min_bin = (MIN_FREQUENCY * padded_size as f32 / sample_rate as f32) as usize;
     let max_bin = std::cmp::min(
         (MAX_FREQUENCY * padded_size as f32 / sample_rate as f32) as usize,
         padded_size / 2,
     );
-    (min_bin, max_bin)
+    // min_bin < max_bin を保証
+    if max_bin <= min_bin {
+        (min_bin, min_bin + 1)
+    } else {
+        (min_bin, max_bin)
+    }
 }
 
 #[cfg(test)]
