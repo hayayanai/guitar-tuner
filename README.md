@@ -2,30 +2,36 @@
 
 Tauri + Vue + Rust (cpal/rustfft) ギターチューナーアプリ
 
-## 概要
-- Windowsタスクトレイ常駐型のギターチューナー
-- Rust (cpal) で音声入力・FFT解析、VueでUI
-- 入力デバイス選択、リアルタイム周波数・音名・セント表示
+## 機能
+- 🎸 レギュラーチューニング6弦対応（E2/A2/D3/G3/B3/E4）
+- 🎯 高精度周波数検出（FFT 16384 + ゼロパディング + ガウシアン補間）
+- 📊 セントメーター（±50セント表示）
+- 🎚️ 入力レベルメーター（-80dB〜0dB）
+- 🔧 チャンネル選択（L/R/両方）- オーディオインターフェース対応
+- ⚙️ 感度調整スライダー
 
-## 現状
-- ✅ Rust側の構文エラーは解消済み
-- ✅ ビルドは正常に通る
-- ✅ 音声入力ストリームのコールバックが正常に動作
-- ✅ FFT解析・周波数検出が動作
-- ✅ フロントエンドへの周波数イベント送信が動作
+## 技術スタック
+- **フロントエンド**: Vue 3 + TypeScript + Vite
+- **バックエンド**: Rust + Tauri v2
+- **音声処理**: cpal（音声入力）+ rustfft（FFT解析）
+- **窓関数**: Blackman-Harris（サイドローブ抑制）
+- **周波数検出**: 倍音検出で基音を優先
 
 ## ビルド・実行
-- `npm install`
-- `mise install`
-- `npm run tauri build` または `npm run tauri dev`
+
+```bash
+npm install
+mise install
+npm run tauri dev    # 開発モード
+npm run tauri build  # リリースビルド
+```
 
 ## 主要ファイル
-- `src-tauri/src/lib.rs` ... Rustバックエンド（cpal/FFT/イベント）
-- `src/App.vue` ... Vue UI
-- `tauri.conf.json` ... Tauri設定
+| ファイル | 説明 |
+|---------|------|
+| `src-tauri/src/lib.rs` | Rustバックエンド（音声入力・FFT・イベント送信） |
+| `src/App.vue` | Vue UI（チューナー画面） |
+| `src-tauri/tauri.conf.json` | Tauri設定 |
 
-## TODO
-- 構文エラーの根本解消（cpalストリーム作成部のクロージャ渡し方修正）
-- 音声入力ストリームのコールバックが呼ばれることの確認
-- 周波数解析・イベント送信の動作確認
-- タスクトレイ機能・アイコン差し替え
+## ライセンス
+MIT
