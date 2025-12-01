@@ -27,11 +27,40 @@ npm run tauri build  # リリースビルド
 ```
 
 ## 主要ファイル
+
+## 必要な環境・依存
+
+- **Node.js 24 LTS** を推奨（`@types/node` も24系を利用）
+- **Visual Studio 2022** の「C++によるデスクトップ開発」ワークロード（Rust/cpal依存のビルドに必要）
+	- Windows: `winget install Microsoft.VisualStudio.2022.Community` などでインストール
+	- インストール時に「C++によるデスクトップ開発」を有効化
+
+## 主要ファイル
 | ファイル | 説明 |
 |---------|------|
 | `src-tauri/src/lib.rs` | Rustバックエンド（音声入力・FFT・イベント送信） |
 | `src/App.vue` | Vue UI（チューナー画面） |
 | `src-tauri/tauri.conf.json` | Tauri設定 |
+
+## コード整形・静的解析
+
+- **prettier**: フォーマッタ
+- **oxlint**: 静的解析（TypeScript/JavaScript）
+	- `eslint-plugin-oxlint`でESLintと併用可能（TypeScript/JavaScriptはoxlintで高速化、Vue等はESLintプラグインでカバー）
+	- `eslint-plugin-vue`でVueファイルもESLint経由でlint可能
+	- `.eslintrc.js`例:
+		```js
+		module.exports = {
+			extends: [
+				'plugin:vue/vue3-recommended',
+				'eslint:recommended',
+				'plugin:oxlint/recommended',
+				'prettier',
+			],
+			plugins: ['vue', 'oxlint'],
+		};
+		```
+	- `npx eslint .` で全ファイルlint
 
 ## ライセンス
 MIT

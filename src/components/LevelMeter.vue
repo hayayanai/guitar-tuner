@@ -16,7 +16,7 @@ const levelPercent = computed(() => props.level * 100);
         class="level-fill"
         :style="{ width: `${levelPercent}%` }"
         :class="{ hot: levelPercent > 90 }"
-      ></div>
+      />
     </div>
     <div class="level-labels">
       <span>-80dB</span>

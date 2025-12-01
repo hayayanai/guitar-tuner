@@ -23,7 +23,7 @@ function handleInput(event: Event) {
       step="0.1"
       :value="modelValue"
       @input="handleInput"
-    />
+    >
     <div class="threshold-labels">
       <span>High</span>
       <span>Low</span>
