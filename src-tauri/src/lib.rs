@@ -9,6 +9,11 @@ use commands::{
 };
 
 pub fn run() {
+    use tauri::image::Image;
+    use tauri::menu::{Menu, MenuItem};
+    use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
+    use tauri::{Manager, WindowEvent};
+
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             get_audio_devices,
@@ -19,6 +24,71 @@ pub fn run() {
             get_channel_mode
         ])
         .setup(|app| {
+            let app_handle = app.handle().clone();
+
+            // トレイメニュー作成
+            let show_item = MenuItem::with_id(app, "show", "ウィンドウを表示", true, None::<&str>)?;
+            let quit_item = MenuItem::with_id(app, "quit", "終了", true, None::<&str>)?;
+            let menu = Menu::with_items(app, &[&show_item, &quit_item])?;
+
+            // トレイアイコン作成（アイコンファイル読み込み）
+            let icon = Image::from_path("icons/icon.ico").unwrap_or_else(|_| {
+                // フォールバック: 組み込みデフォルト（32x32 PNG）
+                Image::from_path("icons/32x32.png").unwrap_or_else(|_| {
+                    // 最終フォールバック: 空のアイコン
+                    Image::new_owned(vec![0u8; 32 * 32 * 4], 32, 32)
+                })
+            });
+
+            TrayIconBuilder::with_id("main")
+                .icon(icon)
+                .menu(&menu)
+                .tooltip("Guitar Tuner")
+                .on_menu_event(move |app, event| {
+                    match event.id.as_ref() {
+                        "show" => {
+                            if let Some(window) = app.get_webview_window("main") {
+                                let _ = window.show();
+                                let _ = window.unminimize();
+                                let _ = window.set_focus();
+                            }
+                        }
+                        "quit" => {
+                            std::process::exit(0);
+                        }
+                        _ => {}
+                    }
+                })
+                .on_tray_icon_event(move |tray, event| {
+                    match event {
+                        TrayIconEvent::Click {
+                            button: MouseButton::Left,
+                            button_state: MouseButtonState::Up,
+                            ..
+                        } => {
+                            // 左クリックでウィンドウを表示
+                            if let Some(window) = tray.app_handle().get_webview_window("main") {
+                                let _ = window.show();
+                                let _ = window.unminimize();
+                                let _ = window.set_focus();
+                            }
+                        }
+                        _ => {}
+                    }
+                })
+                .build(app)?;
+
+            // ウィンドウの閉じるボタンで隠す（終了しない）
+            let window = app.get_webview_window("main").unwrap();
+            window.on_window_event(move |event| {
+                if let WindowEvent::CloseRequested { api, .. } = event {
+                    api.prevent_close();
+                    if let Some(win) = app_handle.get_webview_window("main") {
+                        let _ = win.hide();
+                    }
+                }
+            });
+
             if cfg!(debug_assertions) {
                 app.handle().plugin(
                     tauri_plugin_log::Builder::default()
