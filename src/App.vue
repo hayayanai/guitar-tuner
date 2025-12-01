@@ -38,24 +38,58 @@ function handleChannelChange(mode: ChannelMode) {
 <template>
   <div class="container">
     <h1>Guitar Tuner</h1>
-    <div v-if="loading" class="loading">Loading...</div>
-    <div v-else class="content">
-      <div v-if="error" class="error">{{ error }}</div>
+    <div
+      v-if="loading"
+      class="loading"
+    >
+      Loading...
+    </div>
+    <div
+      v-else
+      class="content"
+    >
+      <div
+        v-if="error"
+        class="error"
+      >
+        {{ error }}
+      </div>
 
-      <DeviceSelector v-model="selectedDevice" :devices="devices" />
+      <DeviceSelector
+        v-model="selectedDevice"
+        :devices="devices"
+      />
 
-      <ChannelSelector :model-value="channelMode" @update:model-value="handleChannelChange" />
+      <ChannelSelector
+        :model-value="channelMode"
+        @update:model-value="handleChannelChange"
+      />
 
-      <div v-if="listenStatus" class="status">{{ listenStatus }}</div>
+      <div
+        v-if="listenStatus"
+        class="status"
+      >
+        {{ listenStatus }}
+      </div>
 
       <LevelMeter :level="inputLevel" />
 
-      <ThresholdSlider :model-value="threshold" @update:model-value="updateThreshold" />
+      <ThresholdSlider
+        :model-value="threshold"
+        @update:model-value="updateThreshold"
+      />
 
       <div class="tuner">
-        <NoteDisplay :note-info="noteInfo" :tuning-status="tuningStatus" :frequency="frequency" />
+        <NoteDisplay
+          :note-info="noteInfo"
+          :tuning-status="tuningStatus"
+          :frequency="frequency"
+        />
 
-        <TunerMeter :note-info="noteInfo" :tuning-status="tuningStatus" />
+        <TunerMeter
+          :note-info="noteInfo"
+          :tuning-status="tuningStatus"
+        />
 
         <CentDisplay
           :cent-display="centDisplay"
@@ -65,7 +99,10 @@ function handleChannelChange(mode: ChannelMode) {
 
         <RawFrequencyDisplay :raw-frequency="rawFrequency" />
 
-        <StringReference :notes="GUITAR_NOTES" :active-note-name="noteInfo.name" />
+        <StringReference
+          :notes="GUITAR_NOTES"
+          :active-note-name="noteInfo.name"
+        />
       </div>
     </div>
   </div>

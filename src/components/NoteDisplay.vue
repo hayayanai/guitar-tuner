@@ -9,13 +9,23 @@ defineProps<{
 </script>
 
 <template>
-  <div class="note-display" :class="tuningStatus">
+  <div
+    class="note-display"
+    :class="tuningStatus"
+  >
     <span class="note-name">{{ noteInfo.name }}</span>
-    <span class="current-freq" v-if="frequency">{{ frequency.toFixed(1) }} Hz</span>
-    <span class="current-freq" v-else>--- Hz</span>
-    <span class="target-freq" v-if="noteInfo.targetFreq > 0"
-      >→ {{ noteInfo.targetFreq.toFixed(2) }} Hz</span
-    >
+    <span
+      v-if="frequency"
+      class="current-freq"
+    >{{ frequency.toFixed(1) }} Hz</span>
+    <span
+      v-else
+      class="current-freq"
+    >--- Hz</span>
+    <span
+      v-if="noteInfo.targetFreq > 0"
+      class="target-freq"
+    >→ {{ noteInfo.targetFreq.toFixed(2) }} Hz</span>
   </div>
 </template>
 

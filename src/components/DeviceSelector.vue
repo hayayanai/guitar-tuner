@@ -17,7 +17,13 @@ const emit = defineEmits<{
       :value="modelValue"
       @change="emit('update:modelValue', ($event.target as HTMLSelectElement).value)"
     >
-      <option v-for="d in devices" :key="d" :value="d">{{ d }}</option>
+      <option
+        v-for="d in devices"
+        :key="d"
+        :value="d"
+      >
+        {{ d }}
+      </option>
     </select>
   </div>
 </template>

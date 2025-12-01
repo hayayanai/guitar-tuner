@@ -14,9 +14,24 @@ const emit = defineEmits<{
   <div class="channel-select">
     <label>Channel:</label>
     <div class="channel-buttons">
-      <button :class="{ active: modelValue === 0 }" @click="emit('update:modelValue', 0)">L</button>
-      <button :class="{ active: modelValue === 2 }" @click="emit('update:modelValue', 2)">L+R</button>
-      <button :class="{ active: modelValue === 1 }" @click="emit('update:modelValue', 1)">R</button>
+      <button
+        :class="{ active: modelValue === 0 }"
+        @click="emit('update:modelValue', 0)"
+      >
+        L
+      </button>
+      <button
+        :class="{ active: modelValue === 2 }"
+        @click="emit('update:modelValue', 2)"
+      >
+        L+R
+      </button>
+      <button
+        :class="{ active: modelValue === 1 }"
+        @click="emit('update:modelValue', 1)"
+      >
+        R
+      </button>
     </div>
   </div>
 </template>
