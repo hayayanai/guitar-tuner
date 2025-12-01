@@ -16,6 +16,17 @@ pub static CHANNEL_MODE: AtomicU32 = AtomicU32::new(1); // デフォルトは右
 pub static STREAM_ID: AtomicU32 = AtomicU32::new(0);
 pub static STOP_FLAG: AtomicBool = AtomicBool::new(false);
 
+/// 最後に検出されたチューニング情報（トレイアイコン用）
+pub static LAST_TUNING_INFO: Lazy<Mutex<TuningInfo>> = Lazy::new(|| Mutex::new(TuningInfo::default()));
+
+/// チューニング情報構造体
+#[derive(Clone, Default)]
+pub struct TuningInfo {
+    pub note_name: String,
+    pub frequency: f32,
+    pub cents: f32,
+}
+
 /// FFTサイズ（高精度のため16384に増加、分解能: 約2.9Hz @48kHz）
 pub const FFT_SIZE: usize = 16384;
 
