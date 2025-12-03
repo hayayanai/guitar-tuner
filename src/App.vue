@@ -100,7 +100,6 @@ const statusClass = computed(() => {
 </template>
 
 <style scoped>
-/* デジタル庁デザインシステム準拠 */
 .container {
   min-height: 100vh;
   background-color: var(--color-background);
