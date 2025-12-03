@@ -22,8 +22,6 @@ export default [
   },
   // oxlintの設定ファイルを参照し、重複ルールを自動でoff
   ...oxlint.buildFromOxlintConfigFile(".oxlintrc.json"),
-  // prettier
-  prettier,
   // Vueファイル用（parserOptions.parserでTypeScript対応）
   ...vue.configs["flat/recommended"].map((cfg) => {
     if (cfg.languageOptions) {
@@ -40,4 +38,6 @@ export default [
     }
     return cfg;
   }),
+  // prettier（ESLintの最後に配置）
+  prettier,
 ];
