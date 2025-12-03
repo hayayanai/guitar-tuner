@@ -126,3 +126,19 @@ npm install         # Install dependencies
 npm run tauri dev   # Development mode
 npm run tauri build # Release build
 ```
+
+### Checking Rust Warnings & Errors
+
+To check for warnings and errors in Rust files, use the following command:
+
+```bash
+cargo check
+```
+
+- Performs syntax and type checks for all Rust files, displaying warnings and errors.
+- Does not build the project, allowing for quick issue detection.
+- Run frequently during development to catch and fix problems early.
+
+```
+
+```
