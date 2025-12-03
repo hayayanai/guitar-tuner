@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { NoteInfo, TuningStatus } from '../types';
+import type { NoteInfo, TuningStatus } from "../types";
 
 defineProps<{
   noteInfo: NoteInfo;
@@ -9,23 +9,13 @@ defineProps<{
 </script>
 
 <template>
-  <div
-    class="note-display"
-    :class="tuningStatus"
-  >
+  <div class="note-display" :class="tuningStatus">
     <span class="note-name">{{ noteInfo.name }}</span>
-    <span
-      v-if="frequency"
-      class="current-freq"
-    >{{ frequency.toFixed(1) }} Hz</span>
-    <span
-      v-else
-      class="current-freq"
-    >--- Hz</span>
-    <span
-      v-if="noteInfo.targetFreq > 0"
-      class="target-freq"
-    >→ {{ noteInfo.targetFreq.toFixed(2) }} Hz</span>
+    <span v-if="frequency" class="current-freq">{{ frequency.toFixed(1) }} Hz</span>
+    <span v-else class="current-freq">--- Hz</span>
+    <span v-if="noteInfo.targetFreq > 0" class="target-freq"
+      >→ {{ noteInfo.targetFreq.toFixed(2) }} Hz</span
+    >
   </div>
 </template>
 

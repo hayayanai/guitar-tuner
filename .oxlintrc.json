@@ -5,8 +5,6 @@
     "browser": true
   },
   "settings": {},
-  "rules": {
-  },
-  "overrides": [
-  ]
+  "rules": {},
+  "overrides": []
 }

@@ -7,7 +7,7 @@ defineProps<{
 <template>
   <div class="raw-frequency">
     <span class="label">Detected:</span>
-    <span class="value">{{ rawFrequency ? rawFrequency.toFixed(1) + ' Hz' : '--- Hz' }}</span>
+    <span class="value">{{ rawFrequency ? rawFrequency.toFixed(1) + " Hz" : "--- Hz" }}</span>
   </div>
 </template>
 

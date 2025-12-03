@@ -5,7 +5,7 @@ defineProps<{
 }>();
 
 const emit = defineEmits<{
-  'update:modelValue': [value: string];
+  "update:modelValue": [value: string];
 }>();
 </script>
 
@@ -17,11 +17,7 @@ const emit = defineEmits<{
       :value="modelValue"
       @change="emit('update:modelValue', ($event.target as HTMLSelectElement).value)"
     >
-      <option
-        v-for="d in devices"
-        :key="d"
-        :value="d"
-      >
+      <option v-for="d in devices" :key="d" :value="d">
         {{ d }}
       </option>
     </select>

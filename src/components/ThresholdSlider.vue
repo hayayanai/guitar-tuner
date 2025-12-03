@@ -4,26 +4,19 @@ defineProps<{
 }>();
 
 const emit = defineEmits<{
-  'update:modelValue': [value: number];
+  "update:modelValue": [value: number];
 }>();
 
 function handleInput(event: Event) {
   const target = event.target as HTMLInputElement;
-  emit('update:modelValue', parseFloat(target.value));
+  emit("update:modelValue", parseFloat(target.value));
 }
 </script>
 
 <template>
   <div class="threshold-control">
     <label>Sensitivity: {{ modelValue.toFixed(1) }}</label>
-    <input
-      type="range"
-      min="1.2"
-      max="5.0"
-      step="0.1"
-      :value="modelValue"
-      @input="handleInput"
-    >
+    <input type="range" min="1.2" max="5.0" step="0.1" :value="modelValue" @input="handleInput" />
     <div class="threshold-labels">
       <span>High</span>
       <span>Low</span>

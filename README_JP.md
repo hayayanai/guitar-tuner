@@ -55,11 +55,11 @@ CIは `.mise.toml` のバージョンを参照して Node.js/Rust をセット�
 
 ## 主要ファイル
 
-| ファイル | 説明 |
-|---------|------|
-| `src-tauri/src/lib.rs` | Rustバックエンド（音声入力・FFT・イベント送信） |
-| `src/App.vue` | Vue UI（チューナー画面） |
-| `src-tauri/tauri.conf.json` | Tauri設定 |
+| ファイル                    | 説明                                            |
+| --------------------------- | ----------------------------------------------- |
+| `src-tauri/src/lib.rs`      | Rustバックエンド（音声入力・FFT・イベント送信） |
+| `src/App.vue`               | Vue UI（チューナー画面）                        |
+| `src-tauri/tauri.conf.json` | Tauri設定                                       |
 
 ## コード整形・静的解析
 

@@ -55,11 +55,11 @@ You can also trigger builds manually from the Actions tab.
 
 ## Project Structure
 
-| File | Description |
-|------|-------------|
-| `src-tauri/src/lib.rs` | Rust backend (audio input, FFT, event emission) |
-| `src/App.vue` | Vue UI (tuner screen) |
-| `src-tauri/tauri.conf.json` | Tauri configuration |
+| File                        | Description                                     |
+| --------------------------- | ----------------------------------------------- |
+| `src-tauri/src/lib.rs`      | Rust backend (audio input, FFT, event emission) |
+| `src/App.vue`               | Vue UI (tuner screen)                           |
+| `src-tauri/tauri.conf.json` | Tauri configuration                             |
 
 ## Code Formatting & Linting
 

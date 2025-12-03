@@ -1,6 +1,6 @@
-import { computed, type Ref } from 'vue';
-import type { NoteInfo, TuningStatus } from '../types';
-import { NOTE_NAMES } from './constants';
+import { computed, type Ref } from "vue";
+import type { NoteInfo, TuningStatus } from "../types";
+import { NOTE_NAMES } from "./constants";
 
 /**
  * 周波数から音名情報を計算するComposable
@@ -8,7 +8,7 @@ import { NOTE_NAMES } from './constants';
 export function useNoteInfo(frequency: Ref<number | null>) {
   const noteInfo = computed<NoteInfo>(() => {
     if (frequency.value === null || frequency.value <= 0) {
-      return { name: '-', cent: 0, targetFreq: 0 };
+      return { name: "-", cent: 0, targetFreq: 0 };
     }
     const f = frequency.value;
     const semitones = 12 * Math.log2(f / 440);
@@ -24,9 +24,9 @@ export function useNoteInfo(frequency: Ref<number | null>) {
 
   const tuningStatus = computed<TuningStatus>(() => {
     const cent = noteInfo.value.cent;
-    if (Math.abs(cent) <= 3) return 'perfect';
-    if (Math.abs(cent) <= 10) return 'good';
-    return 'off';
+    if (Math.abs(cent) <= 3) return "perfect";
+    if (Math.abs(cent) <= 10) return "good";
+    return "off";
   });
 
   const centDisplay = computed(() => {

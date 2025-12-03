@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { TuningStatus } from '../types';
+import type { TuningStatus } from "../types";
 
 defineProps<{
   centDisplay: string;
@@ -9,10 +9,7 @@ defineProps<{
 </script>
 
 <template>
-  <div
-    class="cent-display"
-    :class="tuningStatus"
-  >
+  <div class="cent-display" :class="tuningStatus">
     <span v-if="hasFrequency">{{ centDisplay }} cent</span>
     <span v-else>---</span>
   </div>

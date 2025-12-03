@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { GuitarNote } from '../types';
+import type { GuitarNote } from "../types";
 
 defineProps<{
   notes: GuitarNote[];

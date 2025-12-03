@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { NoteInfo, TuningStatus } from '../types';
+import type { NoteInfo, TuningStatus } from "../types";
 
 defineProps<{
   noteInfo: NoteInfo;
@@ -18,18 +18,9 @@ defineProps<{
       <div class="meter-bar">
         <div class="center-zone" />
         <div class="meter-marks">
-          <div
-            v-for="i in 11"
-            :key="i"
-            class="tick"
-            :class="{ center: i === 6 }"
-          />
+          <div v-for="i in 11" :key="i" class="tick" :class="{ center: i === 6 }" />
         </div>
-        <div
-          class="indicator"
-          :style="{ left: `${50 + noteInfo.cent}%` }"
-          :class="tuningStatus"
-        />
+        <div class="indicator" :style="{ left: `${50 + noteInfo.cent}%` }" :class="tuningStatus" />
       </div>
     </div>
   </div>

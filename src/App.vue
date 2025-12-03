@@ -9,9 +9,9 @@ import {
   CentDisplay,
   RawFrequencyDisplay,
   StringReference,
-} from './components';
-import { useAudioDevice, useNoteInfo, GUITAR_NOTES } from './composables';
-import type { ChannelMode } from './types';
+} from "./components";
+import { useAudioDevice, useNoteInfo, GUITAR_NOTES } from "./composables";
+import type { ChannelMode } from "./types";
 
 const {
   devices,
@@ -38,58 +38,28 @@ function handleChannelChange(mode: ChannelMode) {
 <template>
   <div class="container">
     <h1>Guitar Tuner</h1>
-    <div
-      v-if="loading"
-      class="loading"
-    >
-      Loading...
-    </div>
-    <div
-      v-else
-      class="content"
-    >
-      <div
-        v-if="error"
-        class="error"
-      >
+    <div v-if="loading" class="loading">Loading...</div>
+    <div v-else class="content">
+      <div v-if="error" class="error">
         {{ error }}
       </div>
 
-      <DeviceSelector
-        v-model="selectedDevice"
-        :devices="devices"
-      />
+      <DeviceSelector v-model="selectedDevice" :devices="devices" />
 
-      <ChannelSelector
-        :model-value="channelMode"
-        @update:model-value="handleChannelChange"
-      />
+      <ChannelSelector :model-value="channelMode" @update:model-value="handleChannelChange" />
 
-      <div
-        v-if="listenStatus"
-        class="status"
-      >
+      <div v-if="listenStatus" class="status">
         {{ listenStatus }}
       </div>
 
       <LevelMeter :level="inputLevel" />
 
-      <ThresholdSlider
-        :model-value="threshold"
-        @update:model-value="updateThreshold"
-      />
+      <ThresholdSlider :model-value="threshold" @update:model-value="updateThreshold" />
 
       <div class="tuner">
-        <NoteDisplay
-          :note-info="noteInfo"
-          :tuning-status="tuningStatus"
-          :frequency="frequency"
-        />
+        <NoteDisplay :note-info="noteInfo" :tuning-status="tuningStatus" :frequency="frequency" />
 
-        <TunerMeter
-          :note-info="noteInfo"
-          :tuning-status="tuningStatus"
-        />
+        <TunerMeter :note-info="noteInfo" :tuning-status="tuningStatus" />
 
         <CentDisplay
           :cent-display="centDisplay"
@@ -97,12 +67,9 @@ function handleChannelChange(mode: ChannelMode) {
           :has-frequency="frequency !== null"
         />
 
-        <RawFrequencyDisplay :raw-frequency="rawFrequency" />
+        <!-- <RawFrequencyDisplay :raw-frequency="rawFrequency" /> -->
 
-        <StringReference
-          :notes="GUITAR_NOTES"
-          :active-note-name="noteInfo.name"
-        />
+        <StringReference :notes="GUITAR_NOTES" :active-note-name="noteInfo.name" />
       </div>
     </div>
   </div>
@@ -113,7 +80,7 @@ function handleChannelChange(mode: ChannelMode) {
   min-height: 100vh;
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
   color: #fff;
-  font-family: 'Segoe UI', 'Meiryo', sans-serif;
+  font-family: "Segoe UI", "Meiryo", sans-serif;
   padding: 20px;
   box-sizing: border-box;
 }

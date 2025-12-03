@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 jobs:
   release:
@@ -27,7 +27,7 @@ jobs:
       - name: Rust cache
         uses: swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
         with:
-          workspaces: './src-tauri -> target'
+          workspaces: "./src-tauri -> target"
 
       - name: Install frontend dependencies
         run: npm ci
@@ -38,7 +38,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: ${{ github.ref_name }}
-          releaseName: 'Guitar Tuner ${{ github.ref_name }}'
-          releaseBody: 'See the assets to download this version and install.'
+          releaseName: "Guitar Tuner ${{ github.ref_name }}"
+          releaseBody: "See the assets to download this version and install."
           releaseDraft: true
           prerelease: false
