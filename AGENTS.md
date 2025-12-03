@@ -6,6 +6,44 @@ Project information for AI/automation agents.
 
 Guitar tuner app built with Tauri v2 + Vue 3 + Rust (Windows target).
 
+## Architecture Diagram
+
+```mermaid
+flowchart TB
+    subgraph Frontend["Vue Frontend"]
+        DeviceSelect[DeviceSelector]
+        NoteDisplay[NoteDisplay]
+        CentMeter[CentMeter]
+        LevelMeter[LevelMeter]
+        ChannelSelector[ChannelSelector]
+        ThresholdSlider[ThresholdSlider]
+    end
+
+    subgraph Backend["Rust Backend (Tauri)"]
+        Commands["Commands:<br/>get_audio_devices<br/>start_listening<br/>set_threshold<br/>set_channel_mode"]
+        Events["Events:<br/>frequency<br/>raw_frequency<br/>input_level"]
+    end
+
+    subgraph AudioPipeline["Audio Processing Pipeline"]
+        cpal["cpal<br/>(48kHz)"]
+        ChannelSelect["Channel<br/>Select"]
+        Window["Blackman-<br/>Harris"]
+        ZeroPad["Zero-padding<br/>(2x: 32768)"]
+        FFT["rustfft<br/>+ Gaussian"]
+        Harmonic["Harmonic<br/>Detection"]
+        GuitarFilter["Guitar<br/>Filter"]
+        MedianFilter["Median<br/>Filter"]
+        SendEvent["Send Events"]
+    end
+
+    Frontend <-->|"Tauri Events & Commands"| Backend
+    Backend --> AudioPipeline
+
+    cpal --> ChannelSelect --> Window --> ZeroPad --> FFT
+    FFT --> Harmonic --> GuitarFilter --> MedianFilter --> SendEvent
+    SendEvent -->|"frequency, level"| Events
+```
+
 ## Architecture
 
 ### Rust Backend (`src-tauri/src/lib.rs`)

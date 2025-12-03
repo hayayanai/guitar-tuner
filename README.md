@@ -1,6 +1,6 @@
 # guitar-tuner
 
-[日本語版 README はこちら](README_JP.md)
+[日本語版 README](README_JP.md)
 
 A cross-platform guitar tuner app built with Tauri v2 + Vue 3 + Rust (cpal/rustfft).
 
