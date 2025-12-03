@@ -3,7 +3,7 @@ use rustfft::FftPlanner;
 use std::sync::atomic::Ordering;
 use std::sync::{Arc, Mutex};
 use std::thread;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 use tauri::image::Image;
 use tauri::Emitter;
 
@@ -156,6 +156,22 @@ fn update_tray_tooltip(app_handle: &tauri::AppHandle, note_name: &str, freq: f32
     }
 }
 
+/// トレイアイコンを初期状態にリセット
+fn reset_tray_icon(app_handle: &tauri::AppHandle) {
+    use tauri::image::Image;
+    let tray = app_handle.tray_by_id("main");
+    if let Some(tray) = tray {
+        // アイコンを初期状態に戻す
+        if let Ok(icon) = Image::from_path("icons/icon.ico") {
+            let _ = tray.set_icon(Some(icon));
+        } else if let Ok(icon) = Image::from_path("icons/32x32.png") {
+            let _ = tray.set_icon(Some(icon));
+        }
+        // ツールチップを初期状態に戻す
+        let _ = tray.set_tooltip(Some("Guitar Tuner"));
+    }
+}
+
 /// 周波数解析スレッドを起動
 pub fn run_analysis_thread(
     app_handle: tauri::AppHandle,
@@ -165,11 +181,19 @@ pub fn run_analysis_thread(
 ) {
     let buffer_size = FFT_SIZE * channels;
 
+    // リセット判定用の定数（秒）
+    const RESET_TIMEOUT_SECS: u64 = 3;
+
     thread::spawn(move || {
         let mut planner = FftPlanner::<f32>::new();
 
         // 周波数安定化用のバッファ
         let mut freq_history: Vec<f32> = Vec::with_capacity(10);
+
+        // 最後に有効な音を検出した時刻
+        let mut last_valid_sound_time: Option<Instant> = None;
+        // リセット済みフラグ（連続してresetイベントを送信しないため）
+        let mut is_reset = true;
 
         loop {
             // 停止フラグがセットされたらスレッドを終了
@@ -178,6 +202,20 @@ pub fn run_analysis_thread(
                 break;
             }
             thread::sleep(Duration::from_millis(50));
+
+            // リセット判定: 有効な音が一定時間検出されなかったらリセット
+            if let Some(last_time) = last_valid_sound_time {
+                if last_time.elapsed() > Duration::from_secs(RESET_TIMEOUT_SECS) && !is_reset {
+                    // リセットイベントを送信
+                    let _ = app_handle.emit("reset", ());
+                    // トレイアイコンをリセット
+                    reset_tray_icon(&app_handle);
+                    // 履歴をクリア
+                    freq_history.clear();
+                    is_reset = true;
+                    println!("リセットイベント送信: {}秒間音が検出されませんでした", RESET_TIMEOUT_SECS);
+                }
+            }
 
             let samples: Vec<f32>;
             {
@@ -296,6 +334,10 @@ pub fn run_analysis_thread(
                                 let median_freq = sorted[sorted.len() / 2];
 
                                 let _ = app_handle.emit("frequency", median_freq);
+
+                                // 有効な音を検出したので時刻を更新
+                                last_valid_sound_time = Some(Instant::now());
+                                is_reset = false;
 
                                 // チューニング情報を計算してトレイのツールチップを更新
                                 let (note_name, _target_freq, cents) = calculate_note_info(median_freq);

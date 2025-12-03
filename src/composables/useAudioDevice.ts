@@ -103,6 +103,11 @@ export function useAudioDevice() {
           inputLevel.value = event.payload;
         }
       });
+      listen("reset", () => {
+        // 状態を初期化
+        frequency.value = null;
+        rawFrequency.value = null;
+      });
     } catch (e: unknown) {
       error.value = e?.toString() ?? "Error";
     } finally {
