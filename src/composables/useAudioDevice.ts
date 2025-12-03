@@ -3,6 +3,12 @@ import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import type { ChannelMode } from "../types";
 
+type Settings = {
+  device_name?: string;
+  threshold?: number;
+  channel_mode?: number;
+};
+
 /**
  * オーディオデバイスと設定を管理するComposable
  */
@@ -21,13 +27,13 @@ export function useAudioDevice() {
   async function updateThreshold(value: number) {
     threshold.value = value;
     await invoke("set_threshold", { ratio: value });
-    localStorage.setItem("threshold", value.toString());
+    await saveSettings({ threshold: value });
   }
 
   async function updateChannelMode(mode: ChannelMode) {
     channelMode.value = mode;
     await invoke("set_channel_mode", { mode });
-    localStorage.setItem("channelMode", mode.toString());
+    await saveSettings({ channel_mode: mode });
   }
 
   async function startListening(device: string) {
@@ -35,9 +41,20 @@ export function useAudioDevice() {
       listenStatus.value = "Starting...";
       await invoke("start_listening", { deviceName: device });
       listenStatus.value = `Listening: ${device}`;
+      await saveSettings({ device_name: device });
     } catch (e: unknown) {
       listenStatus.value = "Failed: " + (e?.toString() ?? "");
     }
+  }
+
+  async function saveSettings(partial: Partial<Settings>) {
+    // 既存設定を取得してマージ
+    let current: Settings = {};
+    try {
+      current = await invoke<Settings>("get_settings");
+    } catch {}
+    const merged = { ...current, ...partial };
+    await invoke("set_settings", { settings: merged });
   }
 
   onMounted(async () => {
@@ -45,26 +62,25 @@ export function useAudioDevice() {
       loading.value = true;
       devices.value = await invoke<string[]>("get_audio_devices");
 
-      // 保存された閾値を復元
-      const savedThreshold = localStorage.getItem("threshold");
-      if (savedThreshold) {
-        threshold.value = parseFloat(savedThreshold);
+      // settings.yamlから設定を取得
+      let settings: Settings = {};
+      try {
+        settings = await invoke<Settings>("get_settings");
+      } catch {}
+
+      if (typeof settings.threshold === 'number' && !isNaN(settings.threshold)) {
+        threshold.value = settings.threshold;
+        await invoke("set_threshold", { ratio: threshold.value });
+      } else {
+        threshold.value = 2.0;
         await invoke("set_threshold", { ratio: threshold.value });
       }
-
-      // 保存されたチャンネルモードを復元
-      const savedChannelMode = localStorage.getItem("channelMode");
-      if (savedChannelMode) {
-        const parsed = parseInt(savedChannelMode);
-        if ([0, 1, 2].includes(parsed)) {
-          channelMode.value = parsed as ChannelMode;
-          await invoke("set_channel_mode", { mode: channelMode.value });
-        }
+      if (settings.channel_mode !== undefined && [0, 1, 2].includes(settings.channel_mode)) {
+        channelMode.value = settings.channel_mode as ChannelMode;
+        await invoke("set_channel_mode", { mode: channelMode.value });
       }
-
-      const saved = localStorage.getItem("selectedDevice");
-      if (saved && devices.value.includes(saved)) {
-        selectedDevice.value = saved;
+      if (settings.device_name && devices.value.includes(settings.device_name)) {
+        selectedDevice.value = settings.device_name;
       } else if (devices.value.length > 0) {
         selectedDevice.value = devices.value[0];
       }
@@ -96,7 +112,6 @@ export function useAudioDevice() {
 
   watch(selectedDevice, (newDevice, oldDevice) => {
     if (newDevice && newDevice !== oldDevice) {
-      localStorage.setItem("selectedDevice", newDevice);
       startListening(newDevice);
     }
   });

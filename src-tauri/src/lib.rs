@@ -5,7 +5,7 @@ mod dsp;
 
 use commands::{
     get_audio_devices, get_channel_mode, get_threshold, set_channel_mode, set_threshold,
-    start_listening,
+    start_listening, set_settings, get_settings
 };
 
 pub fn run() {
@@ -21,7 +21,9 @@ pub fn run() {
             set_threshold,
             get_threshold,
             set_channel_mode,
-            get_channel_mode
+            get_channel_mode,
+            set_settings,
+            get_settings
         ])
         .setup(|app| {
             let app_handle = app.handle().clone();

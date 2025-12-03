@@ -2,6 +2,9 @@ use std::sync::atomic::Ordering;
 use std::thread;
 use std::time::Duration;
 use tauri::command;
+use std::fs;
+use std::path::PathBuf;
+use serde::{Deserialize, Serialize};
 
 use crate::audio::{find_device_by_name, get_input_device_names, start_audio_stream};
 use crate::constants::{CHANNEL_MODE, STOP_FLAG, STREAM_ID, THRESHOLD_RATIO};
@@ -65,4 +68,35 @@ pub fn start_listening(app: tauri::AppHandle, device_name: String) -> Result<(),
     run_analysis_thread(app, buffer, sample_rate, channels);
 
     Ok(())
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Settings {
+    pub device_name: Option<String>,
+    pub threshold: Option<f32>,
+    pub channel_mode: Option<u32>,
+}
+
+fn settings_path() -> PathBuf {
+    // exeと同じディレクトリ
+    std::env::current_exe()
+        .map(|mut p| { p.pop(); p.push("settings.json"); p })
+        .unwrap_or_else(|_| PathBuf::from("settings.json"))
+}
+
+#[command]
+pub fn get_settings() -> Result<Settings, String> {
+    let path = settings_path();
+    if !path.exists() {
+        return Ok(Settings { device_name: None, threshold: None, channel_mode: None });
+    }
+    let content = fs::read_to_string(&path).map_err(|e| e.to_string())?;
+    serde_json::from_str(&content).map_err(|e| e.to_string())
+}
+
+#[command]
+pub fn set_settings(settings: Settings) -> Result<(), String> {
+    let path = settings_path();
+    let json = serde_json::to_string_pretty(&settings).map_err(|e| e.to_string())?;
+    fs::write(&path, json).map_err(|e| e.to_string())
 }
