@@ -11,7 +11,6 @@ const emit = defineEmits<{
 
 <template>
   <div class="device-select">
-    <label for="device-select">Input:</label>
     <select
       id="device-select"
       :value="modelValue"
@@ -39,6 +38,6 @@ const emit = defineEmits<{
   border: 1px solid #4fc3f7;
   background: #1a1a2e;
   color: #fff;
-  max-width: 200px;
+  width: 100%;
 }
 </style>

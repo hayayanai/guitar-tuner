@@ -15,7 +15,6 @@ function handleInput(event: Event) {
 
 <template>
   <div class="threshold-control">
-    <label for="sensitivity-slider">Sensitivity: {{ modelValue.toFixed(1) }}</label>
     <div class="slider-wrapper">
       <input
         id="sensitivity-slider"
@@ -29,6 +28,7 @@ function handleInput(event: Event) {
     </div>
     <div class="threshold-labels">
       <span>High</span>
+      <span class="threshold-value">{{ modelValue.toFixed(1) }}</span>
       <span>Low</span>
     </div>
   </div>
@@ -38,14 +38,23 @@ function handleInput(event: Event) {
 .threshold-control {
   width: 100%;
 }
-.threshold-control label {
-  display: block;
-  text-align: center;
-  font-size: 14px;
-  color: var(--color-text-secondary, #aaa);
-  margin-bottom: var(--space-sm, 8px);
-}
+/* Slider値の表示 */
 .slider-wrapper {
+  /* 値を中央に配置 */
+  .threshold-value {
+    font-size: 0.95em;
+    color: var(--color-text-secondary, #aaa);
+    margin: 0 12px;
+  }
+  .threshold-labels {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--color-text-light, #666);
+    margin-top: var(--space-xs, 4px);
+  }
   padding: 6px 12px; /* つまみがはみ出さないように上下左右にパディング */
   overflow: hidden;
 }

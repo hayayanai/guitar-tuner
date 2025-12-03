@@ -82,9 +82,8 @@ const statusClass = computed(() => {
           <legend>Input</legend>
           <DeviceSelector v-model="selectedDevice" :devices="devices" />
           <ChannelSelector :model-value="channelMode" @update:model-value="handleChannelChange" />
-          <!-- ステータス表示（入力設定に関連） -->
           <div v-if="listenStatus" class="status" :class="statusClass">
-            <span class="status-indicator"></span>
+            <span class="status-indicator" />
             {{ statusText }}
           </div>
         </fieldset>
@@ -100,6 +99,13 @@ const statusClass = computed(() => {
 </template>
 
 <style scoped>
+/* Slider値の表示 */
+.threshold-value {
+  text-align: center;
+  font-size: 0.95em;
+  color: var(--color-text-secondary);
+  margin-top: 4px;
+}
 .container {
   min-height: 100vh;
   background-color: var(--color-background);
