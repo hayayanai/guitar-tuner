@@ -10,7 +10,7 @@ defineProps<{
 
 <template>
   <div class="note-display" :class="tuningStatus">
-    <span class="note-name">{{ noteInfo.name }}</span>
+    <span class="note-name">{{ noteInfo.name || "—" }}</span>
     <span v-if="frequency" class="current-freq">{{ frequency.toFixed(1) }} Hz</span>
     <span v-else class="current-freq">--- Hz</span>
     <span v-if="noteInfo.targetFreq > 0" class="target-freq"
@@ -29,6 +29,7 @@ defineProps<{
   font-weight: bold;
   display: block;
   line-height: 1;
+  min-height: 1.1em;
 }
 .current-freq {
   font-size: 1.1em;
