@@ -68,9 +68,15 @@ static STREAM: Lazy<Mutex<Option<Stream>>> = Lazy::new(|| Mutex::new(None));
 - 別の入力デバイスで試す
 
 ## 開発コマンド
+
+## CI・バージョン管理
+- Node.js/Rustのバージョンは `.mise.toml` で管理し、CI（GitHub Actions）でも自動反映
+- タグpushでWindows用インストーラーがGitHub Releasesにドラフト生成
+
+### 開発コマンド
 ```bash
-npm install        # 依存関係インストール
 mise install       # Node.js/Rustバージョン管理
+npm install        # 依存関係インストール
 npm run tauri dev  # 開発モード
 npm run tauri build # リリースビルド
 ```

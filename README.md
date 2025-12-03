@@ -17,20 +17,29 @@ Tauri + Vue + Rust (cpal/rustfft) ギターチューナーアプリ
 - **窓関数**: Blackman-Harris（サイドローブ抑制）
 - **周波数検出**: 倍音検出で基音を優先
 
-## ビルド・実行
+
+## ビルド・実行・CI
 
 ```bash
 npm install
-mise install
-npm run tauri dev    # 開発モード
-npm run tauri build  # リリースビルド
+mise install           # Node.js/Rustバージョン自動管理
+npm run tauri dev      # 開発モード
+npm run tauri build    # リリースビルド
 ```
+
+### GitHub Actionsによる自動リリース
+タグ（例: v0.2.0）をpushすると、Windows用インストーラーがGitHub Releasesにドラフトとして自動生成されます。
+
+CIは `.mise.toml` のバージョンを参照して Node.js/Rust をセットアップします。
+
+手動実行もActionsタブから可能です。
 
 ## 主要ファイル
 
 ## 必要な環境・依存
 
-- **Node.js 24 LTS** を推奨（`@types/node` も24系を利用）
+- **Node.js 24 LTS** を推奨（`.mise.toml`で管理、CIも自動対応）
+- **Rust stable**（`.mise.toml`で管理、CIも自動対応）
 - **Visual Studio 2022** の「C++によるデスクトップ開発」ワークロード（Rust/cpal依存のビルドに必要）
 	- Windows: `winget install Microsoft.VisualStudio.2022.Community` などでインストール
 	- インストール時に「C++によるデスクトップ開発」を有効化
