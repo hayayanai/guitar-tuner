@@ -29,22 +29,24 @@ const levelPercent = computed(() => props.level * 100);
 <style scoped>
 .input-level {
   max-width: 300px;
-  margin: 0 auto 15px;
-  padding: 10px 15px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
+  margin: var(--space-lg, 24px) auto;
+  padding: var(--space-md, 16px);
+  background: var(--color-background-secondary, rgba(255, 255, 255, 0.05));
+  border: 1px solid var(--color-border, #333);
+  border-radius: var(--radius-md, 8px);
 }
 .input-level label {
   display: block;
   text-align: center;
-  font-size: 12px;
-  color: #aaa;
-  margin-bottom: 8px;
+  font-size: 14px;
+  color: var(--color-text-secondary, #aaa);
+  margin-bottom: var(--space-sm, 8px);
 }
 .level-bar {
   width: 100%;
   height: 12px;
-  background: #222;
+  background: var(--color-background, #222);
+  border: 1px solid var(--color-border, #333);
   border-radius: 6px;
   overflow: hidden;
 }
@@ -60,8 +62,8 @@ const levelPercent = computed(() => props.level * 100);
 .level-labels {
   display: flex;
   justify-content: space-between;
-  font-size: 9px;
-  color: #666;
-  margin-top: 4px;
+  font-size: 12px;
+  color: var(--color-text-light, #666);
+  margin-top: var(--space-xs, 4px);
 }
 </style>

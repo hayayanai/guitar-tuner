@@ -15,8 +15,18 @@ function handleInput(event: Event) {
 
 <template>
   <div class="threshold-control">
-    <label>Sensitivity: {{ modelValue.toFixed(1) }}</label>
-    <input type="range" min="1.2" max="5.0" step="0.1" :value="modelValue" @input="handleInput" />
+    <label for="sensitivity-slider">Sensitivity: {{ modelValue.toFixed(1) }}</label>
+    <div class="slider-wrapper">
+      <input
+        id="sensitivity-slider"
+        type="range"
+        min="1.2"
+        max="5.0"
+        step="0.1"
+        :value="modelValue"
+        @input="handleInput"
+      />
+    </div>
     <div class="threshold-labels">
       <span>High</span>
       <span>Low</span>
@@ -26,42 +36,56 @@ function handleInput(event: Event) {
 
 <style scoped>
 .threshold-control {
-  max-width: 300px;
-  margin: 0 auto 20px;
-  padding: 10px 15px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
+  width: 100%;
 }
 .threshold-control label {
   display: block;
   text-align: center;
-  font-size: 12px;
-  color: #aaa;
-  margin-bottom: 8px;
+  font-size: 14px;
+  color: var(--color-text-secondary, #aaa);
+  margin-bottom: var(--space-sm, 8px);
+}
+.slider-wrapper {
+  padding: 6px 12px; /* つまみがはみ出さないように上下左右にパディング */
+  overflow: hidden;
 }
 .threshold-control input[type="range"] {
-  width: 100%;
-  height: 6px;
+  display: block;
+  width: -webkit-fill-available;
+  height: 8px;
   -webkit-appearance: none;
   appearance: none;
-  background: #333;
-  border-radius: 3px;
+  background: var(--color-divider, #444);
+  border-radius: 4px;
   outline: none;
+  margin: 0;
 }
 .threshold-control input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 18px;
-  height: 18px;
-  background: #4fc3f7;
+  width: 20px;
+  height: 20px;
+  background: var(--color-primary, #0071bc);
+  border: 2px solid var(--color-background, #fff);
   border-radius: 50%;
   cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.threshold-control input[type="range"]::-webkit-slider-thumb:hover {
+  background: var(--color-primary-dark, #004b7a);
+}
+.threshold-control input[type="range"]:focus {
+  outline: none;
+}
+.threshold-control input[type="range"]:focus::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px rgba(0, 113, 188, 0.3);
 }
 .threshold-labels {
   display: flex;
   justify-content: space-between;
-  font-size: 10px;
-  color: #666;
-  margin-top: 4px;
+  font-size: 12px;
+  color: var(--color-text-light, #666);
+  margin-top: var(--space-xs, 4px);
+  padding: 0 10px; /* ラベルも同じパディング */
 }
 </style>

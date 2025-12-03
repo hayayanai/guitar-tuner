@@ -68,7 +68,7 @@ export function useAudioDevice() {
         settings = await invoke<Settings>("get_settings");
       } catch {}
 
-      if (typeof settings.threshold === 'number' && !isNaN(settings.threshold)) {
+      if (typeof settings.threshold === "number" && !isNaN(settings.threshold)) {
         threshold.value = settings.threshold;
         await invoke("set_threshold", { ratio: threshold.value });
       } else {
