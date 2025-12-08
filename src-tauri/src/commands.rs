@@ -8,7 +8,8 @@ use tauri::command;
 
 use crate::audio::{find_device_by_name, get_input_device_names, start_audio_stream};
 use crate::constants::{
-    CHANNEL_MODE, LAST_TUNING_INFO, STOP_FLAG, STREAM_ID, THRESHOLD_RATIO, TRAY_ICON_MODE,
+    CHANNEL_MODE, CUSTOM_PITCH, DROP_TUNING_ENABLED, DROP_TUNING_NOTE, LAST_TUNING_INFO,
+    PITCH_MODE, STOP_FLAG, STREAM_ID, THRESHOLD_RATIO, TRAY_ICON_MODE, TUNING_SHIFT,
 };
 use crate::dsp::{refresh_tray_icon, run_analysis_thread};
 
@@ -24,6 +25,53 @@ pub fn set_channel_mode(mode: u32) -> Result<(), String> {
 #[command]
 pub fn get_channel_mode() -> u32 {
     CHANNEL_MODE.load(Ordering::SeqCst)
+}
+
+/// 基準ピッチモードを設定 (0=standard, 1=custom, 2=shift)
+#[command]
+#[allow(dead_code)]
+pub fn set_pitch_mode(mode: u32) {
+    PITCH_MODE.store(mode, Ordering::SeqCst);
+    println!("Pitch mode set to: {}", mode);
+}
+
+/// カスタム基準ピッチを設定 (438.0-445.0 Hz)
+#[command]
+#[allow(dead_code)]
+pub fn set_custom_pitch(pitch: f32) -> Result<(), String> {
+    if !(438.0..=445.0).contains(&pitch) {
+        return Err("Pitch must be between 438 and 445 Hz".to_string());
+    }
+    *CUSTOM_PITCH.write().unwrap() = pitch;
+    println!("Custom pitch set to: {:.1} Hz", pitch);
+    Ok(())
+}
+
+/// チューニングシフトを設定（半音数、負の値）
+#[command]
+#[allow(dead_code)]
+pub fn set_tuning_shift(semitones: i32) {
+    TUNING_SHIFT.store(semitones, Ordering::SeqCst);
+    println!("Tuning shift set to: {} semitones", semitones);
+}
+
+/// 6弦ドロップチューニングを設定
+#[command]
+#[allow(dead_code)]
+pub fn set_drop_tuning(enabled: bool, note: u32) {
+    DROP_TUNING_ENABLED.store(enabled, Ordering::SeqCst);
+    DROP_TUNING_NOTE.store(note, Ordering::SeqCst);
+    println!(
+        "Drop tuning set to: enabled={}, note={}",
+        enabled,
+        match note {
+            0 => "D",
+            1 => "C#",
+            2 => "C",
+            3 => "B",
+            _ => "Unknown",
+        }
+    );
 }
 
 /// トレイアイコン表示モードを設定（0=インジケーターのみ, 1=インジケーター+音名）
@@ -100,6 +148,12 @@ pub struct Settings {
     pub threshold: Option<f32>,
     pub channel_mode: Option<u32>,
     pub tray_icon_mode: Option<u32>,
+    // 新規追加
+    pub pitch_mode: Option<String>,        // "standard" | "custom" | "shift"
+    pub custom_pitch: Option<f32>,         // 438.0-445.0
+    pub tuning_shift: Option<i32>,         // -1〜-5
+    pub drop_tuning_enabled: Option<bool>, // ドロップチューニング有効/無効
+    pub drop_tuning_note: Option<String>,  // "D" | "C#" | "C" | "B"
 }
 
 fn settings_path() -> PathBuf {
@@ -122,6 +176,11 @@ pub fn get_settings() -> Result<Settings, String> {
             threshold: None,
             channel_mode: None,
             tray_icon_mode: None,
+            pitch_mode: None,
+            custom_pitch: None,
+            tuning_shift: None,
+            drop_tuning_enabled: None,
+            drop_tuning_note: None,
         });
     }
     let content = fs::read_to_string(&path).map_err(|e| e.to_string())?;

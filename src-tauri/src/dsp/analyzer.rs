@@ -8,8 +8,9 @@ use tauri::image::Image;
 use tauri::Emitter;
 
 use crate::constants::{
-    determine_color_with_hysteresis, TuningColor, CHANNEL_MODE, FFT_SIZE, GUITAR_FREQUENCIES,
-    LAST_TUNING_INFO, RMS_THRESHOLD, STOP_FLAG, THRESHOLD_RATIO, TRAY_ICON_MODE, TRAY_ICON_STATE,
+    determine_color_with_hysteresis, TuningColor, CHANNEL_MODE, CUSTOM_PITCH, DROP_TUNING_ENABLED,
+    DROP_TUNING_NOTE, FFT_SIZE, GUITAR_FREQUENCIES, LAST_TUNING_INFO, PITCH_MODE, RMS_THRESHOLD,
+    STOP_FLAG, THRESHOLD_RATIO, TRAY_ICON_MODE, TRAY_ICON_STATE, TUNING_SHIFT,
 };
 use crate::dsp::frequency::{
     calculate_frequency_bins, calculate_noise_floor, detect_guitar_fundamental,
@@ -17,15 +18,45 @@ use crate::dsp::frequency::{
 };
 use crate::dsp::window::apply_blackman_harris_window;
 
+/// 現在の設定に基づいて基準A4周波数を取得
+fn get_effective_a4() -> f32 {
+    match PITCH_MODE.load(Ordering::SeqCst) {
+        0 => 440.0, // Standard
+        1 => *CUSTOM_PITCH.read().unwrap(), // Custom
+        2 => {
+            // Shift: A4を半音単位でシフト
+            let shift = TUNING_SHIFT.load(Ordering::SeqCst);
+            440.0 * 2.0_f32.powf(shift as f32 / 12.0)
+        }
+        _ => 440.0,
+    }
+}
+
+/// 6弦の目標周波数を取得（ドロップ考慮）
+fn get_string6_target_freq() -> f32 {
+    if DROP_TUNING_ENABLED.load(Ordering::SeqCst) {
+        let note = DROP_TUNING_NOTE.load(Ordering::SeqCst);
+        match note {
+            0 => 73.42, // D2
+            1 => 69.30, // C#2
+            2 => 65.41, // C2
+            3 => 61.74, // B1
+            _ => 82.41, // E2 (default)
+        }
+    } else {
+        82.41 // E2
+    }
+}
+
 /// 周波数から音名とセント値を計算
 fn calculate_note_info(freq: f32) -> (String, f32, f32) {
     const NOTE_NAMES: [&str; 12] = [
         "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
     ];
-    const A4_FREQ: f32 = 440.0;
+    let a4_freq = get_effective_a4();
 
     // A4からの半音数を計算
-    let semitones_from_a4 = 12.0 * (freq / A4_FREQ).log2();
+    let semitones_from_a4 = 12.0 * (freq / a4_freq).log2();
     let nearest_semitone = semitones_from_a4.round() as i32;
     let cents = (semitones_from_a4 - nearest_semitone as f32) * 100.0;
 
@@ -36,7 +67,19 @@ fn calculate_note_info(freq: f32) -> (String, f32, f32) {
     let note_name = format!("{}{}", NOTE_NAMES[note_index as usize], octave);
 
     // 最も近いギター弦の周波数を探す
-    let target_freq = GUITAR_FREQUENCIES
+    // 6弦の周波数を動的に取得
+    let string6_freq = get_string6_target_freq();
+    // 基準ピッチのシフトを考慮したギター周波数リストを作成
+    let shift_ratio = a4_freq / 440.0;
+
+    let mut target_freqs = GUITAR_FREQUENCIES.to_vec();
+    // 6弦を更新
+    target_freqs[0] = string6_freq;
+
+    // 全体をシフト
+    let shifted_targets: Vec<f32> = target_freqs.iter().map(|&f| f * shift_ratio).collect();
+
+    let target_freq = shifted_targets
         .iter()
         .min_by(|a, b| {
             let diff_a = (freq - *a).abs();

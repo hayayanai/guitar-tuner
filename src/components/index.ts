@@ -7,3 +7,4 @@ export { default as TunerMeter } from "./TunerMeter.vue";
 export { default as CentDisplay } from "./CentDisplay.vue";
 export { default as RawFrequencyDisplay } from "./RawFrequencyDisplay.vue";
 export { default as StringReference } from "./StringReference.vue";
+export { default as PitchSettings } from "./PitchSettings.vue";

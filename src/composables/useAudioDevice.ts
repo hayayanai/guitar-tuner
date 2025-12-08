@@ -1,13 +1,18 @@
 import { ref, onMounted, watch } from "vue";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
-import type { ChannelMode } from "../types";
+import type { ChannelMode, PitchMode } from "../types";
 
 export type Settings = {
   device_name?: string;
   threshold?: number;
   channel_mode?: number;
   tray_icon_mode?: number;
+  pitch_mode?: PitchMode;
+  custom_pitch?: number;
+  tuning_shift?: number;
+  drop_tuning_enabled?: boolean;
+  drop_tuning_note?: string;
 };
 
 /**
@@ -24,6 +29,13 @@ export function useAudioDevice() {
   const threshold = ref(2.0);
   const inputLevel = ref(0);
   const channelMode = ref<ChannelMode>(1); // 0=左, 1=右, 2=平均
+
+  // 新しい設定項目
+  const pitchMode = ref<PitchMode>("standard");
+  const customPitch = ref(440);
+  const tuningShift = ref(-1);
+  const dropEnabled = ref(false);
+  const dropNote = ref("D");
 
   async function updateThreshold(value: number) {
     threshold.value = value;
@@ -58,6 +70,34 @@ export function useAudioDevice() {
     await invoke("set_settings", { settings: merged });
   }
 
+  // 設定変更の監視と反映
+  watch(pitchMode, async (mode) => {
+    const modeVal = mode === "standard" ? 0 : mode === "custom" ? 1 : 2;
+    await invoke("set_pitch_mode", { mode: modeVal });
+    await saveSettings({ pitch_mode: mode });
+  });
+
+  watch(customPitch, async (pitch) => {
+    if (pitch >= 438 && pitch <= 445) {
+      await invoke("set_custom_pitch", { pitch: Number(pitch) });
+      await saveSettings({ custom_pitch: Number(pitch) });
+    }
+  });
+
+  watch(tuningShift, async (shift) => {
+    await invoke("set_tuning_shift", { semitones: Number(shift) });
+    await saveSettings({ tuning_shift: Number(shift) });
+  });
+
+  watch([dropEnabled, dropNote], async ([enabled, note]) => {
+    const noteVal = note === "D" ? 0 : note === "C#" ? 1 : note === "C" ? 2 : 3;
+    await invoke("set_drop_tuning", { enabled, note: noteVal });
+    await saveSettings({
+      drop_tuning_enabled: enabled,
+      drop_tuning_note: note,
+    });
+  });
+
   onMounted(async () => {
     try {
       loading.value = true;
@@ -80,6 +120,31 @@ export function useAudioDevice() {
         channelMode.value = settings.channel_mode as ChannelMode;
         await invoke("set_channel_mode", { mode: channelMode.value });
       }
+
+      // 新しい設定の復元
+      if (settings.pitch_mode) pitchMode.value = settings.pitch_mode;
+      if (settings.custom_pitch) customPitch.value = settings.custom_pitch;
+      if (settings.tuning_shift) tuningShift.value = settings.tuning_shift;
+      if (typeof settings.drop_tuning_enabled === "boolean")
+        dropEnabled.value = settings.drop_tuning_enabled;
+      if (settings.drop_tuning_note) dropNote.value = settings.drop_tuning_note;
+
+      // 初期値をバックエンドに送信
+      const modeVal =
+        pitchMode.value === "standard" ? 0 : pitchMode.value === "custom" ? 1 : 2;
+      await invoke("set_pitch_mode", { mode: modeVal });
+      await invoke("set_custom_pitch", { pitch: Number(customPitch.value) });
+      await invoke("set_tuning_shift", { semitones: Number(tuningShift.value) });
+      const noteVal =
+        dropNote.value === "D"
+          ? 0
+          : dropNote.value === "C#"
+          ? 1
+          : dropNote.value === "C"
+          ? 2
+          : 3;
+      await invoke("set_drop_tuning", { enabled: !!dropEnabled.value, note: noteVal });
+
       if (settings.device_name && devices.value.includes(settings.device_name)) {
         selectedDevice.value = settings.device_name;
       } else if (devices.value.length > 0) {
@@ -133,6 +198,11 @@ export function useAudioDevice() {
     threshold,
     inputLevel,
     channelMode,
+    pitchMode,
+    customPitch,
+    tuningShift,
+    dropEnabled,
+    dropNote,
     updateThreshold,
     updateChannelMode,
     saveSettings,

@@ -11,6 +11,7 @@ import {
   CentDisplay,
   // RawFrequencyDisplay,
   StringReference,
+  PitchSettings,
 } from "./components";
 import { useAudioDevice, useNoteInfo, GUITAR_NOTES, type Settings } from "./composables";
 import type { ChannelMode } from "./types";
@@ -26,6 +27,11 @@ const {
   threshold,
   inputLevel,
   channelMode,
+  pitchMode,
+  customPitch,
+  tuningShift,
+  dropEnabled,
+  dropNote,
   updateThreshold,
   updateChannelMode,
   saveSettings,
@@ -128,6 +134,15 @@ const statusClass = computed(() => {
           <legend>Sensitivity</legend>
           <ThresholdSlider :model-value="threshold" @update:model-value="updateThreshold" />
         </fieldset>
+
+        <!-- ピッチ設定グループ -->
+        <PitchSettings
+          v-model:pitch-mode="pitchMode"
+          v-model:custom-pitch="customPitch"
+          v-model:tuning-shift="tuningShift"
+          v-model:drop-enabled="dropEnabled"
+          v-model:drop-note="dropNote"
+        />
 
         <!-- トレイアイコン設定グループ -->
         <fieldset class="settings-group">
@@ -233,42 +248,11 @@ const statusClass = computed(() => {
   background-color: var(--color-error-light);
 }
 
-/* 設定グループ */
-.settings-group {
-  border: 1px solid var(--color-divider);
-  border-radius: var(--radius-md);
-  padding: var(--space-md);
-  margin-bottom: var(--space-md);
-}
-
-.settings-group legend {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--color-text-secondary);
-  padding: 0 var(--space-sm);
-}
-
 /* トレイアイコンモード選択 */
 .tray-mode-selector {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
-}
-
-.radio-label {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  cursor: pointer;
-  padding: var(--space-xs) 0;
-  font-size: 14px;
-}
-
-.radio-label input[type="radio"] {
-  width: 16px;
-  height: 16px;
-  accent-color: var(--color-primary);
-  cursor: pointer;
 }
 
 .tuner {

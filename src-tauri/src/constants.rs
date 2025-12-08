@@ -1,7 +1,7 @@
 use cpal::Stream;
 use once_cell::sync::Lazy;
-use std::sync::atomic::{AtomicBool, AtomicU32};
-use std::sync::Mutex;
+use std::sync::atomic::{AtomicBool, AtomicI32, AtomicU32};
+use std::sync::{Mutex, RwLock};
 use std::time::Instant;
 
 /// グローバルストリームの保持（dropされないようにする）
@@ -15,6 +15,21 @@ pub static CHANNEL_MODE: AtomicU32 = AtomicU32::new(1); // デフォルトは右
 
 /// トレイアイコン表示モード（0=インジケーターのみ, 1=インジケーター+音名）
 pub static TRAY_ICON_MODE: AtomicU32 = AtomicU32::new(1); // デフォルトは両方表示
+
+/// 基準ピッチモード (0=standard, 1=custom, 2=shift)
+pub static PITCH_MODE: AtomicU32 = AtomicU32::new(0);
+
+/// カスタム基準ピッチ (Hz) - デフォルト440.0
+pub static CUSTOM_PITCH: Lazy<RwLock<f32>> = Lazy::new(|| RwLock::new(440.0));
+
+/// チューニングシフト（半音数、負の値）
+pub static TUNING_SHIFT: AtomicI32 = AtomicI32::new(0);
+
+/// 6弦ドロップチューニング有効フラグ
+pub static DROP_TUNING_ENABLED: AtomicBool = AtomicBool::new(false);
+
+/// 6弦ドロップ音名 (0=D, 1=C#, 2=C, 3=B)
+pub static DROP_TUNING_NOTE: AtomicU32 = AtomicU32::new(0);
 
 /// 解析スレッド制御用
 pub static STREAM_ID: AtomicU32 = AtomicU32::new(0);
