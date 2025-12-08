@@ -7,8 +7,10 @@ use std::time::Duration;
 use tauri::command;
 
 use crate::audio::{find_device_by_name, get_input_device_names, start_audio_stream};
-use crate::constants::{CHANNEL_MODE, STOP_FLAG, STREAM_ID, THRESHOLD_RATIO};
-use crate::dsp::run_analysis_thread;
+use crate::constants::{
+    CHANNEL_MODE, LAST_TUNING_INFO, STOP_FLAG, STREAM_ID, THRESHOLD_RATIO, TRAY_ICON_MODE,
+};
+use crate::dsp::{refresh_tray_icon, run_analysis_thread};
 
 /// チャンネルモードを設定（0=左, 1=右, 2=両方の平均）
 #[command]
@@ -22,6 +24,28 @@ pub fn set_channel_mode(mode: u32) -> Result<(), String> {
 #[command]
 pub fn get_channel_mode() -> u32 {
     CHANNEL_MODE.load(Ordering::SeqCst)
+}
+
+/// トレイアイコン表示モードを設定（0=インジケーターのみ, 1=インジケーター+音名）
+#[command]
+pub fn set_tray_icon_mode(app: tauri::AppHandle, mode: u32) -> Result<(), String> {
+    TRAY_ICON_MODE.store(mode.min(1), Ordering::SeqCst);
+    println!("Tray icon mode set to: {}", mode);
+
+    // 最後のチューニング情報を取得して即座にアイコンを再描画
+    if let Ok(info) = LAST_TUNING_INFO.lock() {
+        if !info.note_name.is_empty() {
+            refresh_tray_icon(&app, info.cents, &info.note_name);
+        }
+    }
+
+    Ok(())
+}
+
+/// 現在のトレイアイコン表示モードを取得
+#[command]
+pub fn get_tray_icon_mode() -> u32 {
+    TRAY_ICON_MODE.load(Ordering::SeqCst)
 }
 
 /// 閾値を設定（1.1〜10.0の範囲）
@@ -75,6 +99,7 @@ pub struct Settings {
     pub device_name: Option<String>,
     pub threshold: Option<f32>,
     pub channel_mode: Option<u32>,
+    pub tray_icon_mode: Option<u32>,
 }
 
 fn settings_path() -> PathBuf {
@@ -96,6 +121,7 @@ pub fn get_settings() -> Result<Settings, String> {
             device_name: None,
             threshold: None,
             channel_mode: None,
+            tray_icon_mode: None,
         });
     }
     let content = fs::read_to_string(&path).map_err(|e| e.to_string())?;

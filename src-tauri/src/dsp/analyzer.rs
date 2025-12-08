@@ -9,7 +9,7 @@ use tauri::Emitter;
 
 use crate::constants::{
     determine_color_with_hysteresis, TuningColor, CHANNEL_MODE, FFT_SIZE, GUITAR_FREQUENCIES,
-    LAST_TUNING_INFO, RMS_THRESHOLD, STOP_FLAG, THRESHOLD_RATIO, TRAY_ICON_STATE,
+    LAST_TUNING_INFO, RMS_THRESHOLD, STOP_FLAG, THRESHOLD_RATIO, TRAY_ICON_MODE, TRAY_ICON_STATE,
 };
 use crate::dsp::frequency::{
     calculate_frequency_bins, calculate_noise_floor, detect_guitar_fundamental,
@@ -164,10 +164,14 @@ fn draw_text_large(
 }
 
 /// セント値に応じてチューニング状態を示すアイコンを生成（32x32 RGBA）
-/// 音名を大きく上部に、チューニングバーを下部に表示
+/// モード0: インジケーターのみ（全画面メーター）
+/// モード1: 音名を大きく上部に、チューニングバーを下部に表示
 fn generate_tuning_icon(cents: f32, color: TuningColor, note_name: &str) -> Vec<u8> {
     const SIZE: usize = 32;
     let mut rgba = vec![0u8; SIZE * SIZE * 4];
+
+    // 表示モードを取得（0=インジケーターのみ, 1=インジケーター+音名）
+    let icon_mode = TRAY_ICON_MODE.load(Ordering::SeqCst);
 
     // 背景色（濃いグレー）
     let bg_color: [u8; 4] = [40, 40, 40, 255];
@@ -192,39 +196,47 @@ fn generate_tuning_icon(cents: f32, color: TuningColor, note_name: &str) -> Vec<
         }
     }
 
-    // 音名を上部に大きく描画（音名+#のみ抽出：例 "A#4" -> "A#"）
-    let note_chars: String = note_name
-        .chars()
-        .filter(|c| c.is_alphabetic() || *c == '#')
-        .collect();
-
-    // 大きなフォントで描画（5x7ピクセル、スケール2 = 10x14ピクセル）
-    let scale = 2;
-    let char_count = note_chars.len();
-    // 文字幅: 5*scale + 間隔1*scale = 6*scale per char、最後の間隔除く
-    let text_width = if char_count > 0 {
-        char_count * 6 * scale - scale
-    } else {
-        0
-    };
-    let text_start_x = (SIZE.saturating_sub(text_width)) / 2;
-    draw_text_large(
-        &mut rgba,
-        SIZE,
-        &note_chars,
-        text_start_x,
-        1,
-        text_color,
-        scale,
-    );
-
-    // メーター領域（音名の下に配置）- 音名が14px高さなので、16pxから開始
-    let meter_top = 17;
+    // メーター領域の設定（モードに応じて変更）
+    let meter_top;
     let meter_bottom = SIZE - 2;
-    // 32px幅のアイコンなので、left=2, right=30 で 28px幅
     let meter_left = 2;
     let meter_right = SIZE - 2; // 30 (2〜29の28px幅)
     let meter_width = meter_right - meter_left; // 28px
+
+    if icon_mode == 1 {
+        // モード1: 音名+インジケーター
+        // 音名を上部に大きく描画（音名+#のみ抽出：例 "A#4" -> "A#"）
+        let note_chars: String = note_name
+            .chars()
+            .filter(|c| c.is_alphabetic() || *c == '#')
+            .collect();
+
+        // 大きなフォントで描画（5x7ピクセル、スケール2 = 10x14ピクセル）
+        let scale = 2;
+        let char_count = note_chars.len();
+        // 文字幅: 5*scale + 間隔1*scale = 6*scale per char、最後の間隔除く
+        let text_width = if char_count > 0 {
+            char_count * 6 * scale - scale
+        } else {
+            0
+        };
+        let text_start_x = (SIZE.saturating_sub(text_width)) / 2;
+        draw_text_large(
+            &mut rgba,
+            SIZE,
+            &note_chars,
+            text_start_x,
+            1,
+            text_color,
+            scale,
+        );
+
+        // メーター領域（音名の下に配置）- 音名が14px高さなので、17pxから開始
+        meter_top = 17;
+    } else {
+        // モード0: インジケーターのみ（全画面メーター）
+        meter_top = 2;
+    }
 
     // 偶数幅なので中央は2ピクセル（15と16）
     let center_x1 = meter_left + meter_width / 2 - 1; // 15
@@ -256,12 +268,11 @@ fn generate_tuning_icon(cents: f32, color: TuningColor, note_name: &str) -> Vec<
         }
     }
 
-    // 中央マーク（小さな三角形）を上部に描画 - 音名とメーターの間
-    // 2ピクセル中央に対応
+    // 中央マーク（小さな三角形）を上部に描画
     let triangle_color: [u8; 4] = [120, 120, 120, 255];
     for i in 0..2 {
-        let y = meter_top - 1 - i;
-        if y > 15 {
+        let y = meter_top.saturating_sub(1 + i);
+        if y >= 1 && (icon_mode == 1 && y > 15 || icon_mode == 0) {
             for dx in 0..=i {
                 // 左側の中央点から左へ
                 let x1 = center_x1.saturating_sub(dx);
@@ -310,6 +321,29 @@ fn update_tray_icon(app_handle: &tauri::AppHandle, cents: f32, note_name: &str) 
 
         // 状態を更新
         state.update(new_color, indicator_pos);
+    }
+}
+
+/// トレイアイコンを即座に再描画（モード変更時など、デバウンスをスキップ）
+pub fn refresh_tray_icon(app_handle: &tauri::AppHandle, cents: f32, note_name: &str) {
+    // 状態管理を取得
+    let state = match TRAY_ICON_STATE.lock() {
+        Ok(s) => s,
+        Err(_) => return,
+    };
+
+    // 現在の色を取得（なければ新規計算）
+    let color = state
+        .last_color
+        .unwrap_or_else(|| determine_color_with_hysteresis(cents, None));
+    drop(state); // ロックを解放
+
+    // トレイアイコンを更新
+    let tray = app_handle.tray_by_id("main");
+    if let Some(tray) = tray {
+        let icon_data = generate_tuning_icon(cents, color, note_name);
+        let image = Image::new_owned(icon_data, 32, 32);
+        let _ = tray.set_icon(Some(image));
     }
 }
 

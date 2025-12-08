@@ -4,8 +4,8 @@ mod constants;
 mod dsp;
 
 use commands::{
-    get_audio_devices, get_channel_mode, get_settings, get_threshold, set_channel_mode,
-    set_settings, set_threshold, start_listening,
+    get_audio_devices, get_channel_mode, get_settings, get_threshold, get_tray_icon_mode,
+    set_channel_mode, set_settings, set_threshold, set_tray_icon_mode, start_listening,
 };
 
 pub fn run() {
@@ -22,6 +22,8 @@ pub fn run() {
             get_threshold,
             set_channel_mode,
             get_channel_mode,
+            set_tray_icon_mode,
+            get_tray_icon_mode,
             set_settings,
             get_settings
         ])

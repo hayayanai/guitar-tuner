@@ -3,10 +3,11 @@ import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import type { ChannelMode } from "../types";
 
-type Settings = {
+export type Settings = {
   device_name?: string;
   threshold?: number;
   channel_mode?: number;
+  tray_icon_mode?: number;
 };
 
 /**
@@ -134,5 +135,6 @@ export function useAudioDevice() {
     channelMode,
     updateThreshold,
     updateChannelMode,
+    saveSettings,
   };
 }

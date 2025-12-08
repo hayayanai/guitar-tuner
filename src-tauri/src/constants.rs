@@ -13,6 +13,9 @@ pub static THRESHOLD_RATIO: Lazy<Mutex<f32>> = Lazy::new(|| Mutex::new(2.0));
 /// チャンネル選択（0=左, 1=右, 2=両方の平均）
 pub static CHANNEL_MODE: AtomicU32 = AtomicU32::new(1); // デフォルトは右チャンネル
 
+/// トレイアイコン表示モード（0=インジケーターのみ, 1=インジケーター+音名）
+pub static TRAY_ICON_MODE: AtomicU32 = AtomicU32::new(1); // デフォルトは両方表示
+
 /// 解析スレッド制御用
 pub static STREAM_ID: AtomicU32 = AtomicU32::new(0);
 pub static STOP_FLAG: AtomicBool = AtomicBool::new(false);

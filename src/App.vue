@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref, watch, onMounted } from "vue";
+import { invoke } from "@tauri-apps/api/core";
 import {
   DeviceSelector,
   ChannelSelector,
@@ -11,7 +12,7 @@ import {
   // RawFrequencyDisplay,
   StringReference,
 } from "./components";
-import { useAudioDevice, useNoteInfo, GUITAR_NOTES } from "./composables";
+import { useAudioDevice, useNoteInfo, GUITAR_NOTES, type Settings } from "./composables";
 import type { ChannelMode } from "./types";
 
 const {
@@ -27,6 +28,7 @@ const {
   channelMode,
   updateThreshold,
   updateChannelMode,
+  saveSettings,
 } = useAudioDevice();
 
 const { noteInfo, tuningStatus, centDisplay } = useNoteInfo(frequency);
@@ -34,6 +36,39 @@ const { noteInfo, tuningStatus, centDisplay } = useNoteInfo(frequency);
 function handleChannelChange(mode: ChannelMode) {
   updateChannelMode(mode);
 }
+
+// トレイアイコン表示モード（0=インジケーターのみ, 1=インジケーター+音名）
+const trayIconMode = ref<string>("1");
+const trayIconModeInitialized = ref(false);
+
+// 起動時に設定を復元
+onMounted(async () => {
+  try {
+    const settings = await invoke<Settings>("get_settings");
+    if (settings.tray_icon_mode !== undefined && [0, 1].includes(settings.tray_icon_mode)) {
+      trayIconMode.value = String(settings.tray_icon_mode);
+      await invoke("set_tray_icon_mode", { mode: settings.tray_icon_mode });
+    }
+  } catch (e) {
+    console.error("Failed to load tray icon mode:", e);
+  } finally {
+    trayIconModeInitialized.value = true;
+  }
+});
+
+// モード変更時にバックエンドに通知して保存
+watch(trayIconMode, async (newMode) => {
+  // 初期化前の変更は無視（設定復元時のトリガーを防ぐ）
+  if (!trayIconModeInitialized.value) return;
+
+  try {
+    const mode = parseInt(newMode);
+    await invoke("set_tray_icon_mode", { mode });
+    await saveSettings({ tray_icon_mode: mode });
+  } catch (e) {
+    console.error("Failed to set tray icon mode:", e);
+  }
+});
 
 // ステータス表示の改善
 const statusText = computed(() => {
@@ -92,6 +127,21 @@ const statusClass = computed(() => {
         <fieldset class="settings-group">
           <legend>Sensitivity</legend>
           <ThresholdSlider :model-value="threshold" @update:model-value="updateThreshold" />
+        </fieldset>
+
+        <!-- トレイアイコン設定グループ -->
+        <fieldset class="settings-group">
+          <legend>Tray Icon</legend>
+          <div class="tray-mode-selector">
+            <label class="radio-label">
+              <input type="radio" name="trayMode" value="0" v-model="trayIconMode" />
+              <span>Indicator only</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="trayMode" value="1" v-model="trayIconMode" />
+              <span>Indicator + Note name</span>
+            </label>
+          </div>
         </fieldset>
       </details>
     </div>
@@ -196,6 +246,29 @@ const statusClass = computed(() => {
   font-weight: 700;
   color: var(--color-text-secondary);
   padding: 0 var(--space-sm);
+}
+
+/* トレイアイコンモード選択 */
+.tray-mode-selector {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  cursor: pointer;
+  padding: var(--space-xs) 0;
+  font-size: 14px;
+}
+
+.radio-label input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
 }
 
 .tuner {
