@@ -63,11 +63,28 @@ You can also trigger builds manually from the Actions tab.
 
 ## Code Formatting & Linting
 
-- **prettier**: Code formatter
-- **oxlint**: Fast linter for TypeScript/JavaScript
-  - Used with `eslint-plugin-oxlint` for ESLint integration
-  - `eslint-plugin-vue` for Vue file linting
-  - Run `npm run lint` to lint all files
+### Linter
+
+TypeScript/Vue code static analysis:
+
+```bash
+npm run lint
+```
+
+### Formatter
+
+Code formatting:
+
+```bash
+npm run format
+```
+
+**prettier**: Code formatter
+**oxlint**: Fast linter for TypeScript/JavaScript
+`eslint-plugin-oxlint` for ESLint integration
+`eslint-plugin-vue` for Vue file linting
+
+These checks are also run automatically in CI. Please run them locally before committing.
 
 ## License
 

@@ -63,11 +63,28 @@ CIは `.mise.toml` のバージョンを参照して Node.js/Rust をセット�
 
 ## コード整形・静的解析
 
-- **prettier**: フォーマッタ
-- **oxlint**: 静的解析（TypeScript/JavaScript）
-  - `eslint-plugin-oxlint`でESLintと併用可能
-  - `eslint-plugin-vue`でVueファイルもESLint経由でlint可能
-  - `npm run lint` で全ファイルlint
+### Linter（静的解析）
+
+TypeScript/Vue コードの静的解析:
+
+```bash
+npm run lint
+```
+
+### Formatter（フォーマッタ）
+
+コード整形:
+
+```bash
+npm run format
+```
+
+**prettier**: フォーマッタ
+**oxlint**: 静的解析（TypeScript/JavaScript）
+`eslint-plugin-oxlint`でESLintと併用可能
+`eslint-plugin-vue`でVueファイルもESLint経由でlint可能
+
+これらのチェックはCIでも自動実行されます。コミット前にローカルでも実行してください。
 
 ## ライセンス
 
