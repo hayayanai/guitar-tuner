@@ -26,7 +26,7 @@ defineProps<{
   justify-content: center;
   gap: 10px;
   padding: 15px;
-  background: var(--color-background-secondary);
+  background: var(--dads-gray-420);
   border-radius: 10px;
 }
 .string-note {
@@ -35,17 +35,17 @@ defineProps<{
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-background);
+  background: var(--dads-white);
   border-radius: 50%;
   font-weight: bold;
   font-size: 14px;
-  color: var(--color-text-secondary);
+  color: var(--dads-gray-640);
   transition: all 0.2s;
 }
 .string-note.active {
-  background: var(--color-primary-light);
-  color: var(--color-background);
+  background: var(--dads-blue-500);
+  color: var(--dads-white);
   transform: scale(1.1);
-  box-shadow: 0 0 15px var(--color-primary-light, #4fc3f7);
+  box-shadow: 0 0 15px var(--dads-blue-500);
 }
 </style>

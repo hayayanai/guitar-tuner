@@ -33,23 +33,23 @@ defineProps<{
 }
 .current-freq {
   font-size: 1.1em;
-  color: #888;
+  color: var(--dads-gray-640);
   margin-top: 5px;
   display: inline;
 }
 .target-freq {
   font-size: 1em;
-  color: #4fc3f7;
+  color: var(--dads-cyan-400);
   margin-left: 8px;
 }
 .note-display.perfect .note-name {
-  color: #4caf50;
-  text-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+  color: var(--semantic-success-main);
+  text-shadow: 0 0 20px color-mix(in srgb, var(--semantic-success-main) 50%, transparent 50%);
 }
 .note-display.good .note-name {
-  color: #ffeb3b;
+  color: var(--semantic-warning-low);
 }
 .note-display.off .note-name {
-  color: #ef5350;
+  color: var(--semantic-error-main);
 }
 </style>

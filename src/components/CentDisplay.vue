@@ -23,12 +23,12 @@ defineProps<{
   margin-bottom: 15px;
 }
 .cent-display.perfect {
-  color: #4caf50;
+  color: var(--semantic-success-main);
 }
 .cent-display.good {
-  color: #ffeb3b;
+  color: var(--semantic-warning-low);
 }
 .cent-display.off {
-  color: #ef5350;
+  color: var(--semantic-error-main);
 }
 </style>

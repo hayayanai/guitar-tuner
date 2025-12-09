@@ -121,13 +121,13 @@ const pitchError = computed(() => {
   margin: 0 8px;
   padding: 4px 8px;
   border-radius: 4px;
-  border: 1px solid var(--color-border);
-  background: var(--color-background);
-  color: var(--color-text);
+  border: 1px solid var(--dads-gray-420);
+  background: var(--dads-gray-420);
+  color: var(--dads-gray-640);
 }
 
 .error-text {
-  color: var(--color-error);
+  color: var(--semantic-error-main);
   font-size: 0.8em;
   margin-left: 8px;
 }
@@ -136,27 +136,27 @@ select {
   margin-left: 8px;
   padding: 4px 8px;
   border-radius: 4px;
-  background: var(--color-background);
-  color: var(--color-text);
-  border: 1px solid var(--color-border);
+  background: var(--dads-gray-420);
+  color: var(--dads-gray-640);
+  border: 1px solid var(--dads-gray-420);
 }
 
 select:disabled,
 input:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  background: var(--color-background-secondary);
+  background: var(--dads-gray-420);
 }
 
 .range-hint {
   font-size: 0.8em;
-  color: var(--color-text-secondary);
+  color: var(--dads-gray-420);
   margin-left: 4px;
 }
 
 .help-text {
   font-size: 0.85em;
-  color: var(--color-text-secondary);
+  color: var(--dads-gray-420);
   margin: 8px 0 0 24px;
   line-height: 1.4;
 }

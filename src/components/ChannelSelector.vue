@@ -32,7 +32,7 @@ const emit = defineEmits<{
 }
 .channel-select label {
   font-size: 12px;
-  color: #aaa;
+  color: var(--dads-gray-640);
 }
 .channel-buttons {
   display: flex;
@@ -41,18 +41,18 @@ const emit = defineEmits<{
 .channel-buttons button {
   padding: 4px 12px;
   font-size: 11px;
-  border: 1px solid var(--color-primary-light);
-  background: var(--color-background-secondary);
-  color: var(--color-text-secondary);
+  border: 1px solid var(--dads-blue-500);
+  background: var(--dads-gray-420);
+  color: var(--dads-gray-640);
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s;
 }
 .channel-buttons button.active {
-  background: var(--color-primary-light);
-  color: var(--color-background);
+  background: var(--dads-blue-500);
+  color: var(--dads-white);
 }
 .channel-buttons button:hover:not(.active) {
-  background: var(--color-background);
+  background: var(--dads-gray-420);
 }
 </style>

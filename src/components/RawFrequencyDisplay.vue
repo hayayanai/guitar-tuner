@@ -16,17 +16,17 @@ defineProps<{
   text-align: center;
   margin-bottom: 15px;
   padding: 8px;
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--dads-gray-420);
   border-radius: 6px;
 }
 .raw-frequency .label {
   font-size: 11px;
-  color: #666;
+  color: var(--dads-gray-640);
   margin-right: 8px;
 }
 .raw-frequency .value {
   font-size: 14px;
-  color: #4fc3f7;
+  color: var(--dads-cyan-400);
   font-family: monospace;
 }
 </style>

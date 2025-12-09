@@ -32,21 +32,21 @@ defineProps<{
 }
 .meter-track {
   padding: 10px 15px;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.3); /* 非テキスト装飾はそのまま */
   border-radius: 10px;
 }
 .meter-labels {
   display: flex;
   justify-content: space-between;
   font-size: 11px;
-  color: #666;
+  color: var(--dads-gray-536);
   margin-bottom: 6px;
   padding: 0 5px;
 }
 .meter-bar {
   position: relative;
   height: 40px;
-  background: var(--color-background-secondary);
+  background: var(--dads-gray-420);
   border-radius: 6px;
   overflow: hidden;
 }
@@ -57,7 +57,7 @@ defineProps<{
   bottom: 0;
   width: 20px;
   transform: translateX(-50%);
-  background: color-mix(in srgb, var(--color-success) 15%, var(--color-background) 85%);
+  background: var(--dads-gray-420);
 }
 .meter-marks {
   position: absolute;
@@ -73,11 +73,11 @@ defineProps<{
 .tick {
   width: 2px;
   height: 10px;
-  background: var(--color-border);
+  background: var(--dads-gray-536);
 }
 .tick.center {
   height: 100%;
-  background: var(--color-success);
+  background: var(--semantic-success-main);
   width: 3px;
 }
 .indicator {
@@ -85,19 +85,19 @@ defineProps<{
   top: 4px;
   bottom: 4px;
   width: 8px;
-  background: #ef5350;
+  background: var(--semantic-error-main);
   border-radius: 4px;
   transform: translateX(-50%);
   transition: left 0.08s ease-out;
-  box-shadow: 0 0 10px rgba(239, 83, 80, 0.5);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--semantic-error-main) 50%, transparent 50%);
 }
 .indicator.perfect {
-  background: #4caf50;
-  box-shadow: 0 0 15px rgba(76, 175, 80, 0.7);
+  background: var(--semantic-success-main);
+  box-shadow: 0 0 15px color-mix(in srgb, var(--semantic-success-main) 70%, transparent 30%);
 }
 .indicator.good {
-  background: #ffeb3b;
-  box-shadow: 0 0 10px rgba(255, 235, 59, 0.5);
+  background: var(--semantic-warning-low);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--semantic-warning-low) 50%, transparent 50%);
 }
 
 .indicator {

@@ -1,3 +1,4 @@
+@import "../tokens/colors.css";
 :root {
   /* フォントファミリー */
   font-family:
@@ -118,7 +119,6 @@ body {
 }
 
 html {
-  scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
 }
 html::-webkit-scrollbar {

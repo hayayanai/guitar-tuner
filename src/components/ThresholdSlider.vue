@@ -43,7 +43,7 @@ function handleInput(event: Event) {
   /* 値を中央に配置 */
   .threshold-value {
     font-size: 0.95em;
-    color: var(--color-text-secondary, #aaa);
+    color: var(--dads-gray-420);
     margin: 0 12px;
   }
   .threshold-labels {
@@ -52,7 +52,7 @@ function handleInput(event: Event) {
     align-items: center;
     gap: 8px;
     font-size: 12px;
-    color: var(--color-text-light, #666);
+    color: var(--dads-gray-640);
     margin-top: var(--space-xs, 4px);
   }
   padding: 6px 12px; /* つまみがはみ出さないように上下左右にパディング */
@@ -64,7 +64,7 @@ function handleInput(event: Event) {
   height: 8px;
   -webkit-appearance: none;
   appearance: none;
-  background: var(--color-divider, #444);
+  background: var(--dads-gray-420);
   border-radius: 4px;
   outline: none;
   margin: 0;
@@ -74,26 +74,26 @@ function handleInput(event: Event) {
   appearance: none;
   width: 20px;
   height: 20px;
-  background: var(--color-primary, #0071bc);
-  border: 2px solid var(--color-background, #fff);
+  background: var(--dads-blue-500);
+  border: 2px solid var(--dads-white);
   border-radius: 50%;
   cursor: pointer;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 .threshold-control input[type="range"]::-webkit-slider-thumb:hover {
-  background: var(--color-primary-dark, #004b7a);
+  background: var(--dads-blue-600);
 }
 .threshold-control input[type="range"]:focus {
   outline: none;
 }
 .threshold-control input[type="range"]:focus::-webkit-slider-thumb {
-  box-shadow: 0 0 0 3px rgba(0, 113, 188, 0.3);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--dads-blue-500) 30%, transparent 70%);
 }
 .threshold-labels {
   display: flex;
   justify-content: space-between;
   font-size: 12px;
-  color: var(--color-text-light, #666);
+  color: var(--dads-gray-640);
   margin-top: var(--space-xs, 4px);
   padding: 0 10px; /* ラベルも同じパディング */
 }
