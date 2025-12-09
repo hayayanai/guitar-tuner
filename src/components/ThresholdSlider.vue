@@ -1,15 +1,9 @@
 <script setup lang="ts">
-defineProps<{
-  modelValue: number;
-}>();
-
-const emit = defineEmits<{
-  "update:modelValue": [value: number];
-}>();
+const model = defineModel<number>({ required: true });
 
 function handleInput(event: Event) {
   const target = event.target as HTMLInputElement;
-  emit("update:modelValue", parseFloat(target.value));
+  model.value = parseFloat(target.value);
 }
 </script>
 
@@ -22,13 +16,13 @@ function handleInput(event: Event) {
         min="1.2"
         max="5.0"
         step="0.1"
-        :value="modelValue"
+        :value="model"
         @input="handleInput"
       />
     </div>
     <div class="threshold-labels">
       <span>High</span>
-      <span class="threshold-value">{{ modelValue.toFixed(1) }}</span>
+      <span class="threshold-value">{{ model.toFixed(1) }}</span>
       <span>Low</span>
     </div>
   </div>

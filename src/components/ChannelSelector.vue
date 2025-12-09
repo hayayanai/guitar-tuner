@@ -1,23 +1,16 @@
 <script setup lang="ts">
 import type { ChannelMode } from "../types";
 
-defineProps<{
-  modelValue: ChannelMode;
-}>();
-
-const emit = defineEmits<{
-  "update:modelValue": [value: ChannelMode];
-}>();
+import { defineModel } from "vue";
+const model = defineModel<ChannelMode>({ required: true });
 </script>
 
 <template>
   <div class="channel-select">
     <div class="channel-buttons">
-      <button :class="{ active: modelValue === 0 }" @click="emit('update:modelValue', 0)">L</button>
-      <button :class="{ active: modelValue === 2 }" @click="emit('update:modelValue', 2)">
-        L+R
-      </button>
-      <button :class="{ active: modelValue === 1 }" @click="emit('update:modelValue', 1)">R</button>
+      <button :class="{ active: model === 0 }" @click="model = 0">L</button>
+      <button :class="{ active: model === 2 }" @click="model = 2">L+R</button>
+      <button :class="{ active: model === 1 }" @click="model = 1">R</button>
     </div>
   </div>
 </template>

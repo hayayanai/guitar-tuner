@@ -3,25 +3,15 @@ import { computed } from "vue";
 import { TUNING_SHIFTS, DROP_TUNINGS } from "../composables/constants";
 import type { PitchMode } from "../types";
 
-const props = defineProps<{
-  pitchMode: PitchMode;
-  customPitch: number;
-  tuningShift: number;
-  dropEnabled: boolean;
-  dropNote: string;
-}>();
-
-const emit = defineEmits<{
-  (e: "update:pitchMode", value: PitchMode): void;
-  (e: "update:customPitch", value: number): void;
-  (e: "update:tuningShift", value: number): void;
-  (e: "update:dropEnabled", value: boolean): void;
-  (e: "update:dropNote", value: string): void;
-}>();
+const pitchMode = defineModel<PitchMode>("pitchMode", { required: true });
+const customPitch = defineModel<number>("customPitch", { required: true });
+const tuningShift = defineModel<number>("tuningShift", { required: true });
+const dropEnabled = defineModel<boolean>("dropEnabled", { required: true });
+const dropNote = defineModel<string>("dropNote", { required: true });
 
 const pitchError = computed(() => {
-  if (props.pitchMode === "custom") {
-    if (props.customPitch < 438 || props.customPitch > 445) {
+  if (pitchMode.value === "custom") {
+    if (customPitch.value < 438 || customPitch.value > 445) {
       return "Must be 438-445 Hz";
     }
   }
@@ -39,7 +29,7 @@ const pitchError = computed(() => {
         type="radio"
         value="standard"
         :checked="pitchMode === 'standard'"
-        @change="emit('update:pitchMode', 'standard')"
+        @change="pitchMode = 'standard'"
       />
       <span>Standard (A4 = 440 Hz)</span>
     </label>
@@ -50,13 +40,13 @@ const pitchError = computed(() => {
         type="radio"
         value="custom"
         :checked="pitchMode === 'custom'"
-        @change="emit('update:pitchMode', 'custom')"
+        @change="pitchMode = 'custom'"
       />
       <span>Custom pitch:</span>
       <input
         type="number"
         :value="customPitch"
-        @input="emit('update:customPitch', Number(($event.target as HTMLInputElement).value))"
+        @input="customPitch = Number(($event.target as HTMLInputElement).value)"
         :disabled="pitchMode !== 'custom'"
         min="438"
         max="445"
@@ -74,12 +64,12 @@ const pitchError = computed(() => {
         type="radio"
         value="shift"
         :checked="pitchMode === 'shift'"
-        @change="emit('update:pitchMode', 'shift')"
+        @change="pitchMode = 'shift'"
       />
       <span>Tuning shift:</span>
       <select
         :value="tuningShift"
-        @change="emit('update:tuningShift', Number(($event.target as HTMLSelectElement).value))"
+        @change="tuningShift = Number(($event.target as HTMLSelectElement).value)"
         :disabled="pitchMode !== 'shift'"
       >
         <option v-for="opt in TUNING_SHIFTS" :key="opt.value" :value="opt.value">
@@ -95,12 +85,12 @@ const pitchError = computed(() => {
       <input
         type="checkbox"
         :checked="dropEnabled"
-        @change="emit('update:dropEnabled', ($event.target as HTMLInputElement).checked)"
+        @change="dropEnabled = ($event.target as HTMLInputElement).checked"
       />
       <span>Enable drop tuning:</span>
       <select
         :value="dropNote"
-        @change="emit('update:dropNote', ($event.target as HTMLSelectElement).value)"
+        @change="dropNote = ($event.target as HTMLSelectElement).value"
         :disabled="!dropEnabled"
       >
         <option v-for="opt in DROP_TUNINGS" :key="opt.value" :value="opt.value">
