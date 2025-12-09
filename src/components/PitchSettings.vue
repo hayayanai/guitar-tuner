@@ -118,8 +118,8 @@ const pitchError = computed(() => {
 <style scoped>
 .pitch-input {
   width: 60px;
-  margin: 0 8px;
-  padding: 4px 8px;
+  margin: 0 var(--space-sm);
+  padding: var(--space-xs) var(--space-sm);
   border-radius: 4px;
   border: 1px solid var(--dads-gray-420);
   background: var(--dads-gray-420);
@@ -129,12 +129,12 @@ const pitchError = computed(() => {
 .error-text {
   color: var(--semantic-error-main);
   font-size: var(--font-size-xs);
-  margin-left: 8px;
+  margin-left: var(--space-sm);
 }
 
 select {
-  margin-left: 8px;
-  padding: 4px 8px;
+  margin-left: var(--space-sm);
+  padding: var(--space-xs) var(--space-sm);
   border-radius: 4px;
   background: var(--dads-gray-420);
   color: var(--dads-gray-640);
@@ -151,13 +151,13 @@ input:disabled {
 .range-hint {
   font-size: var(--font-size-xs);
   color: var(--dads-gray-420);
-  margin-left: 4px;
+  margin-left: var(--space-xs);
 }
 
 .help-text {
   font-size: var(--font-size-sm);
   color: var(--dads-gray-420);
-  margin: 8px 0 0 24px;
+  margin: var(--space-sm) 0 0 var(--space-lg);
   line-height: 1.4;
 }
 </style>

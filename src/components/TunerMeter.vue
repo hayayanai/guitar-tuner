@@ -28,10 +28,10 @@ defineProps<{
 
 <style scoped>
 .tuner-meter {
-  margin-bottom: 15px;
+  margin-bottom: var(--space-md);
 }
 .meter-track {
-  padding: 10px 15px;
+  padding: var(--space-sm) var(--space-md) var(--space-md);
   background: rgba(0, 0, 0, 0.3); /* 非テキスト装飾はそのまま */
   border-radius: 10px;
 }
@@ -40,8 +40,8 @@ defineProps<{
   justify-content: space-between;
   font-size: var(--font-size-xs);
   color: var(--dads-gray-536);
-  margin-bottom: 6px;
-  padding: 0 5px;
+  margin-bottom: var(--space-xs);
+  padding: 0 var(--space-xs);
 }
 .meter-bar {
   position: relative;

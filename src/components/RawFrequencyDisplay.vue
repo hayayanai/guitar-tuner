@@ -14,15 +14,15 @@ defineProps<{
 <style scoped>
 .raw-frequency {
   text-align: center;
-  margin-bottom: 15px;
-  padding: 8px;
+  margin-bottom: var(--space-md);
+  padding: var(--space-sm);
   background: var(--dads-gray-420);
   border-radius: 6px;
 }
 .raw-frequency .label {
   font-size: var(--font-size-xs);
   color: var(--dads-gray-640);
-  margin-right: 8px;
+  margin-right: var(--space-sm);
 }
 .raw-frequency .value {
   font-size: var(--font-size-md);

@@ -22,7 +22,7 @@ defineProps<{
 <style scoped>
 .note-display {
   text-align: center;
-  margin-bottom: 15px;
+  margin-bottom: var(--space-md);
 }
 .note-name {
   font-size: var(--font-size-huge);
@@ -34,13 +34,13 @@ defineProps<{
 .current-freq {
   font-size: var(--font-size-md);
   color: var(--dads-gray-640);
-  margin-top: 5px;
+  margin-top: var(--space-xs);
   display: inline;
 }
 .target-freq {
   font-size: var(--font-size-base);
   color: var(--dads-cyan-400);
-  margin-left: 8px;
+  margin-left: var(--space-sm);
 }
 .note-display.perfect .note-name {
   color: var(--semantic-success-main);
