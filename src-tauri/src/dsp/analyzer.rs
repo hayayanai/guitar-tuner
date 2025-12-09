@@ -18,7 +18,7 @@ use crate::dsp::frequency::{
 };
 use crate::dsp::window::apply_blackman_harris_window;
 
-/// 現在の設定に基づいて基準A4周波数を取得
+/// 現在の設定に基づいて基準A4周波数を取得（目標周波数計算用）
 fn get_effective_a4() -> f32 {
     match PITCH_MODE.load(Ordering::SeqCst) {
         0 => 440.0,                         // Standard
@@ -28,6 +28,14 @@ fn get_effective_a4() -> f32 {
             let shift = TUNING_SHIFT.load(Ordering::SeqCst);
             440.0 * 2.0_f32.powf(shift as f32 / 12.0)
         }
+        _ => 440.0,
+    }
+}
+
+/// 音名判定用のA4周波数を取得（customモードのみ考慮、shiftは考慮しない）
+fn get_custom_a4_for_note() -> f32 {
+    match PITCH_MODE.load(Ordering::SeqCst) {
+        1 => *CUSTOM_PITCH.read().unwrap(), // Custom
         _ => 440.0,
     }
 }
@@ -53,10 +61,11 @@ fn calculate_note_info(freq: f32) -> (String, f32, f32) {
     const NOTE_NAMES: [&str; 12] = [
         "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
     ];
-    let a4_freq = get_effective_a4();
+    // 音名判定用のA4（customモードのみ考慮、shiftは考慮しない）
+    let a4_for_note = get_custom_a4_for_note();
 
     // A4からの半音数を計算
-    let semitones_from_a4 = 12.0 * (freq / a4_freq).log2();
+    let semitones_from_a4 = 12.0 * (freq / a4_for_note).log2();
     let nearest_semitone = semitones_from_a4.round() as i32;
     let cents = (semitones_from_a4 - nearest_semitone as f32) * 100.0;
 
@@ -66,11 +75,13 @@ fn calculate_note_info(freq: f32) -> (String, f32, f32) {
     let octave = (midi_note / 12) - 1;
     let note_name = format!("{}{}", NOTE_NAMES[note_index as usize], octave);
 
-    // 最も近いギター弦の周波数を探す
+    // 目標周波数の計算（こちらはshiftも考慮）
+    let a4_for_target = get_effective_a4();
+
     // 6弦の周波数を動的に取得
     let string6_freq = get_string6_target_freq();
     // 基準ピッチのシフトを考慮したギター周波数リストを作成
-    let shift_ratio = a4_freq / 440.0;
+    let shift_ratio = a4_for_target / 440.0;
 
     let mut target_freqs = GUITAR_FREQUENCIES.to_vec();
     // 6弦を更新

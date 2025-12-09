@@ -1,3 +1,10 @@
 export { useAudioDevice, type Settings } from "./useAudioDevice";
 export { useNoteInfo } from "./useNoteInfo";
-export { GUITAR_NOTES, NOTE_NAMES } from "./constants";
+export {
+  GUITAR_NOTES,
+  NOTE_NAMES,
+  getEffectiveA4,
+  getGuitarNotes,
+  TUNING_SHIFTS,
+  DROP_TUNINGS,
+} from "./constants";

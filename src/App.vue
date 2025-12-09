@@ -47,8 +47,14 @@ import {
   StringReference,
   PitchSettings,
 } from "./components";
-import { useAudioDevice, useNoteInfo, GUITAR_NOTES, type Settings } from "./composables";
-import type { ChannelMode } from "./types";
+import {
+  useAudioDevice,
+  useNoteInfo,
+  getEffectiveA4,
+  getGuitarNotes,
+  type Settings,
+} from "./composables";
+import type { ChannelMode, DropTuningNote } from "./types";
 
 const {
   devices,
@@ -71,7 +77,26 @@ const {
   saveSettings,
 } = useAudioDevice();
 
-const { noteInfo, tuningStatus, centDisplay } = useNoteInfo(frequency);
+// 音名判定用のA4周波数（customモードのみ変化、shiftは影響しない）
+const customA4 = computed(() => (pitchMode.value === "custom" ? customPitch.value : 440.0));
+
+// 実効A4周波数の計算（目標周波数表示用）
+const effectiveA4 = computed(() =>
+  getEffectiveA4(pitchMode.value, customPitch.value, tuningShift.value),
+);
+
+// ギター弦の音名・周波数を計算
+const guitarNotes = computed(() =>
+  getGuitarNotes(
+    pitchMode.value,
+    customPitch.value,
+    tuningShift.value,
+    dropEnabled.value,
+    dropNote.value as DropTuningNote,
+  ),
+);
+
+const { noteInfo, tuningStatus, centDisplay } = useNoteInfo(frequency, customA4);
 
 function handleChannelChange(mode: ChannelMode) {
   updateChannelMode(mode);
@@ -144,7 +169,7 @@ const statusClass = computed(() => {
           :tuning-status="tuningStatus"
           :has-frequency="frequency !== null"
         />
-        <StringReference :notes="GUITAR_NOTES" :active-note-name="noteInfo.name" />
+        <StringReference :notes="guitarNotes" :active-note-name="noteInfo.name" />
       </div>
 
       <LevelMeter :level="inputLevel" />
