@@ -220,7 +220,7 @@ const statusClass = computed(() => {
 /* Slider値の表示 */
 .threshold-value {
   text-align: center;
-  font-size: 0.95em;
+  font-size: var(--font-size-sm);
   color: var(--color-text-secondary);
   margin-top: 4px;
 }
@@ -255,7 +255,7 @@ const statusClass = computed(() => {
 }
 
 .settings-panel summary {
-  font-size: 16px;
+  font-size: var(--font-size-base);
   font-weight: 700;
   color: var(--color-primary);
   cursor: pointer;
@@ -273,7 +273,7 @@ const statusClass = computed(() => {
   align-items: center;
   justify-content: center;
   gap: var(--space-sm);
-  font-size: 14px;
+  font-size: var(--font-size-md);
   padding: var(--space-sm) var(--space-md);
   border-radius: var(--radius-md);
   margin-top: var(--space-md);

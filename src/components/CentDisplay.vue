@@ -18,7 +18,7 @@ defineProps<{
 <style scoped>
 .cent-display {
   text-align: center;
-  font-size: 2em;
+  font-size: var(--font-size-2xl);
   font-weight: bold;
   margin-bottom: 15px;
 }

@@ -38,7 +38,7 @@ defineProps<{
 .meter-labels {
   display: flex;
   justify-content: space-between;
-  font-size: 11px;
+  font-size: var(--font-size-xs);
   color: var(--dads-gray-536);
   margin-bottom: 6px;
   padding: 0 5px;

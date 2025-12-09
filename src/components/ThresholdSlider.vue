@@ -42,7 +42,7 @@ function handleInput(event: Event) {
 .slider-wrapper {
   /* 値を中央に配置 */
   .threshold-value {
-    font-size: 0.95em;
+    font-size: var(--font-size-sm);
     color: var(--dads-gray-420);
     margin: 0 12px;
   }
@@ -51,7 +51,7 @@ function handleInput(event: Event) {
     justify-content: center;
     align-items: center;
     gap: 8px;
-    font-size: 12px;
+    font-size: var(--font-size-sm);
     color: var(--dads-gray-640);
     margin-top: var(--space-xs, 4px);
   }
@@ -92,7 +92,7 @@ function handleInput(event: Event) {
 .threshold-labels {
   display: flex;
   justify-content: space-between;
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   color: var(--dads-gray-640);
   margin-top: var(--space-xs, 4px);
   padding: 0 10px; /* ラベルも同じパディング */

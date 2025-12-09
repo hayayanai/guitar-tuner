@@ -33,7 +33,7 @@ const emit = defineEmits<{
 }
 .device-select select {
   padding: 6px 10px;
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   border-radius: 6px;
   border: 1px solid var(--dads-gray-420);
   background: var(--dads-gray-420);

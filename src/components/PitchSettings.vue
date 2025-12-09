@@ -128,7 +128,7 @@ const pitchError = computed(() => {
 
 .error-text {
   color: var(--semantic-error-main);
-  font-size: 0.8em;
+  font-size: var(--font-size-xs);
   margin-left: 8px;
 }
 
@@ -149,13 +149,13 @@ input:disabled {
 }
 
 .range-hint {
-  font-size: 0.8em;
+  font-size: var(--font-size-xs);
   color: var(--dads-gray-420);
   margin-left: 4px;
 }
 
 .help-text {
-  font-size: 0.85em;
+  font-size: var(--font-size-sm);
   color: var(--dads-gray-420);
   margin: 8px 0 0 24px;
   line-height: 1.4;

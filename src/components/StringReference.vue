@@ -38,7 +38,7 @@ defineProps<{
   background: var(--dads-white);
   border-radius: 50%;
   font-weight: bold;
-  font-size: 14px;
+  font-size: var(--font-size-md);
   color: var(--dads-gray-640);
   transition: all 0.2s;
 }

@@ -37,7 +37,7 @@ const levelPercent = computed(() => props.level * 100);
 .input-level label {
   display: block;
   text-align: center;
-  font-size: 14px;
+  font-size: var(--font-size-md);
   color: var(--dads-gray-640);
   margin-bottom: var(--space-sm, 8px);
 }
@@ -60,7 +60,7 @@ const levelPercent = computed(() => props.level * 100);
 .level-labels {
   display: flex;
   justify-content: space-between;
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   color: var(--dads-gray-640);
   margin-top: var(--space-xs, 4px);
 }

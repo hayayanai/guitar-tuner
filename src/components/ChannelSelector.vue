@@ -31,7 +31,7 @@ const emit = defineEmits<{
   margin-bottom: 8px;
 }
 .channel-select label {
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   color: var(--dads-gray-640);
 }
 .channel-buttons {
@@ -40,7 +40,7 @@ const emit = defineEmits<{
 }
 .channel-buttons button {
   padding: 4px 12px;
-  font-size: 11px;
+  font-size: var(--font-size-xs);
   border: 1px solid var(--dads-blue-500);
   background: var(--dads-gray-420);
   color: var(--dads-gray-640);

@@ -20,12 +20,12 @@ defineProps<{
   border-radius: 6px;
 }
 .raw-frequency .label {
-  font-size: 11px;
+  font-size: var(--font-size-xs);
   color: var(--dads-gray-640);
   margin-right: 8px;
 }
 .raw-frequency .value {
-  font-size: 14px;
+  font-size: var(--font-size-md);
   color: var(--dads-cyan-400);
   font-family: monospace;
 }

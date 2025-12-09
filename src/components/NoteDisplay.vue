@@ -25,20 +25,20 @@ defineProps<{
   margin-bottom: 15px;
 }
 .note-name {
-  font-size: 4em;
+  font-size: var(--font-size-huge);
   font-weight: bold;
   display: block;
   line-height: 1;
   min-height: 1.1em;
 }
 .current-freq {
-  font-size: 1.1em;
+  font-size: var(--font-size-md);
   color: var(--dads-gray-640);
   margin-top: 5px;
   display: inline;
 }
 .target-freq {
-  font-size: 1em;
+  font-size: var(--font-size-base);
   color: var(--dads-cyan-400);
   margin-left: 8px;
 }
