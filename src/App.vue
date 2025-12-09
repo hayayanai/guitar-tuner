@@ -1,6 +1,40 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted } from "vue";
 import { invoke } from "@tauri-apps/api/core";
+type ThemeMode = "system" | "light" | "dark";
+const themeMode = ref<ThemeMode>("system");
+
+function applyTheme(mode: ThemeMode) {
+  const html = document.documentElement;
+  html.classList.remove("theme-light", "theme-dark");
+  if (mode === "light") {
+    html.classList.add("theme-light");
+  } else if (mode === "dark") {
+    html.classList.add("theme-dark");
+  }
+  // system: 何も付与しない（CSSの@mediaに任せる）
+}
+
+// テーマ初期化（設定ファイルから）
+onMounted(async () => {
+  try {
+    const settings = await invoke<Settings>("get_settings");
+    if (
+      settings.theme_mode === "light" ||
+      settings.theme_mode === "dark" ||
+      settings.theme_mode === "system"
+    ) {
+      themeMode.value = settings.theme_mode;
+    }
+  } catch {}
+  applyTheme(themeMode.value);
+});
+
+// テーマ変更時に反映＆保存
+watch(themeMode, async (val) => {
+  applyTheme(val);
+  await saveSettings({ theme_mode: val });
+});
 import {
   DeviceSelector,
   ChannelSelector,
@@ -155,6 +189,25 @@ const statusClass = computed(() => {
             <label class="radio-label">
               <input type="radio" name="trayMode" value="1" v-model="trayIconMode" />
               <span>Indicator + Note name</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <!-- テーマ設定グループ -->
+        <fieldset class="settings-group">
+          <legend>Theme</legend>
+          <div class="tray-mode-selector">
+            <label class="radio-label">
+              <input type="radio" name="themeMode" value="system" v-model="themeMode" />
+              <span>System</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="themeMode" value="light" v-model="themeMode" />
+              <span>Light</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="themeMode" value="dark" v-model="themeMode" />
+              <span>Dark</span>
             </label>
           </div>
         </fieldset>

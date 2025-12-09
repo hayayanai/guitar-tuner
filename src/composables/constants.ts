@@ -36,7 +36,7 @@ export const TUNING_SHIFTS = [
 
 export const DROP_TUNINGS = [
   { value: "D", label: "Drop D", freq: 73.42 },
-  { value: "C#", label: "Drop C#", freq: 69.30 },
+  { value: "C#", label: "Drop C#", freq: 69.3 },
   { value: "C", label: "Drop C", freq: 65.41 },
   { value: "B", label: "Drop B", freq: 61.74 },
 ] as const;

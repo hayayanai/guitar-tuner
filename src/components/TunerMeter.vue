@@ -46,7 +46,7 @@ defineProps<{
 .meter-bar {
   position: relative;
   height: 40px;
-  background: #1a1a2e;
+  background: var(--color-background-secondary);
   border-radius: 6px;
   overflow: hidden;
 }
@@ -57,7 +57,7 @@ defineProps<{
   bottom: 0;
   width: 20px;
   transform: translateX(-50%);
-  background: rgba(76, 175, 80, 0.25);
+  background: color-mix(in srgb, var(--color-success) 15%, var(--color-background) 85%);
 }
 .meter-marks {
   position: absolute;
@@ -73,13 +73,33 @@ defineProps<{
 .tick {
   width: 2px;
   height: 10px;
-  background: #444;
+  background: var(--color-border);
 }
 .tick.center {
   height: 100%;
-  background: #4caf50;
+  background: var(--color-success);
   width: 3px;
 }
+.indicator {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  width: 8px;
+  background: #ef5350;
+  border-radius: 4px;
+  transform: translateX(-50%);
+  transition: left 0.08s ease-out;
+  box-shadow: 0 0 10px rgba(239, 83, 80, 0.5);
+}
+.indicator.perfect {
+  background: #4caf50;
+  box-shadow: 0 0 15px rgba(76, 175, 80, 0.7);
+}
+.indicator.good {
+  background: #ffeb3b;
+  box-shadow: 0 0 10px rgba(255, 235, 59, 0.5);
+}
+
 .indicator {
   position: absolute;
   top: 4px;

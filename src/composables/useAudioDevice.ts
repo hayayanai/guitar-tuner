@@ -3,6 +3,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import type { ChannelMode, PitchMode } from "../types";
 
+export type ThemeMode = "system" | "light" | "dark";
 export type Settings = {
   device_name?: string;
   threshold?: number;
@@ -13,6 +14,7 @@ export type Settings = {
   tuning_shift?: number;
   drop_tuning_enabled?: boolean;
   drop_tuning_note?: string;
+  theme_mode?: ThemeMode;
 };
 
 /**
@@ -130,19 +132,12 @@ export function useAudioDevice() {
       if (settings.drop_tuning_note) dropNote.value = settings.drop_tuning_note;
 
       // 初期値をバックエンドに送信
-      const modeVal =
-        pitchMode.value === "standard" ? 0 : pitchMode.value === "custom" ? 1 : 2;
+      const modeVal = pitchMode.value === "standard" ? 0 : pitchMode.value === "custom" ? 1 : 2;
       await invoke("set_pitch_mode", { mode: modeVal });
       await invoke("set_custom_pitch", { pitch: Number(customPitch.value) });
       await invoke("set_tuning_shift", { semitones: Number(tuningShift.value) });
       const noteVal =
-        dropNote.value === "D"
-          ? 0
-          : dropNote.value === "C#"
-          ? 1
-          : dropNote.value === "C"
-          ? 2
-          : 3;
+        dropNote.value === "D" ? 0 : dropNote.value === "C#" ? 1 : dropNote.value === "C" ? 2 : 3;
       await invoke("set_drop_tuning", { enabled: !!dropEnabled.value, note: noteVal });
 
       if (settings.device_name && devices.value.includes(settings.device_name)) {

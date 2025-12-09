@@ -149,11 +149,12 @@ pub struct Settings {
     pub channel_mode: Option<u32>,
     pub tray_icon_mode: Option<u32>,
     // 新規追加
-    pub pitch_mode: Option<String>,        // "standard" | "custom" | "shift"
-    pub custom_pitch: Option<f32>,         // 438.0-445.0
-    pub tuning_shift: Option<i32>,         // -1〜-5
+    pub pitch_mode: Option<String>, // "standard" | "custom" | "shift"
+    pub custom_pitch: Option<f32>,  // 438.0-445.0
+    pub tuning_shift: Option<i32>,  // -1〜-5
     pub drop_tuning_enabled: Option<bool>, // ドロップチューニング有効/無効
-    pub drop_tuning_note: Option<String>,  // "D" | "C#" | "C" | "B"
+    pub drop_tuning_note: Option<String>, // "D" | "C#" | "C" | "B"
+    pub theme_mode: Option<String>, // "system" | "light" | "dark"
 }
 
 fn settings_path() -> PathBuf {
@@ -181,6 +182,7 @@ pub fn get_settings() -> Result<Settings, String> {
             tuning_shift: None,
             drop_tuning_enabled: None,
             drop_tuning_note: None,
+            theme_mode: None,
         });
     }
     let content = fs::read_to_string(&path).map_err(|e| e.to_string())?;

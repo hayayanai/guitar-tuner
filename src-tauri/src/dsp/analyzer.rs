@@ -21,7 +21,7 @@ use crate::dsp::window::apply_blackman_harris_window;
 /// 現在の設定に基づいて基準A4周波数を取得
 fn get_effective_a4() -> f32 {
     match PITCH_MODE.load(Ordering::SeqCst) {
-        0 => 440.0, // Standard
+        0 => 440.0,                         // Standard
         1 => *CUSTOM_PITCH.read().unwrap(), // Custom
         2 => {
             // Shift: A4を半音単位でシフト

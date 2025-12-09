@@ -41,18 +41,18 @@ const emit = defineEmits<{
 .channel-buttons button {
   padding: 4px 12px;
   font-size: 11px;
-  border: 1px solid #4fc3f7;
-  background: #1a1a2e;
-  color: #888;
+  border: 1px solid var(--color-primary-light);
+  background: var(--color-background-secondary);
+  color: var(--color-text-secondary);
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s;
 }
 .channel-buttons button.active {
-  background: #4fc3f7;
-  color: #000;
+  background: var(--color-primary-light);
+  color: var(--color-background);
 }
 .channel-buttons button:hover:not(.active) {
-  background: #2a2a3e;
+  background: var(--color-background);
 }
 </style>
