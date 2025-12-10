@@ -100,7 +100,7 @@ const pitchError = computed(() => {
     </label>
     <p class="help-text">
       Combined with Tuning Shift, the 6th string drops relative to the shifted tuning.<br />
-      (e.g. Half step down + Drop D = Drop Db)
+      (e.g. Half step down + Drop D = Drop C#)
     </p>
   </fieldset>
 </template>

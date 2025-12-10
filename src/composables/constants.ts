@@ -27,14 +27,15 @@ export const NOTE_NAMES = [
 ] as const;
 
 export const TUNING_SHIFTS = [
-  { value: -1, label: "Half step down (Eb)" },
+  { value: -1, label: "Half step down (D#)" },
   { value: -2, label: "Whole step down (D)" },
-  { value: -3, label: "1.5 steps down (Db)" },
+  { value: -3, label: "1.5 steps down (C#)" },
   { value: -4, label: "2 steps down (C)" },
   { value: -5, label: "2.5 steps down (B)" },
 ] as const;
 
 export const DROP_TUNINGS = [
+  { value: "D#", label: "Drop D#", freq: 77.78 },
   { value: "D", label: "Drop D", freq: 73.42 },
   { value: "C#", label: "Drop C#", freq: 69.3 },
   { value: "C", label: "Drop C", freq: 65.41 },
