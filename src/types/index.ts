@@ -11,6 +11,11 @@ export interface NoteInfo {
   targetFreq: number;
 }
 
+/** バックエンドから送られてくる音名イベント */
+export interface NoteInfoPayload extends NoteInfo {
+  tuningStatus: TuningStatus;
+}
+
 /** チューニング状態 */
 export type TuningStatus = "perfect" | "good" | "off";
 

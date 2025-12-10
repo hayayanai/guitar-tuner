@@ -1,5 +1,6 @@
 use rustfft::num_complex::Complex;
 use rustfft::FftPlanner;
+use serde::Serialize;
 use std::sync::atomic::Ordering;
 use std::sync::{Arc, Mutex};
 use std::thread;
@@ -10,13 +11,42 @@ use tauri::Emitter;
 use crate::constants::{
     determine_color_with_hysteresis, TuningColor, CHANNEL_MODE, CUSTOM_PITCH, DROP_TUNING_ENABLED,
     DROP_TUNING_NOTE, FFT_SIZE, GUITAR_FREQUENCIES, LAST_TUNING_INFO, PITCH_MODE, RMS_THRESHOLD,
-    STOP_FLAG, THRESHOLD_RATIO, TRAY_ICON_MODE, TRAY_ICON_STATE, TUNING_SHIFT,
+    STOP_FLAG, THRESHOLD_RATIO, TRAY_ICON_MODE, TRAY_ICON_STATE, TUNING_GREEN_THRESHOLD,
+    TUNING_RED_THRESHOLD, TUNING_SHIFT,
 };
 use crate::dsp::frequency::{
     calculate_frequency_bins, calculate_noise_floor, detect_guitar_fundamental,
     gaussian_interpolation, is_guitar_frequency,
 };
 use crate::dsp::window::apply_blackman_harris_window;
+
+#[derive(Debug, Serialize, Clone, Copy)]
+#[serde(rename_all = "lowercase")]
+enum FrontendTuningStatus {
+    Perfect,
+    Good,
+    Off,
+}
+
+#[derive(Debug, Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
+struct NoteInfoEventPayload {
+    name: String,
+    cent: f32,
+    target_freq: f32,
+    tuning_status: FrontendTuningStatus,
+}
+
+fn classify_tuning_status(cent: f32) -> FrontendTuningStatus {
+    let abs_cent = cent.abs();
+    if abs_cent <= TUNING_GREEN_THRESHOLD {
+        FrontendTuningStatus::Perfect
+    } else if abs_cent <= TUNING_RED_THRESHOLD {
+        FrontendTuningStatus::Good
+    } else {
+        FrontendTuningStatus::Off
+    }
+}
 
 /// 現在の設定に基づいて基準A4周波数を取得（目標周波数計算用）
 fn get_effective_a4() -> f32 {
@@ -616,7 +646,7 @@ pub fn run_analysis_thread(
                                 is_reset = false;
 
                                 // チューニング情報を計算してトレイのツールチップを更新
-                                let (note_name, _target_freq, cents) =
+                                let (note_name, target_freq, cents) =
                                     calculate_note_info(median_freq);
 
                                 // グローバル変数を更新
@@ -629,6 +659,14 @@ pub fn run_analysis_thread(
                                 // トレイのツールチップとアイコンを更新
                                 update_tray_tooltip(&app_handle, &note_name, median_freq, cents);
                                 update_tray_icon(&app_handle, cents, &note_name);
+
+                                let payload = NoteInfoEventPayload {
+                                    name: note_name.clone(),
+                                    cent: cents,
+                                    target_freq,
+                                    tuning_status: classify_tuning_status(cents),
+                                };
+                                let _ = app_handle.emit("note_info", payload);
                             }
                         }
                     }

@@ -1,7 +1,13 @@
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
-import type { ChannelMode, PitchMode } from "../types";
+import type {
+  ChannelMode,
+  PitchMode,
+  NoteInfo,
+  NoteInfoPayload,
+  TuningStatus,
+} from "../types";
 
 export type ThemeMode = "system" | "light" | "dark";
 export type Settings = {
@@ -31,6 +37,13 @@ export function useAudioDevice() {
   const threshold = ref(2.0);
   const inputLevel = ref(0);
   const channelMode = ref<ChannelMode>(1); // 0=左, 1=右, 2=平均
+  const noteInfo = ref<NoteInfo>({ name: "-", cent: 0, targetFreq: 0 });
+  const tuningStatus = ref<TuningStatus>("off");
+  const centDisplay = computed(() => {
+    const cent = Math.round(noteInfo.value.cent);
+    if (!Number.isFinite(cent)) return "0";
+    return cent > 0 ? `+${cent}` : cent.toString();
+  });
 
   // 新しい設定項目
   const pitchMode = ref<PitchMode>("standard");
@@ -164,10 +177,31 @@ export function useAudioDevice() {
           inputLevel.value = event.payload;
         }
       });
+      listen("note_info", (event) => {
+        const payload = event.payload as NoteInfoPayload | undefined;
+        if (!payload) return;
+
+        const payloadCent = typeof payload.cent === "number" ? payload.cent : 0;
+        const payloadTarget =
+          typeof payload.targetFreq === "number" ? payload.targetFreq : 0;
+
+        noteInfo.value = {
+          name: payload.name ?? "-",
+          cent: payloadCent,
+          targetFreq: payloadTarget,
+        };
+        if (payload.tuningStatus === "perfect" || payload.tuningStatus === "good") {
+          tuningStatus.value = payload.tuningStatus;
+        } else {
+          tuningStatus.value = "off";
+        }
+      });
       listen("reset", () => {
         // 状態を初期化
         frequency.value = null;
         rawFrequency.value = null;
+        noteInfo.value = { name: "-", cent: 0, targetFreq: 0 };
+        tuningStatus.value = "off";
       });
     } catch (e: unknown) {
       error.value = e?.toString() ?? "Error";
@@ -198,6 +232,9 @@ export function useAudioDevice() {
     tuningShift,
     dropEnabled,
     dropNote,
+    noteInfo,
+    tuningStatus,
+    centDisplay,
     updateThreshold,
     updateChannelMode,
     saveSettings,

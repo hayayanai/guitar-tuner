@@ -47,13 +47,7 @@ import {
   StringReference,
   PitchSettings,
 } from "./components";
-import {
-  useAudioDevice,
-  useNoteInfo,
-  getEffectiveA4,
-  getGuitarNotes,
-  type Settings,
-} from "./composables";
+import { useAudioDevice, getEffectiveA4, getGuitarNotes, type Settings } from "./composables";
 import type { ChannelMode, DropTuningNote } from "./types";
 
 const {
@@ -72,13 +66,13 @@ const {
   tuningShift,
   dropEnabled,
   dropNote,
+  noteInfo,
+  tuningStatus,
+  centDisplay,
   updateThreshold,
   updateChannelMode,
   saveSettings,
 } = useAudioDevice();
-
-// 音名判定用のA4周波数（customモードのみ変化、shiftは影響しない）
-const customA4 = computed(() => (pitchMode.value === "custom" ? customPitch.value : 440.0));
 
 // 実効A4周波数の計算（目標周波数表示用）
 const effectiveA4 = computed(() =>
@@ -95,8 +89,6 @@ const guitarNotes = computed(() =>
     dropNote.value as DropTuningNote,
   ),
 );
-
-const { noteInfo, tuningStatus, centDisplay } = useNoteInfo(frequency, customA4);
 
 function handleChannelChange(mode: ChannelMode) {
   updateChannelMode(mode);
