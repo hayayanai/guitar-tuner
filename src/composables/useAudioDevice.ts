@@ -1,13 +1,7 @@
 import { ref, onMounted, watch, computed } from "vue";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
-import type {
-  ChannelMode,
-  PitchMode,
-  NoteInfo,
-  NoteInfoPayload,
-  TuningStatus,
-} from "../types";
+import type { ChannelMode, PitchMode, NoteInfo, NoteInfoPayload, TuningStatus } from "../types";
 
 export type ThemeMode = "system" | "light" | "dark";
 export type Settings = {
@@ -182,8 +176,7 @@ export function useAudioDevice() {
         if (!payload) return;
 
         const payloadCent = typeof payload.cent === "number" ? payload.cent : 0;
-        const payloadTarget =
-          typeof payload.targetFreq === "number" ? payload.targetFreq : 0;
+        const payloadTarget = typeof payload.targetFreq === "number" ? payload.targetFreq : 0;
 
         noteInfo.value = {
           name: payload.name ?? "-",
