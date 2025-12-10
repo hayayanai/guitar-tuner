@@ -10,11 +10,7 @@
   --font-size-2xl: 24px;
   --font-size-huge: 48px;
   /* フォントファミリー */
-  font-family:
-    "Noto Sans JP",
-    -apple-system,
-    BlinkMacSystemFont,
-    sans-serif;
+  font-family: "Segoe UI", "Noto Sans JP", sans-serif;
   font-size: var(--font-size-base);
   line-height: 1.7; /* 本文の行間: 170% */
   font-weight: 400; /* Normal */
