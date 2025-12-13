@@ -124,7 +124,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-
 .update-notification {
   position: fixed;
   left: 50%;
