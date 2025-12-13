@@ -3,9 +3,8 @@
  * @type {import("prettier").Config}
  */
 const config = {
-    tabWidth: 4,
-    semi: false,
-    singleQuote: true,
+  tabWidth: 2,
+  printWidth: 100,
 };
 
 export default config;

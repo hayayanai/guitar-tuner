@@ -7,26 +7,26 @@ defineProps<{
 <template>
   <div class="raw-frequency">
     <span class="label">Detected:</span>
-    <span class="value">{{ rawFrequency ? rawFrequency.toFixed(1) + ' Hz' : '--- Hz' }}</span>
+    <span class="value">{{ rawFrequency ? rawFrequency.toFixed(1) + " Hz" : "--- Hz" }}</span>
   </div>
 </template>
 
 <style scoped>
 .raw-frequency {
   text-align: center;
-  margin-bottom: 15px;
-  padding: 8px;
-  background: rgba(0, 0, 0, 0.2);
+  margin-bottom: var(--space-md);
+  padding: var(--space-sm);
+  background: var(--dads-gray-420);
   border-radius: 6px;
 }
 .raw-frequency .label {
-  font-size: 11px;
-  color: #666;
-  margin-right: 8px;
+  font-size: var(--font-size-xs);
+  color: var(--dads-gray-640);
+  margin-right: var(--space-sm);
 }
 .raw-frequency .value {
-  font-size: 14px;
-  color: #4fc3f7;
+  font-size: var(--font-size-md);
+  color: var(--dads-cyan-400);
   font-family: monospace;
 }
 </style>

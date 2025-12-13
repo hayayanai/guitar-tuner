@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { NoteInfo, TuningStatus } from '../types';
+import type { NoteInfo, TuningStatus } from "../types";
 
 defineProps<{
   noteInfo: NoteInfo;
@@ -18,18 +18,9 @@ defineProps<{
       <div class="meter-bar">
         <div class="center-zone" />
         <div class="meter-marks">
-          <div
-            v-for="i in 11"
-            :key="i"
-            class="tick"
-            :class="{ center: i === 6 }"
-          />
+          <div v-for="i in 11" :key="i" class="tick" :class="{ center: i === 6 }" />
         </div>
-        <div
-          class="indicator"
-          :style="{ left: `${50 + noteInfo.cent}%` }"
-          :class="tuningStatus"
-        />
+        <div class="indicator" :style="{ left: `${50 + noteInfo.cent}%` }" :class="tuningStatus" />
       </div>
     </div>
   </div>
@@ -37,25 +28,25 @@ defineProps<{
 
 <style scoped>
 .tuner-meter {
-  margin-bottom: 15px;
+  margin-bottom: var(--space-md);
 }
 .meter-track {
-  padding: 10px 15px;
-  background: rgba(0, 0, 0, 0.3);
+  padding: var(--space-sm) var(--space-md) var(--space-md);
+  background: rgba(0, 0, 0, 0.3); /* 非テキスト装飾はそのまま */
   border-radius: 10px;
 }
 .meter-labels {
   display: flex;
   justify-content: space-between;
-  font-size: 11px;
-  color: #666;
-  margin-bottom: 6px;
-  padding: 0 5px;
+  font-size: var(--font-size-xs);
+  color: var(--dads-gray-536);
+  margin-bottom: var(--space-xs);
+  padding: 0 var(--space-xs);
 }
 .meter-bar {
   position: relative;
   height: 40px;
-  background: #1a1a2e;
+  background: var(--dads-gray-420);
   border-radius: 6px;
   overflow: hidden;
 }
@@ -66,7 +57,7 @@ defineProps<{
   bottom: 0;
   width: 20px;
   transform: translateX(-50%);
-  background: rgba(76, 175, 80, 0.25);
+  background: var(--dads-gray-420);
 }
 .meter-marks {
   position: absolute;
@@ -82,13 +73,33 @@ defineProps<{
 .tick {
   width: 2px;
   height: 10px;
-  background: #444;
+  background: var(--dads-gray-536);
 }
 .tick.center {
   height: 100%;
-  background: #4caf50;
+  background: var(--semantic-success-main);
   width: 3px;
 }
+.indicator {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  width: 8px;
+  background: var(--semantic-error-main);
+  border-radius: 4px;
+  transform: translateX(-50%);
+  transition: left 0.08s ease-out;
+  box-shadow: 0 0 10px color-mix(in srgb, var(--semantic-error-main) 50%, transparent 50%);
+}
+.indicator.perfect {
+  background: var(--semantic-success-main);
+  box-shadow: 0 0 15px color-mix(in srgb, var(--semantic-success-main) 70%, transparent 30%);
+}
+.indicator.good {
+  background: var(--semantic-warning-low);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--semantic-warning-low) 50%, transparent 50%);
+}
+
 .indicator {
   position: absolute;
   top: 4px;

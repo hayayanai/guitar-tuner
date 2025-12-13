@@ -1,26 +1,101 @@
 use rustfft::num_complex::Complex;
 use rustfft::FftPlanner;
+use serde::Serialize;
 use std::sync::atomic::Ordering;
 use std::sync::{Arc, Mutex};
 use std::thread;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 use tauri::image::Image;
 use tauri::Emitter;
 
-use crate::constants::{CHANNEL_MODE, FFT_SIZE, GUITAR_FREQUENCIES, LAST_TUNING_INFO, RMS_THRESHOLD, STOP_FLAG, THRESHOLD_RATIO};
+use crate::constants::{
+    determine_color_with_hysteresis, TuningColor, CHANNEL_MODE, CUSTOM_PITCH, DROP_TUNING_ENABLED,
+    DROP_TUNING_NOTE, FFT_SIZE, GUITAR_FREQUENCIES, LAST_TUNING_INFO, PITCH_MODE, RMS_THRESHOLD,
+    STOP_FLAG, THRESHOLD_RATIO, TRAY_ICON_MODE, TRAY_ICON_STATE, TUNING_GREEN_THRESHOLD,
+    TUNING_RED_THRESHOLD, TUNING_SHIFT,
+};
 use crate::dsp::frequency::{
     calculate_frequency_bins, calculate_noise_floor, detect_guitar_fundamental,
     gaussian_interpolation, is_guitar_frequency,
 };
 use crate::dsp::window::apply_blackman_harris_window;
 
+#[derive(Debug, Serialize, Clone, Copy)]
+#[serde(rename_all = "lowercase")]
+enum FrontendTuningStatus {
+    Perfect,
+    Good,
+    Off,
+}
+
+#[derive(Debug, Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
+struct NoteInfoEventPayload {
+    name: String,
+    cent: f32,
+    target_freq: f32,
+    tuning_status: FrontendTuningStatus,
+}
+
+fn classify_tuning_status(cent: f32) -> FrontendTuningStatus {
+    let abs_cent = cent.abs();
+    if abs_cent <= TUNING_GREEN_THRESHOLD {
+        FrontendTuningStatus::Perfect
+    } else if abs_cent <= TUNING_RED_THRESHOLD {
+        FrontendTuningStatus::Good
+    } else {
+        FrontendTuningStatus::Off
+    }
+}
+
+/// 現在の設定に基づいて基準A4周波数を取得（目標周波数計算用）
+fn get_effective_a4() -> f32 {
+    match PITCH_MODE.load(Ordering::SeqCst) {
+        0 => 440.0,                         // Standard
+        1 => *CUSTOM_PITCH.read().unwrap(), // Custom
+        2 => {
+            // Shift: A4を半音単位でシフト
+            let shift = TUNING_SHIFT.load(Ordering::SeqCst);
+            440.0 * 2.0_f32.powf(shift as f32 / 12.0)
+        }
+        _ => 440.0,
+    }
+}
+
+/// 音名判定用のA4周波数を取得（customモードのみ考慮、shiftは考慮しない）
+fn get_custom_a4_for_note() -> f32 {
+    match PITCH_MODE.load(Ordering::SeqCst) {
+        1 => *CUSTOM_PITCH.read().unwrap(), // Custom
+        _ => 440.0,
+    }
+}
+
+/// 6弦の目標周波数を取得（ドロップ考慮）
+fn get_string6_target_freq() -> f32 {
+    if DROP_TUNING_ENABLED.load(Ordering::SeqCst) {
+        let note = DROP_TUNING_NOTE.load(Ordering::SeqCst);
+        match note {
+            0 => 73.42, // D2
+            1 => 69.30, // C#2
+            2 => 65.41, // C2
+            3 => 61.74, // B1
+            _ => 82.41, // E2 (default)
+        }
+    } else {
+        82.41 // E2
+    }
+}
+
 /// 周波数から音名とセント値を計算
 fn calculate_note_info(freq: f32) -> (String, f32, f32) {
-    const NOTE_NAMES: [&str; 12] = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-    const A4_FREQ: f32 = 440.0;
+    const NOTE_NAMES: [&str; 12] = [
+        "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",
+    ];
+    // 音名判定用のA4（customモードのみ考慮、shiftは考慮しない）
+    let a4_for_note = get_custom_a4_for_note();
 
     // A4からの半音数を計算
-    let semitones_from_a4 = 12.0 * (freq / A4_FREQ).log2();
+    let semitones_from_a4 = 12.0 * (freq / a4_for_note).log2();
     let nearest_semitone = semitones_from_a4.round() as i32;
     let cents = (semitones_from_a4 - nearest_semitone as f32) * 100.0;
 
@@ -30,8 +105,22 @@ fn calculate_note_info(freq: f32) -> (String, f32, f32) {
     let octave = (midi_note / 12) - 1;
     let note_name = format!("{}{}", NOTE_NAMES[note_index as usize], octave);
 
-    // 最も近いギター弦の周波数を探す
-    let target_freq = GUITAR_FREQUENCIES
+    // 目標周波数の計算（こちらはshiftも考慮）
+    let a4_for_target = get_effective_a4();
+
+    // 6弦の周波数を動的に取得
+    let string6_freq = get_string6_target_freq();
+    // 基準ピッチのシフトを考慮したギター周波数リストを作成
+    let shift_ratio = a4_for_target / 440.0;
+
+    let mut target_freqs = GUITAR_FREQUENCIES.to_vec();
+    // 6弦を更新
+    target_freqs[0] = string6_freq;
+
+    // 全体をシフト
+    let shifted_targets: Vec<f32> = target_freqs.iter().map(|&f| f * shift_ratio).collect();
+
+    let target_freq = shifted_targets
         .iter()
         .min_by(|a, b| {
             let diff_a = (freq - *a).abs();
@@ -44,27 +133,144 @@ fn calculate_note_info(freq: f32) -> (String, f32, f32) {
     (note_name, target_freq, cents)
 }
 
+/// 5x7ピクセルの大きめビットマップフォント（A-G, #）
+fn get_char_bitmap_large(c: char) -> Option<[[bool; 5]; 7]> {
+    match c {
+        'A' => Some([
+            [false, true, true, true, false],
+            [true, false, false, false, true],
+            [true, false, false, false, true],
+            [true, true, true, true, true],
+            [true, false, false, false, true],
+            [true, false, false, false, true],
+            [true, false, false, false, true],
+        ]),
+        'B' => Some([
+            [true, true, true, true, false],
+            [true, false, false, false, true],
+            [true, false, false, false, true],
+            [true, true, true, true, false],
+            [true, false, false, false, true],
+            [true, false, false, false, true],
+            [true, true, true, true, false],
+        ]),
+        'C' => Some([
+            [false, true, true, true, false],
+            [true, false, false, false, true],
+            [true, false, false, false, false],
+            [true, false, false, false, false],
+            [true, false, false, false, false],
+            [true, false, false, false, true],
+            [false, true, true, true, false],
+        ]),
+        'D' => Some([
+            [true, true, true, true, false],
+            [true, false, false, false, true],
+            [true, false, false, false, true],
+            [true, false, false, false, true],
+            [true, false, false, false, true],
+            [true, false, false, false, true],
+            [true, true, true, true, false],
+        ]),
+        'E' => Some([
+            [true, true, true, true, true],
+            [true, false, false, false, false],
+            [true, false, false, false, false],
+            [true, true, true, true, false],
+            [true, false, false, false, false],
+            [true, false, false, false, false],
+            [true, true, true, true, true],
+        ]),
+        'F' => Some([
+            [true, true, true, true, true],
+            [true, false, false, false, false],
+            [true, false, false, false, false],
+            [true, true, true, true, false],
+            [true, false, false, false, false],
+            [true, false, false, false, false],
+            [true, false, false, false, false],
+        ]),
+        'G' => Some([
+            [false, true, true, true, false],
+            [true, false, false, false, true],
+            [true, false, false, false, false],
+            [true, false, true, true, true],
+            [true, false, false, false, true],
+            [true, false, false, false, true],
+            [false, true, true, true, false],
+        ]),
+        '#' => Some([
+            [false, true, false, true, false],
+            [false, true, false, true, false],
+            [true, true, true, true, true],
+            [false, true, false, true, false],
+            [true, true, true, true, true],
+            [false, true, false, true, false],
+            [false, true, false, true, false],
+        ]),
+        _ => None,
+    }
+}
+
+/// 文字列を大きめビットマップとして描画（スケーリング対応）
+fn draw_text_large(
+    rgba: &mut [u8],
+    size: usize,
+    text: &str,
+    start_x: usize,
+    start_y: usize,
+    color: [u8; 4],
+    scale: usize,
+) {
+    let mut x_offset = start_x;
+    for c in text.chars() {
+        if let Some(bitmap) = get_char_bitmap_large(c) {
+            for (row, bits) in bitmap.iter().enumerate() {
+                for (col, &pixel) in bits.iter().enumerate() {
+                    if pixel {
+                        // スケーリング: 各ピクセルをscale x scaleで描画
+                        for sy in 0..scale {
+                            for sx in 0..scale {
+                                let x = x_offset + col * scale + sx;
+                                let y = start_y + row * scale + sy;
+                                if x < size && y < size {
+                                    let idx = (y * size + x) * 4;
+                                    rgba[idx..idx + 4].copy_from_slice(&color);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        x_offset += 6 * scale; // 文字幅5 + 間隔1
+    }
+}
+
 /// セント値に応じてチューニング状態を示すアイコンを生成（32x32 RGBA）
-/// タスクマネージャーのCPUグラフのように、メーター形式で状態を表示
-fn generate_tuning_icon(cents: f32) -> Vec<u8> {
+/// モード0: インジケーターのみ（全画面メーター）
+/// モード1: 音名を大きく上部に、チューニングバーを下部に表示
+fn generate_tuning_icon(cents: f32, color: TuningColor, note_name: &str) -> Vec<u8> {
     const SIZE: usize = 32;
     let mut rgba = vec![0u8; SIZE * SIZE * 4];
+
+    // 表示モードを取得（0=インジケーターのみ, 1=インジケーター+音名）
+    let icon_mode = TRAY_ICON_MODE.load(Ordering::SeqCst);
 
     // 背景色（濃いグレー）
     let bg_color: [u8; 4] = [40, 40, 40, 255];
 
-    // メーターの色を決定
-    let abs_cents = cents.abs();
-    let meter_color: [u8; 4] = if abs_cents < 5.0 {
-        [0, 255, 100, 255]   // 緑: チューニング良好
-    } else if abs_cents < 15.0 {
-        [255, 200, 0, 255]   // 黄: 少しずれ
-    } else {
-        [255, 60, 60, 255]   // 赤: 大きくずれ
+    // メーターの色を決定（ヒステリシス付きの色を使用）
+    let meter_color: [u8; 4] = match color {
+        TuningColor::Green => [0, 255, 100, 255], // 緑: チューニング良好
+        TuningColor::Yellow => [255, 200, 0, 255], // 黄: 少しずれ
+        TuningColor::Red => [255, 60, 60, 255],   // 赤: 大きくずれ
     };
 
     // 中央線の色
-    let center_line_color: [u8; 4] = [100, 100, 100, 255];
+    let center_line_color: [u8; 4] = [80, 80, 80, 255];
+    // テキストの色（白）
+    let text_color: [u8; 4] = [255, 255, 255, 255];
 
     // 背景を塗りつぶし
     for y in 0..SIZE {
@@ -74,54 +280,92 @@ fn generate_tuning_icon(cents: f32) -> Vec<u8> {
         }
     }
 
-    // メーター領域（上下に余白を残す）
-    let meter_top = 6;
-    let meter_bottom = SIZE - 6;
+    // メーター領域の設定（モードに応じて変更）
+    let meter_top;
+    let meter_bottom = SIZE - 2;
     let meter_left = 2;
-    let meter_right = SIZE - 2;
-    let meter_width = meter_right - meter_left;
+    let meter_right = SIZE - 2; // 30 (2〜29の28px幅)
+    let meter_width = meter_right - meter_left; // 28px
 
-    // 中央位置
-    let center_x = meter_left + meter_width / 2;
+    if icon_mode == 1 {
+        // モード1: 音名+インジケーター
+        // 音名を上部に大きく描画（音名+#のみ抽出：例 "A#4" -> "A#"）
+        let note_chars: String = note_name
+            .chars()
+            .filter(|c| c.is_alphabetic() || *c == '#')
+            .collect();
 
-    // セント値をメーター位置に変換（-50〜+50セント → 左端〜右端）
-    let clamped_cents = cents.clamp(-50.0, 50.0);
-    let normalized = (clamped_cents + 50.0) / 100.0; // 0.0〜1.0
-    let indicator_x = meter_left + (normalized * meter_width as f32) as usize;
+        // 大きなフォントで描画（5x7ピクセル、スケール2 = 10x14ピクセル）
+        let scale = 2;
+        let char_count = note_chars.len();
+        // 文字幅: 5*scale + 間隔1*scale = 6*scale per char、最後の間隔除く
+        let text_width = if char_count > 0 {
+            char_count * 6 * scale - scale
+        } else {
+            0
+        };
+        let text_start_x = (SIZE.saturating_sub(text_width)) / 2;
+        draw_text_large(
+            &mut rgba,
+            SIZE,
+            &note_chars,
+            text_start_x,
+            1,
+            text_color,
+            scale,
+        );
 
-    // インジケーターの幅（セント値の絶対値が小さいほど細く、正確さを強調）
-    let indicator_width = if abs_cents < 5.0 { 4 } else if abs_cents < 15.0 { 5 } else { 6 };
-    let half_width = indicator_width / 2;
+        // メーター領域（音名の下に配置）- 音名が14px高さなので、17pxから開始
+        meter_top = 17;
+    } else {
+        // モード0: インジケーターのみ（全画面メーター）
+        meter_top = 2;
+    }
+
+    // 偶数幅なので中央は2ピクセル（15と16）
+    let center_x1 = meter_left + meter_width / 2 - 1; // 15
+    let center_x2 = meter_left + meter_width / 2; // 16
+
+    // セント値をメーター位置に変換（-10〜+10セント → 左端〜右端）
+    // ±10セントを超えると端にクロップ
+    let clamped_cents = cents.clamp(-10.0, 10.0);
+    let normalized = (clamped_cents + 10.0) / 20.0; // 0.0〜1.0
+                                                    // インジケーターは2px幅なので、位置は左側のピクセルを基準にする
+    let indicator_pos = meter_left as f32 + normalized * (meter_width - 2) as f32;
+    let indicator_x1 = indicator_pos.round() as usize;
+    let indicator_x2 = indicator_x1 + 1;
 
     // メーターバーを描画
     for y in meter_top..meter_bottom {
         for x in meter_left..meter_right {
             let idx = (y * SIZE + x) * 4;
 
-            // 中央線を描画
-            if x == center_x || x == center_x + 1 {
+            // 中央線を描画（2ピクセル幅）
+            if x == center_x1 || x == center_x2 {
                 rgba[idx..idx + 4].copy_from_slice(&center_line_color);
             }
 
-            // インジケーターを描画
-            if x >= indicator_x.saturating_sub(half_width) && x <= indicator_x + half_width {
+            // インジケーターを描画（常に2ピクセル幅）
+            if x == indicator_x1 || x == indicator_x2 {
                 rgba[idx..idx + 4].copy_from_slice(&meter_color);
             }
         }
     }
 
-    // 中央マーク（三角形）を上部に描画
-    let triangle_color: [u8; 4] = [180, 180, 180, 255];
-    for i in 0..4 {
-        let y = meter_top - 1 - i;
-        if y > 0 {
+    // 中央マーク（小さな三角形）を上部に描画
+    let triangle_color: [u8; 4] = [120, 120, 120, 255];
+    for i in 0..2 {
+        let y = meter_top.saturating_sub(1 + i);
+        if y >= 1 && (icon_mode == 1 && y > 15 || icon_mode == 0) {
             for dx in 0..=i {
-                let x1 = center_x.saturating_sub(dx);
-                let x2 = center_x + dx + 1;
+                // 左側の中央点から左へ
+                let x1 = center_x1.saturating_sub(dx);
                 if x1 < SIZE {
                     let idx = (y * SIZE + x1) * 4;
                     rgba[idx..idx + 4].copy_from_slice(&triangle_color);
                 }
+                // 右側の中央点から右へ
+                let x2 = center_x2 + dx;
                 if x2 < SIZE {
                     let idx = (y * SIZE + x2) * 4;
                     rgba[idx..idx + 4].copy_from_slice(&triangle_color);
@@ -133,11 +377,55 @@ fn generate_tuning_icon(cents: f32) -> Vec<u8> {
     rgba
 }
 
-/// トレイアイコンを動的に更新
-fn update_tray_icon(app_handle: &tauri::AppHandle, cents: f32) {
+/// トレイアイコンを動的に更新（デバウンス・ヒステリシス付き）
+fn update_tray_icon(app_handle: &tauri::AppHandle, cents: f32, note_name: &str) {
+    // インジケーター位置を計算（-50〜+50の整数）
+    let indicator_pos = cents.clamp(-50.0, 50.0).round() as i32;
+
+    // 状態管理を取得
+    let mut state = match TRAY_ICON_STATE.lock() {
+        Ok(s) => s,
+        Err(_) => return,
+    };
+
+    // ヒステリシス付きで色を決定
+    let new_color = determine_color_with_hysteresis(cents, state.last_color);
+
+    // 更新が必要か判定
+    if !state.should_update(new_color, indicator_pos) {
+        return;
+    }
+
+    // トレイアイコンを更新
     let tray = app_handle.tray_by_id("main");
     if let Some(tray) = tray {
-        let icon_data = generate_tuning_icon(cents);
+        let icon_data = generate_tuning_icon(cents, new_color, note_name);
+        let image = Image::new_owned(icon_data, 32, 32);
+        let _ = tray.set_icon(Some(image));
+
+        // 状態を更新
+        state.update(new_color, indicator_pos);
+    }
+}
+
+/// トレイアイコンを即座に再描画（モード変更時など、デバウンスをスキップ）
+pub fn refresh_tray_icon(app_handle: &tauri::AppHandle, cents: f32, note_name: &str) {
+    // 状態管理を取得
+    let state = match TRAY_ICON_STATE.lock() {
+        Ok(s) => s,
+        Err(_) => return,
+    };
+
+    // 現在の色を取得（なければ新規計算）
+    let color = state
+        .last_color
+        .unwrap_or_else(|| determine_color_with_hysteresis(cents, None));
+    drop(state); // ロックを解放
+
+    // トレイアイコンを更新
+    let tray = app_handle.tray_by_id("main");
+    if let Some(tray) = tray {
+        let icon_data = generate_tuning_icon(cents, color, note_name);
         let image = Image::new_owned(icon_data, 32, 32);
         let _ = tray.set_icon(Some(image));
     }
@@ -147,12 +435,43 @@ fn update_tray_icon(app_handle: &tauri::AppHandle, cents: f32) {
 fn update_tray_tooltip(app_handle: &tauri::AppHandle, note_name: &str, freq: f32, cents: f32) {
     let tray = app_handle.tray_by_id("main");
     if let Some(tray) = tray {
-        let direction = if cents > 0.0 { "+" } else { "" };
+        // セント値を整数に丸める
+        let cents_int = cents.round() as i32;
+        // +/-の表示（0は符号なし）
+        let direction = if cents_int > 0 {
+            "+"
+        } else if cents_int < 0 {
+            "" // 負の数は自動で-がつく
+        } else {
+            "" // 0の場合は符号なし
+        };
         let tooltip = format!(
             "Guitar Tuner\n{} ({:.1}Hz)\n{}{}¢",
-            note_name, freq, direction, cents as i32
+            note_name, freq, direction, cents_int
         );
         let _ = tray.set_tooltip(Some(&tooltip));
+    }
+}
+
+/// トレイアイコンを初期状態にリセット
+fn reset_tray_icon(app_handle: &tauri::AppHandle) {
+    use tauri::image::Image;
+
+    // 状態をリセット
+    if let Ok(mut state) = TRAY_ICON_STATE.lock() {
+        state.reset();
+    }
+
+    let tray = app_handle.tray_by_id("main");
+    if let Some(tray) = tray {
+        // アイコンを初期状態に戻す
+        if let Ok(icon) = Image::from_path("icons/icon.ico") {
+            let _ = tray.set_icon(Some(icon));
+        } else if let Ok(icon) = Image::from_path("icons/32x32.png") {
+            let _ = tray.set_icon(Some(icon));
+        }
+        // ツールチップを初期状態に戻す
+        let _ = tray.set_tooltip(Some("Guitar Tuner"));
     }
 }
 
@@ -165,11 +484,19 @@ pub fn run_analysis_thread(
 ) {
     let buffer_size = FFT_SIZE * channels;
 
+    // リセット判定用の定数（秒）
+    const RESET_TIMEOUT_SECS: u64 = 3;
+
     thread::spawn(move || {
         let mut planner = FftPlanner::<f32>::new();
 
         // 周波数安定化用のバッファ
         let mut freq_history: Vec<f32> = Vec::with_capacity(10);
+
+        // 最後に有効な音を検出した時刻
+        let mut last_valid_sound_time: Option<Instant> = None;
+        // リセット済みフラグ（連続してresetイベントを送信しないため）
+        let mut is_reset = true;
 
         loop {
             // 停止フラグがセットされたらスレッドを終了
@@ -178,6 +505,23 @@ pub fn run_analysis_thread(
                 break;
             }
             thread::sleep(Duration::from_millis(50));
+
+            // リセット判定: 有効な音が一定時間検出されなかったらリセット
+            if let Some(last_time) = last_valid_sound_time {
+                if last_time.elapsed() > Duration::from_secs(RESET_TIMEOUT_SECS) && !is_reset {
+                    // リセットイベントを送信
+                    let _ = app_handle.emit("reset", ());
+                    // トレイアイコンをリセット
+                    reset_tray_icon(&app_handle);
+                    // 履歴をクリア
+                    freq_history.clear();
+                    is_reset = true;
+                    println!(
+                        "リセットイベント送信: {}秒間音が検出されませんでした",
+                        RESET_TIMEOUT_SECS
+                    );
+                }
+            }
 
             let samples: Vec<f32>;
             {
@@ -297,8 +641,13 @@ pub fn run_analysis_thread(
 
                                 let _ = app_handle.emit("frequency", median_freq);
 
+                                // 有効な音を検出したので時刻を更新
+                                last_valid_sound_time = Some(Instant::now());
+                                is_reset = false;
+
                                 // チューニング情報を計算してトレイのツールチップを更新
-                                let (note_name, _target_freq, cents) = calculate_note_info(median_freq);
+                                let (note_name, target_freq, cents) =
+                                    calculate_note_info(median_freq);
 
                                 // グローバル変数を更新
                                 if let Ok(mut info) = LAST_TUNING_INFO.lock() {
@@ -309,7 +658,15 @@ pub fn run_analysis_thread(
 
                                 // トレイのツールチップとアイコンを更新
                                 update_tray_tooltip(&app_handle, &note_name, median_freq, cents);
-                                update_tray_icon(&app_handle, cents);
+                                update_tray_icon(&app_handle, cents, &note_name);
+
+                                let payload = NoteInfoEventPayload {
+                                    name: note_name.clone(),
+                                    cent: cents,
+                                    target_freq,
+                                    tuning_status: classify_tuning_status(cents),
+                                };
+                                let _ = app_handle.emit("note_info", payload);
                             }
                         }
                     }

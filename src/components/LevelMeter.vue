@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed } from "vue";
 
 const props = defineProps<{
   level: number; // 0〜1の値
@@ -29,39 +29,39 @@ const levelPercent = computed(() => props.level * 100);
 <style scoped>
 .input-level {
   max-width: 300px;
-  margin: 0 auto 15px;
-  padding: 10px 15px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
+  margin: var(--space-lg, 24px) auto;
+  padding: var(--space-md, 16px);
+  background: var(--dads-gray-420);
+  border-radius: var(--radius-md, 8px);
 }
 .input-level label {
   display: block;
   text-align: center;
-  font-size: 12px;
-  color: #aaa;
-  margin-bottom: 8px;
+  font-size: var(--font-size-md);
+  color: var(--dads-gray-640);
+  margin-bottom: var(--space-sm, 8px);
 }
 .level-bar {
   width: 100%;
   height: 12px;
-  background: #222;
+  background: var(--dads-white);
   border-radius: 6px;
   overflow: hidden;
 }
 .level-fill {
   height: 100%;
-  background: linear-gradient(90deg, #4caf50, #8bc34a, #ffeb3b);
+  background: var(--semantic-success-main);
   transition: width 0.05s ease-out;
   border-radius: 6px;
 }
 .level-fill.hot {
-  background: linear-gradient(90deg, #4caf50, #ffeb3b, #ff5722);
+  background: var(--semantic-error-main);
 }
 .level-labels {
   display: flex;
   justify-content: space-between;
-  font-size: 9px;
-  color: #666;
-  margin-top: 4px;
+  font-size: var(--font-size-sm);
+  color: var(--dads-gray-640);
+  margin-top: var(--space-xs, 4px);
 }
 </style>

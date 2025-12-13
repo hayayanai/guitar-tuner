@@ -1,11 +1,65 @@
+@import "../tokens/colors.css";
 :root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 400;
+  /* フォントサイズスケール */
+  --font-size-xs: 11px;
+  --font-size-sm: 12px;
+  --font-size-md: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-size-huge: 48px;
+  /* フォントファミリー */
+  font-family: "Segoe UI", "Noto Sans JP", sans-serif;
+  font-size: var(--font-size-base);
+  line-height: 1.7; /* 本文の行間: 170% */
+  font-weight: 400; /* Normal */
+  letter-spacing: 0.02em; /* 2% */
 
-  color: #0f0f0f;
-  background-color: #f6f6f6;
+  /* カラーパレット - ライトブルー系 */
+  --color-primary: #0071bc; /* プライマリーカラー（青） */
+  --color-primary-dark: #004b7a; /* プライマリーダーク */
+  --color-primary-light: #4fc3f7; /* プライマリーライト */
+  --color-secondary: #0097a7; /* セカンダリーカラー（シアン） */
+
+  /* ニュートラルカラー */
+  --color-text: #1a1a1c; /* テキスト（ほぼ黒） */
+  --color-text-secondary: #626264; /* セカンダリテキスト（グレー） */
+  --color-text-light: #949497; /* 薄いテキスト */
+  --color-background: #ffffff; /* 背景（白） */
+  --color-background-secondary: #f5f5f5; /* 背景（薄いグレー） */
+  --color-border: #d9d9d9; /* ボーダー */
+  --color-divider: #e5e5e5; /* 区切り線 */
+
+  /* セマンティックカラー */
+  --color-success: #259d63; /* 成功（緑） */
+  --color-success-light: #e8f5e9; /* 成功背景 */
+  --color-error: #d32f2f; /* エラー（赤） */
+  --color-error-light: #ffebee; /* エラー背景 */
+  --color-warning: #f5a623; /* 警告（オレンジ） */
+  --color-warning-light: #fff8e1; /* 警告背景 */
+
+  /* 余白スケール（8pxベース） */
+  --space-xs: 4px; /* 0.5倍 */
+  --space-sm: 8px; /* 1倍 */
+  --space-md: 16px; /* 2倍 */
+  --space-lg: 24px; /* 3倍 */
+  --space-xl: 32px; /* 4倍 */
+  --space-2xl: 48px; /* 6倍 */
+  --space-3xl: 64px; /* 8倍 */
+
+  /* 角丸 */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* シャドウ（エレベーション） */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.15);
+
+  color: var(--color-text);
+  background-color: var(--color-background);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -14,10 +68,264 @@
   -webkit-text-size-adjust: 100%;
 }
 
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-text: #f5f5f5;
+    --color-text-secondary: #b0b0b0;
+    --color-text-light: #808080;
+    --color-background: #1a1a1c;
+    --color-background-secondary: #2a2a2c;
+    --color-border: #404040;
+    --color-divider: #333333;
+    --color-primary-light: #81d4fa;
+  }
+}
+
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
   min-height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  /* スクロールバー非表示 */
+  overflow-x: hidden;
+  width: 100vw;
+  max-width: 100vw;
+  padding: 0;
+  font-size: var(--font-size-base);
+  user-select: none;
+}
+
+/* 強制ライトテーマ */
+.theme-light {
+  --color-text: #1a1a1c;
+  --color-text-secondary: #626264;
+  --color-text-light: #949497;
+  --color-background: #ffffff;
+  --color-background-secondary: #f5f5f5;
+  --color-border: #d9d9d9;
+  --color-divider: #e5e5e5;
+  --color-primary-light: #4fc3f7;
+}
+
+/* 強制ダークテーマ */
+.theme-dark {
+  --color-text: #f5f5f5;
+  --color-text-secondary: #b0b0b0;
+  --color-text-light: #808080;
+  --color-background: #1a1a1c;
+  --color-background-secondary: #2a2a2c;
+  --color-border: #404040;
+  --color-divider: #333333;
+  --color-primary-light: #81d4fa;
+}
+
+html {
+  -ms-overflow-style: none; /* IE/Edge */
+}
+html::-webkit-scrollbar {
+  display: none;
+}
+
+.container,
+.main-content {
+  width: min(96vw, 700px);
+  max-width: 100vw;
+  margin: 0 auto;
+  padding: 2vw;
+  box-sizing: border-box;
+}
+.meter,
+.note-display,
+.device-selector,
+.channel-selector,
+.level-meter,
+.cent-meter,
+.threshold-slider {
+  width: 100%;
+  margin-bottom: 2vw;
+}
+
+/* Chrome, Edge用 スクロールバー非表示 */
+body::-webkit-scrollbar {
+  display: none;
+}
+
+/* スクロールバー出現時の横幅揺れ防止 */
+/* 常にスクロールバーのガターを確保してレイアウトのズレを防ぐ */
+html {
+  /* Edge/Chrome で有効。縦スクロールの有無で横幅が変わらないようにする */
+  scrollbar-gutter: stable;
+}
+
+body {
+  /* ガター確保が効くように（デフォルトのautoでもOKだが明示） */
+  overflow-y: auto;
+}
+
+/* 設定グループ共通スタイル */
+.settings-group {
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+  min-width: 0;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.settings-group legend {
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  padding: 0 var(--space-sm);
+}
+
+/* ラジオボタン・チェックボックス共通スタイル */
+.radio-label,
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  cursor: pointer;
+  padding: var(--space-xs) 0;
+  font-size: var(--font-size-md);
+  flex-wrap: wrap;
+  min-width: 0;
+  width: 100%;
+}
+
+.radio-label > input[type="radio"],
+.radio-label > input[type="checkbox"],
+.checkbox-label > input[type="radio"],
+.checkbox-label > input[type="checkbox"] {
+  flex-shrink: 0;
+}
+
+.radio-label > span,
+.checkbox-label > span {
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+.radio-label > select,
+.checkbox-label > select,
+.radio-label > input[type="number"],
+.checkbox-label > input[type="number"] {
+  flex-shrink: 0;
+}
+
+.radio-label input[type="radio"],
+.checkbox-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+/* タイポグラフィ */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 700; /* Bold */
+  line-height: 1.5; /* 見出しの行間: 150% */
+  margin: 0 0 var(--space-md) 0;
+}
+
+h1 {
+  font-size: var(--font-size-3xl);
+  letter-spacing: 0.01em;
+}
+h2 {
+  font-size: var(--font-size-2xl);
+  letter-spacing: 0.02em;
+}
+h3 {
+  font-size: var(--font-size-xl);
+  letter-spacing: 0.02em;
+}
+h4 {
+  font-size: var(--font-size-lg);
+  letter-spacing: 0.02em;
+}
+
+/* リンク */
+a {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+a:visited {
+  color: #6b357a; /* 訪問済みリンク（紫系） */
+}
+a:hover {
+  color: var(--color-primary-dark);
+}
+
+/* ボタン共通スタイル */
+button,
+.btn {
+  font-family: inherit;
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  line-height: 1;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    box-shadow 0.2s;
+}
+
+button:focus-visible,
+.btn:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* プライマリボタン */
+.btn-primary {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+.btn-primary:hover {
+  background-color: var(--color-primary-dark);
+}
+
+/* セカンダリボタン */
+.btn-secondary {
+  background-color: transparent;
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+}
+.btn-secondary:hover {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+
+/* フォーム要素 */
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: var(--font-size-base);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(0, 113, 188, 0.2);
 }

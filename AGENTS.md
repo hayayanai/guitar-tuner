@@ -1,44 +1,87 @@
 # AGENTS.md
 
-AI/自動化エージェント向けのプロジェクト情報です。
+Project information for AI/automation agents.
 
-## プロジェクト概要
-Tauri v2 + Vue 3 + Rust によるギターチューナーアプリ（Windows向け）
+## Project Overview
 
-## アーキテクチャ
+Guitar tuner app built with Tauri v2 + Vue 3 + Rust (Windows target).
 
-### Rustバックエンド (`src-tauri/src/lib.rs`)
-- **cpal**: 音声入力ストリーム（48kHz, ステレオ）
-- **rustfft**: FFT解析
-- **グローバル状態**: `STREAM`, `THRESHOLD_RATIO`, `CHANNEL_MODE`, `STOP_FLAG`
-- **Tauriコマンド**: `get_audio_devices`, `start_listening`, `set_threshold`, `set_channel_mode`
-- **イベント**: `frequency`, `raw_frequency`, `input_level`
+## Architecture Diagram
 
-### 音声処理パイプライン
-1. cpalで音声入力（48kHz, ステレオ）
-2. チャンネル選択（L/R/両方）
-3. Blackman-Harris窓関数適用
-4. 2倍ゼロパディング（FFT 16384 → 32768）
-5. FFT実行、パワースペクトル計算（75-350Hz範囲）
-6. ガウシアン補間でピーク周波数推定
-7. 倍音検出（1/2, 1/3, 1/4をチェック）で基音優先
-8. ギター音フィルタ（E2〜E4の±15%範囲）
-9. 中央値フィルタで安定化
-10. フロントエンドへイベント送信
+```mermaid
+flowchart TB
+    subgraph Frontend["Vue Frontend"]
+        DeviceSelect[DeviceSelector]
+        NoteDisplay[NoteDisplay]
+        CentMeter[CentMeter]
+        LevelMeter[LevelMeter]
+        ChannelSelector[ChannelSelector]
+        ThresholdSlider[ThresholdSlider]
+    end
 
-### Vueフロントエンド (`src/App.vue`)
-- デバイス選択ドロップダウン
-- 音名・周波数表示（現在値と目標値）
-- セントメーター（±50セント、水平バー）
-- レベルメーター（-80dB〜0dB）
-- チャンネル選択ボタン（L/L+R/R）
-- 感度スライダー
+    subgraph Backend["Rust Backend (Tauri)"]
+        Commands["Commands:<br/>get_audio_devices<br/>start_listening<br/>set_threshold<br/>set_channel_mode"]
+        Events["Events:<br/>frequency<br/>raw_frequency<br/>input_level"]
+    end
 
-## 注意点
+    subgraph AudioPipeline["Audio Processing Pipeline"]
+        cpal["cpal<br/>(48kHz)"]
+        ChannelSelect["Channel<br/>Select"]
+        Window["Blackman-<br/>Harris"]
+        ZeroPad["Zero-padding<br/>(2x: 32768)"]
+        FFT["rustfft<br/>+ Gaussian"]
+        Harmonic["Harmonic<br/>Detection"]
+        GuitarFilter["Guitar<br/>Filter"]
+        MedianFilter["Median<br/>Filter"]
+        SendEvent["Send Events"]
+    end
 
-### Rustクロージャの書き方
+    Frontend <-->|"Tauri Events & Commands"| Backend
+    Backend --> AudioPipeline
+
+    cpal --> ChannelSelect --> Window --> ZeroPad --> FFT
+    FFT --> Harmonic --> GuitarFilter --> MedianFilter --> SendEvent
+    SendEvent -->|"frequency, level"| Events
+```
+
+## Architecture
+
+### Rust Backend (`src-tauri/src/lib.rs`)
+
+- **cpal**: Audio input stream (48kHz, stereo)
+- **rustfft**: FFT analysis
+- **Global State**: `STREAM`, `THRESHOLD_RATIO`, `CHANNEL_MODE`, `STOP_FLAG`
+- **Tauri Commands**: `get_audio_devices`, `start_listening`, `set_threshold`, `set_channel_mode`
+- **Events**: `frequency`, `raw_frequency`, `input_level`
+
+### Audio Processing Pipeline
+
+1. Audio input via cpal (48kHz, stereo)
+2. Channel selection (L/R/Both)
+3. Apply Blackman-Harris window function
+4. 2x zero-padding (FFT 16384 → 32768)
+5. Execute FFT, calculate power spectrum (75-350Hz range)
+6. Gaussian interpolation for peak frequency estimation
+7. Harmonic detection (check 1/2, 1/3, 1/4) prioritizing fundamental
+8. Guitar tone filter (E2-E4 ±15% range)
+9. Median filter for stabilization
+10. Send events to frontend
+
+### Vue Frontend (`src/App.vue`)
+
+- Device selection dropdown
+- Note name & frequency display (current and target values)
+- Cent meter (±50 cents, horizontal bar)
+- Level meter (-80dB to 0dB)
+- Channel selection buttons (L/L+R/R)
+- Sensitivity slider
+
+## Important Notes
+
+### Rust Closure Syntax
+
 ```rust
-// ✅ 正しい
+// ✅ Correct
 let buffer_clone = buffer.clone();
 device.build_input_stream(
   &config,
@@ -47,30 +90,55 @@ device.build_input_stream(
   None
 )
 
-// ❌ 間違い（余計なブロック）
+// ❌ Wrong (unnecessary block)
 device.build_input_stream(
   &config,
-  { move |data: &[f32], _| { /* ... */ } },  // ブロックで囲まない
+  { move |data: &[f32], _| { /* ... */ } },  // Don't wrap in block
   err_fn,
   None
 )
 ```
 
-### ストリームの保持
-cpalのストリームはdropされるとコールバックが停止するため、グローバルに保持：
+### Stream Retention
+
+cpal streams stop callbacks when dropped, so retain globally:
+
 ```rust
 static STREAM: Lazy<Mutex<Option<Stream>>> = Lazy::new(|| Mutex::new(None));
 ```
 
-### コールバックが呼ばれない場合
-- Windowsの「サウンド設定」→「録音」で排他モードをOFF
-- 他のDAW/録音アプリを閉じる
-- 別の入力デバイスで試す
+### If Callbacks Aren't Called
 
-## 開発コマンド
+- Windows "Sound Settings" → "Recording" → Disable exclusive mode
+- Close other DAW/recording apps
+- Try a different input device
+
+## CI & Version Management
+
+- Node.js/Rust versions managed via `.mise.toml`, auto-applied in CI (GitHub Actions)
+- Tag push generates Windows installer draft on GitHub Releases
+
+### Development Commands
+
 ```bash
-npm install        # 依存関係インストール
-mise install       # Node.js/Rustバージョン管理
-npm run tauri dev  # 開発モード
-npm run tauri build # リリースビルド
+mise install        # Node.js/Rust version management
+npm install         # Install dependencies
+npm run tauri dev   # Development mode
+npm run tauri build # Release build
+```
+
+### Checking Rust Warnings & Errors
+
+To check for warnings and errors in Rust files, use the following command:
+
+```bash
+cargo check
+```
+
+- Performs syntax and type checks for all Rust files, displaying warnings and errors.
+- Does not build the project, allowing for quick issue detection.
+- Run frequently during development to catch and fix problems early.
+
+```
+
 ```

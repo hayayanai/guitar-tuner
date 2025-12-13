@@ -4,8 +4,9 @@ mod constants;
 mod dsp;
 
 use commands::{
-    get_audio_devices, get_channel_mode, get_threshold, set_channel_mode, set_threshold,
-    start_listening,
+    get_audio_devices, get_channel_mode, get_settings, get_threshold, get_tray_icon_mode,
+    set_channel_mode, set_custom_pitch, set_drop_tuning, set_pitch_mode, set_settings,
+    set_threshold, set_tray_icon_mode, set_tuning_shift, start_listening,
 };
 
 pub fn run() {
@@ -15,13 +16,23 @@ pub fn run() {
     use tauri::{Manager, WindowEvent};
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(tauri_plugin_process::init())
         .invoke_handler(tauri::generate_handler![
             get_audio_devices,
             start_listening,
             set_threshold,
             get_threshold,
             set_channel_mode,
-            get_channel_mode
+            get_channel_mode,
+            set_tray_icon_mode,
+            get_tray_icon_mode,
+            set_settings,
+            get_settings,
+            set_pitch_mode,
+            set_custom_pitch,
+            set_tuning_shift,
+            set_drop_tuning
         ])
         .setup(|app| {
             let app_handle = app.handle().clone();
@@ -44,20 +55,18 @@ pub fn run() {
                 .icon(icon)
                 .menu(&menu)
                 .tooltip("Guitar Tuner")
-                .on_menu_event(move |app, event| {
-                    match event.id.as_ref() {
-                        "show" => {
-                            if let Some(window) = app.get_webview_window("main") {
-                                let _ = window.show();
-                                let _ = window.unminimize();
-                                let _ = window.set_focus();
-                            }
+                .on_menu_event(move |app, event| match event.id.as_ref() {
+                    "show" => {
+                        if let Some(window) = app.get_webview_window("main") {
+                            let _ = window.show();
+                            let _ = window.unminimize();
+                            let _ = window.set_focus();
                         }
-                        "quit" => {
-                            std::process::exit(0);
-                        }
-                        _ => {}
                     }
+                    "quit" => {
+                        std::process::exit(0);
+                    }
+                    _ => {}
                 })
                 .on_tray_icon_event(move |tray, event| {
                     match event {

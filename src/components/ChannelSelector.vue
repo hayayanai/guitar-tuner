@@ -1,37 +1,16 @@
 <script setup lang="ts">
-import type { ChannelMode } from '../types';
+import type { ChannelMode } from "../types";
 
-defineProps<{
-  modelValue: ChannelMode;
-}>();
-
-const emit = defineEmits<{
-  'update:modelValue': [value: ChannelMode];
-}>();
+import { defineModel } from "vue";
+const model = defineModel<ChannelMode>({ required: true });
 </script>
 
 <template>
   <div class="channel-select">
-    <label>Channel:</label>
     <div class="channel-buttons">
-      <button
-        :class="{ active: modelValue === 0 }"
-        @click="emit('update:modelValue', 0)"
-      >
-        L
-      </button>
-      <button
-        :class="{ active: modelValue === 2 }"
-        @click="emit('update:modelValue', 2)"
-      >
-        L+R
-      </button>
-      <button
-        :class="{ active: modelValue === 1 }"
-        @click="emit('update:modelValue', 1)"
-      >
-        R
-      </button>
+      <button :class="{ active: model === 0 }" @click="model = 0">L</button>
+      <button :class="{ active: model === 2 }" @click="model = 2">L+R</button>
+      <button :class="{ active: model === 1 }" @click="model = 1">R</button>
     </div>
   </div>
 </template>
@@ -45,8 +24,8 @@ const emit = defineEmits<{
   margin-bottom: 8px;
 }
 .channel-select label {
-  font-size: 12px;
-  color: #aaa;
+  font-size: var(--font-size-sm);
+  color: var(--dads-gray-640);
 }
 .channel-buttons {
   display: flex;
@@ -54,19 +33,19 @@ const emit = defineEmits<{
 }
 .channel-buttons button {
   padding: 4px 12px;
-  font-size: 11px;
-  border: 1px solid #4fc3f7;
-  background: #1a1a2e;
-  color: #888;
+  font-size: var(--font-size-xs);
+  border: 1px solid var(--dads-blue-500);
+  background: var(--dads-gray-420);
+  color: var(--dads-gray-640);
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s;
 }
 .channel-buttons button.active {
-  background: #4fc3f7;
-  color: #000;
+  background: var(--dads-blue-500);
+  color: var(--dads-white);
 }
 .channel-buttons button:hover:not(.active) {
-  background: #2a2a3e;
+  background: var(--dads-gray-420);
 }
 </style>

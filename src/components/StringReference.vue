@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { GuitarNote } from '../types';
+import type { GuitarNote } from "../types";
 
 defineProps<{
   notes: GuitarNote[];
@@ -26,7 +26,7 @@ defineProps<{
   justify-content: center;
   gap: 10px;
   padding: 15px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--dads-gray-420);
   border-radius: 10px;
 }
 .string-note {
@@ -35,17 +35,17 @@ defineProps<{
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #2a2a3e;
+  background: var(--dads-white);
   border-radius: 50%;
   font-weight: bold;
-  font-size: 14px;
-  color: #888;
+  font-size: var(--font-size-md);
+  color: var(--dads-gray-640);
   transition: all 0.2s;
 }
 .string-note.active {
-  background: #4fc3f7;
-  color: #000;
+  background: var(--dads-blue-500);
+  color: var(--dads-white);
   transform: scale(1.1);
-  box-shadow: 0 0 15px rgba(79, 195, 247, 0.5);
+  box-shadow: 0 0 15px var(--dads-blue-500);
 }
 </style>

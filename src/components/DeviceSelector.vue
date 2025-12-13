@@ -1,27 +1,16 @@
 <script setup lang="ts">
-defineProps<{
-  devices: string[];
-  modelValue: string;
-}>();
-
-const emit = defineEmits<{
-  'update:modelValue': [value: string];
-}>();
+const props = defineProps<{ devices: string[] }>();
+const model = defineModel<string>({ required: true });
 </script>
 
 <template>
   <div class="device-select">
-    <label for="device-select">Input:</label>
     <select
       id="device-select"
-      :value="modelValue"
-      @change="emit('update:modelValue', ($event.target as HTMLSelectElement).value)"
+      :value="model"
+      @change="model = ($event.target as HTMLSelectElement).value"
     >
-      <option
-        v-for="d in devices"
-        :key="d"
-        :value="d"
-      >
+      <option v-for="d in devices" :key="d" :value="d">
         {{ d }}
       </option>
     </select>
@@ -35,14 +24,18 @@ const emit = defineEmits<{
   justify-content: center;
   gap: 10px;
   margin-bottom: 8px;
+  width: 100%;
 }
 .device-select select {
   padding: 6px 10px;
-  font-size: 12px;
+  font-size: var(--font-size-sm);
   border-radius: 6px;
-  border: 1px solid #4fc3f7;
-  background: #1a1a2e;
-  color: #fff;
-  max-width: 200px;
+  border: 1px solid var(--dads-gray-420);
+  background: var(--dads-gray-420);
+  color: var(--color-text);
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
 }
 </style>
