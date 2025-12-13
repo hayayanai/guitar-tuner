@@ -47,6 +47,7 @@ import {
   StringReference,
   PitchSettings,
 } from "./components";
+import UpdateNotification from "./components/UpdateNotification.vue";
 import { useAudioDevice, getEffectiveA4, getGuitarNotes, type Settings } from "./composables";
 import type { ChannelMode, DropTuningNote } from "./types";
 
@@ -146,7 +147,8 @@ const statusClass = computed(() => {
 </script>
 
 <template>
-  <div class="container">
+  <div class="app">
+    <UpdateNotification />
     <div v-if="loading" class="loading">Loading...</div>
     <div v-else class="content">
       <div v-if="error" class="error">
@@ -264,11 +266,12 @@ const statusClass = computed(() => {
 
 .settings-panel {
   margin: var(--space-xl) auto 0 auto;
-  max-width: 400px;
   background-color: var(--color-background-secondary);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-md);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .settings-panel summary {
@@ -326,12 +329,27 @@ const statusClass = computed(() => {
 }
 
 .tuner {
-  max-width: 400px;
-  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .content {
   animation: fadeIn 0.3s ease-out;
+  width: 400px;
+  max-width: calc(100vw - 32px);
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.app {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: var(--space-md);
+  box-sizing: border-box;
+  min-height: 100vh;
 }
 
 @keyframes fadeIn {

@@ -24,6 +24,7 @@
   },
   "bundle": {
     "active": true,
+    "createUpdaterArtifacts": true,
     "targets": "all",
     "icon": [
       "icons/32x32.png",
@@ -33,5 +34,16 @@
       "icons/icon.ico"
     ],
     "resources": ["icons/*"]
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDdDRjBEQjMyRDk3MjE1MTMKUldRVEZYTFpNdHZ3ZkQrT1l3Um9jS3FhS1pRNHRBTG9lUEFFb3czM2Nyak0zR2lQNnJqVXpBbmYK",
+      "endpoints": [
+        "https://github.com/hayayanai/guitar-tuner/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
   }
 }

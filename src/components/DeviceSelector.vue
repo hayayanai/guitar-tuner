@@ -24,6 +24,7 @@ const model = defineModel<string>({ required: true });
   justify-content: center;
   gap: 10px;
   margin-bottom: 8px;
+  width: 100%;
 }
 .device-select select {
   padding: 6px 10px;
@@ -33,5 +34,8 @@ const model = defineModel<string>({ required: true });
   background: var(--dads-gray-420);
   color: var(--color-text);
   width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
 }
 </style>

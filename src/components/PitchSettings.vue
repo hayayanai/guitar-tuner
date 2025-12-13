@@ -31,7 +31,7 @@ const pitchError = computed(() => {
         :checked="pitchMode === 'standard'"
         @change="pitchMode = 'standard'"
       />
-      <span>Standard (A4 = 440 Hz)</span>
+      <span>A4 = 440 Hz</span>
     </label>
 
     <!-- Custom Pitch -->
@@ -42,7 +42,7 @@ const pitchError = computed(() => {
         :checked="pitchMode === 'custom'"
         @change="pitchMode = 'custom'"
       />
-      <span>Custom pitch:</span>
+      <span>Custom:</span>
       <input
         type="number"
         :value="customPitch"
@@ -66,7 +66,7 @@ const pitchError = computed(() => {
         :checked="pitchMode === 'shift'"
         @change="pitchMode = 'shift'"
       />
-      <span>Tuning shift:</span>
+      <span>Shift:</span>
       <select
         :value="tuningShift"
         @change="tuningShift = Number(($event.target as HTMLSelectElement).value)"
@@ -87,7 +87,7 @@ const pitchError = computed(() => {
         :checked="dropEnabled"
         @change="dropEnabled = ($event.target as HTMLInputElement).checked"
       />
-      <span>Enable drop tuning:</span>
+      <span>Enable:</span>
       <select
         :value="dropNote"
         @change="dropNote = ($event.target as HTMLSelectElement).value"
@@ -114,6 +114,8 @@ const pitchError = computed(() => {
   border: 1px solid var(--dads-gray-420);
   background: var(--dads-gray-420);
   color: var(--dads-gray-640);
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .error-text {
@@ -129,6 +131,8 @@ select {
   background: var(--dads-gray-420);
   color: var(--dads-gray-640);
   border: 1px solid var(--dads-gray-420);
+  box-sizing: border-box;
+  max-width: 200px;
 }
 
 select:disabled,
@@ -149,5 +153,8 @@ input:disabled {
   color: var(--dads-gray-420);
   margin: var(--space-sm) 0 0 var(--space-lg);
   line-height: 1.4;
+  max-width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 </style>
