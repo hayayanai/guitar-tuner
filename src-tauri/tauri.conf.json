@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "guitar-tuner",
-  "version": "0.2.1",
+  "version": "0.2.3",
   "identifier": "com.example.guitartuner",
   "build": {
     "frontendDist": "../dist",
@@ -37,7 +37,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDdDRjBEQjMyRDk3MjE1MTMKUldRVEZYTFpNdHZ3ZkQrT1l3Um9jS3FhS1pRNHRBTG9lUEFFb3czM2Nyak0zR2lQNnJqVXpBbmYK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDY2OTE2QTM0RkNBRTY2NTcKUldSWFpxNzhOR3FSWmtpVEJoSnJPU055N3QvTjE1VWJLbmdmOHcyekZkOEFxMHNUN1AzblpxMFcK",
       "endpoints": [
         "https://github.com/hayayanai/guitar-tuner/releases/latest/download/latest.json"
       ],
