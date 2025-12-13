@@ -230,6 +230,7 @@ const statusClass = computed(() => {
             </label>
           </div>
         </fieldset>
+        <div class="version-label">Version 0.2.3</div>
       </details>
     </div>
   </div>
@@ -350,6 +351,13 @@ const statusClass = computed(() => {
   padding: var(--space-md);
   box-sizing: border-box;
   min-height: 100vh;
+}
+
+.version-label {
+  text-align: right;
+  margin-top: var(--space-xl);
+  color: var(--color-text-light);
+  font-size: var(--font-size-sm);
 }
 
 @keyframes fadeIn {
