@@ -51,6 +51,33 @@ npm run tauri dev
 npm run tauri build
 ```
 
+### Build Notes (Updater Signing Keys)
+
+This app uses the Tauri v2 Updater. Building signed update artifacts requires:
+
+- Set `plugins.updater.pubkey` in [src-tauri/tauri.conf.json](src-tauri/tauri.conf.json) to your generated public key.
+- Configure CI secret `TAURI_SIGNING_PRIVATE_KEY` with your private key contents.
+  - If your private key is password-protected, also set `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` (optional).
+
+See [UPDATER_SETUP.md](UPDATER_SETUP.md) for step-by-step setup.
+
+Quick reference:
+
+```powershell
+# Generate signing key pair (prints public key)
+npm run tauri signer generate -- -w .tauri\guitar-tuner.key
+
+# Copy private key to clipboard (Windows)
+Get-Content $env:USERPROFILE\.tauri\guitar-tuner.key | Set-Clipboard
+```
+
+After setting the public key in `tauri.conf.json` and the private key in GitHub Secrets, tag and push to trigger a signed release:
+
+```bash
+git tag v0.2.4
+git push origin v0.2.4
+```
+
 ## CI/CD with GitHub Actions
 
 Pushing a tag (e.g., `v0.2.0`) automatically builds a Windows installer and creates a draft release on GitHub Releases.

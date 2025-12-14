@@ -51,6 +51,33 @@ npm run tauri dev
 npm run tauri build
 ```
 
+### ビルド注意事項（アップデーター署名鍵）
+
+本アプリは Tauri v2 Updater を使用します。署名済みアップデートをビルド・配布するには、以下の設定が必要です:
+
+- [src-tauri/tauri.conf.json](src-tauri/tauri.conf.json) の `plugins.updater.pubkey` に、生成した公開鍵を設定する
+- CI のリポジトリシークレット `TAURI_SIGNING_PRIVATE_KEY` に、秘密鍵の内容を設定する
+  - 秘密鍵にパスワードを設定している場合は、`TAURI_SIGNING_PRIVATE_KEY_PASSWORD` も併せて設定（任意）
+
+手順は [UPDATER_SETUP.md](UPDATER_SETUP.md) を参照してください。
+
+クイックリファレンス:
+
+```powershell
+# 署名鍵ペアの生成（公開鍵が表示されます）
+npm run tauri signer generate -- -w .tauri\guitar-tuner.key
+
+# 秘密鍵をクリップボードへコピー（Windows）
+Get-Content $env:USERPROFILE\.tauri\guitar-tuner.key | Set-Clipboard
+```
+
+公開鍵を `tauri.conf.json` に設定し、秘密鍵を GitHub Secrets に登録したら、タグを付けてプッシュすると署名付きリリースが生成されます:
+
+```bash
+git tag v0.2.4
+git push origin v0.2.4
+```
+
 ## CI/CDとGitHub Actions
 
 タグをプッシュすることで (例: `v0.2.0`)、Windowsインストーラーが自動的にビルドされ、GitHub Releasesにドラフトリリースが作成されます。
