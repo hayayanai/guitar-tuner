@@ -6,12 +6,18 @@ A cross-platform guitar tuner app built with Tauri v2 + Vue 3 + Rust (cpal/rustf
 
 ## Features
 
-- 🎸 Standard tuning support for 6 strings (E2/A2/D3/G3/B3/E4)
-- 🎯 High-precision frequency detection (FFT 16384 + zero-padding + Gaussian interpolation)
-- 📊 Cent meter (±50 cents display)
+- 🎸 Standard 6-string tuning support (E2/A2/D3/G3/B3/E4)
+- 🎼 High-precision frequency detection (FFT 16384 + zero-padding + Gaussian interpolation)
+- 📈 Cent meter (±50 cents display) with tuning status (Perfect/Good/Off)
 - 🎚️ Input level meter (-80dB to 0dB)
-- 🔧 Channel selection (L/R/Both) - Audio interface compatible
+- 🔊 Channel selection (L/R/Both) - Audio interface compatible
 - ⚙️ Sensitivity adjustment slider
+- 🎵 Reference pitch settings (Standard A4=440Hz / Custom 438-445Hz / Tuning shift ±1 semitone)
+- 🎸 6th string drop tuning support (D/C#/C/B)
+- 🎯 Visual string reference with active note highlighting
+- 🌓 Theme mode (Light/Dark/System)
+- 📌 System tray integration with background operation
+- 🔄 Auto-update from GitHub Releases
 
 ## Tech Stack
 
