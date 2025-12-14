@@ -21,14 +21,17 @@ defineProps<{
   font-size: var(--font-size-2xl);
   font-weight: bold;
   margin-bottom: 15px;
-}
-.cent-display.perfect {
-  color: var(--semantic-success-main);
-}
-.cent-display.good {
-  color: var(--semantic-warning-low);
-}
-.cent-display.off {
-  color: var(--semantic-error-main);
+
+  &.perfect {
+    color: var(--semantic-success-main);
+  }
+
+  &.good {
+    color: var(--semantic-warning-low);
+  }
+
+  &.off {
+    color: var(--semantic-error-main);
+  }
 }
 </style>

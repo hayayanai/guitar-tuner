@@ -18,15 +18,17 @@ defineProps<{
   padding: var(--space-sm);
   background: var(--dads-gray-420);
   border-radius: 6px;
-}
-.raw-frequency .label {
-  font-size: var(--font-size-xs);
-  color: var(--dads-gray-640);
-  margin-right: var(--space-sm);
-}
-.raw-frequency .value {
-  font-size: var(--font-size-md);
-  color: var(--dads-cyan-400);
-  font-family: monospace;
+
+  .label {
+    font-size: var(--font-size-xs);
+    color: var(--dads-gray-640);
+    margin-right: var(--space-sm);
+  }
+
+  .value {
+    font-size: var(--font-size-md);
+    color: var(--dads-cyan-400);
+    font-family: monospace;
+  }
 }
 </style>

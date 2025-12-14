@@ -23,33 +23,39 @@ defineProps<{
 .note-display {
   text-align: center;
   margin-bottom: var(--space-md);
-}
-.note-name {
-  font-size: var(--font-size-huge);
-  font-weight: bold;
-  display: block;
-  line-height: 1;
-  min-height: 1.1em;
-}
-.current-freq {
-  font-size: var(--font-size-md);
-  color: var(--dads-gray-640);
-  margin-top: var(--space-xs);
-  display: inline;
-}
-.target-freq {
-  font-size: var(--font-size-base);
-  color: var(--dads-cyan-400);
-  margin-left: var(--space-sm);
-}
-.note-display.perfect .note-name {
-  color: var(--semantic-success-main);
-  text-shadow: 0 0 20px color-mix(in srgb, var(--semantic-success-main) 50%, transparent 50%);
-}
-.note-display.good .note-name {
-  color: var(--semantic-warning-low);
-}
-.note-display.off .note-name {
-  color: var(--semantic-error-main);
+
+  .note-name {
+    font-size: var(--font-size-huge);
+    font-weight: bold;
+    display: block;
+    line-height: 1;
+    min-height: 1.1em;
+  }
+
+  .current-freq {
+    font-size: var(--font-size-md);
+    color: var(--dads-gray-640);
+    margin-top: var(--space-xs);
+    display: inline;
+  }
+
+  .target-freq {
+    font-size: var(--font-size-base);
+    color: var(--dads-cyan-400);
+    margin-left: var(--space-sm);
+  }
+
+  &.perfect .note-name {
+    color: var(--semantic-success-main);
+    text-shadow: 0 0 20px color-mix(in srgb, var(--semantic-success-main) 50%, transparent 50%);
+  }
+
+  &.good .note-name {
+    color: var(--semantic-warning-low);
+  }
+
+  &.off .note-name {
+    color: var(--semantic-error-main);
+  }
 }
 </style>

@@ -175,13 +175,13 @@ body {
   min-width: 0;
   overflow: hidden;
   max-width: 100%;
-}
 
-.settings-group legend {
-  font-size: var(--font-size-md);
-  font-weight: 700;
-  color: var(--color-text-secondary);
-  padding: 0 var(--space-sm);
+  legend {
+    font-size: var(--font-size-md);
+    font-weight: 700;
+    color: var(--color-text-secondary);
+    padding: 0 var(--space-sm);
+  }
 }
 
 /* ラジオボタン・チェックボックス共通スタイル */
@@ -196,34 +196,29 @@ body {
   flex-wrap: wrap;
   min-width: 0;
   width: 100%;
-}
 
-.radio-label > input[type="radio"],
-.radio-label > input[type="checkbox"],
-.checkbox-label > input[type="radio"],
-.checkbox-label > input[type="checkbox"] {
-  flex-shrink: 0;
-}
+  > input[type="radio"],
+  > input[type="checkbox"] {
+    flex-shrink: 0;
+  }
 
-.radio-label > span,
-.checkbox-label > span {
-  flex-shrink: 1;
-  min-width: 0;
-}
+  > span {
+    flex-shrink: 1;
+    min-width: 0;
+  }
 
-.radio-label > select,
-.checkbox-label > select,
-.radio-label > input[type="number"],
-.checkbox-label > input[type="number"] {
-  flex-shrink: 0;
-}
+  > select,
+  > input[type="number"] {
+    flex-shrink: 0;
+  }
 
-.radio-label input[type="radio"],
-.checkbox-label input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  accent-color: var(--color-primary);
-  cursor: pointer;
+  input[type="radio"],
+  input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--color-primary);
+    cursor: pointer;
+  }
 }
 
 /* タイポグラフィ */
@@ -259,12 +254,13 @@ h4 {
 a {
   color: var(--color-primary);
   text-decoration: underline;
-}
-a:visited {
-  color: #6b357a; /* 訪問済みリンク（紫系） */
-}
-a:hover {
-  color: var(--color-primary-dark);
+
+  &:visited {
+    color: #6b357a; /* 訪問済みリンク（紫系） */
+  }
+  &:hover {
+    color: var(--color-primary-dark);
+  }
 }
 
 /* ボタン共通スタイル */
@@ -281,21 +277,21 @@ button,
   transition:
     background-color 0.2s,
     box-shadow 0.2s;
-}
 
-button:focus-visible,
-.btn:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+  &:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
 }
 
 /* プライマリボタン */
 .btn-primary {
   background-color: var(--color-primary);
   color: #ffffff;
-}
-.btn-primary:hover {
-  background-color: var(--color-primary-dark);
+
+  &:hover {
+    background-color: var(--color-primary-dark);
+  }
 }
 
 /* セカンダリボタン */
@@ -303,10 +299,11 @@ button:focus-visible,
   background-color: transparent;
   color: var(--color-primary);
   border: 2px solid var(--color-primary);
-}
-.btn-secondary:hover {
-  background-color: var(--color-primary);
-  color: #ffffff;
+
+  &:hover {
+    background-color: var(--color-primary);
+    color: #ffffff;
+  }
 }
 
 /* フォーム要素 */
@@ -320,12 +317,10 @@ textarea {
   border-radius: var(--radius-md);
   background-color: var(--color-background);
   color: var(--color-text);
-}
 
-input:focus,
-select:focus,
-textarea:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(0, 113, 188, 0.2);
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(0, 113, 188, 0.2);
+  }
 }
