@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { check, type Update } from "@tauri-apps/plugin-updater";
+import { check } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
 
 const updateAvailable = ref(false);
-const updateInfo = ref<Update | null>(null);
+const updateInfo = ref<Awaited<ReturnType<typeof check>> | null>(null);
 const downloading = ref(false);
 const downloadProgress = ref(0);
 const downloadTotal = ref(0);
