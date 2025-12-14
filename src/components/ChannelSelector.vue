@@ -22,30 +22,37 @@ const model = defineModel<ChannelMode>({ required: true });
   justify-content: center;
   gap: 10px;
   margin-bottom: 8px;
+
+  label {
+    font-size: var(--font-size-sm);
+    color: var(--dads-gray-640);
+  }
 }
-.channel-select label {
-  font-size: var(--font-size-sm);
-  color: var(--dads-gray-640);
-}
+
 .channel-buttons {
   display: flex;
   gap: 4px;
-}
-.channel-buttons button {
-  padding: 4px 12px;
-  font-size: var(--font-size-xs);
-  border: 1px solid var(--dads-blue-500);
-  background: var(--dads-gray-420);
-  color: var(--dads-gray-640);
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.channel-buttons button.active {
-  background: var(--dads-blue-500);
-  color: var(--dads-white);
-}
-.channel-buttons button:hover:not(.active) {
-  background: var(--dads-gray-420);
+
+  button {
+    padding: 4px 12px;
+    font-size: var(--font-size-xs);
+    border: 1px solid var(--color-border);
+    background: var(--color-background);
+    color: var(--color-text);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &.active {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #ffffff;
+    }
+
+    &:hover:not(.active) {
+      background: var(--color-background-secondary);
+      border-color: var(--color-primary);
+    }
+  }
 }
 </style>

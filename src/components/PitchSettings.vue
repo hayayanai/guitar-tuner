@@ -133,9 +133,14 @@ select {
   border: 1px solid var(--dads-gray-420);
   box-sizing: border-box;
   max-width: 200px;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: var(--dads-gray-420);
+  }
 }
 
-select:disabled,
 input:disabled {
   opacity: 0.5;
   cursor: not-allowed;

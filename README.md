@@ -6,12 +6,18 @@ A cross-platform guitar tuner app built with Tauri v2 + Vue 3 + Rust (cpal/rustf
 
 ## Features
 
-- 🎸 Standard tuning support for 6 strings (E2/A2/D3/G3/B3/E4)
-- 🎯 High-precision frequency detection (FFT 16384 + zero-padding + Gaussian interpolation)
-- 📊 Cent meter (±50 cents display)
+- 🎸 Standard 6-string tuning support (E2/A2/D3/G3/B3/E4)
+- 🎼 High-precision frequency detection (FFT 16384 + zero-padding + Gaussian interpolation)
+- 📈 Cent meter (±50 cents display) with tuning status (Perfect/Good/Off)
 - 🎚️ Input level meter (-80dB to 0dB)
-- 🔧 Channel selection (L/R/Both) - Audio interface compatible
+- 🔊 Channel selection (L/R/Both) - Audio interface compatible
 - ⚙️ Sensitivity adjustment slider
+- 🎵 Reference pitch settings (Standard A4=440Hz / Custom 438-445Hz / Tuning shift ±1 semitone)
+- 🎸 6th string drop tuning support (D/C#/C/B)
+- 🎯 Visual string reference with active note highlighting
+- 🌓 Theme mode (Light/Dark/System)
+- 📌 System tray integration with background operation
+- 🔄 Auto-update from GitHub Releases
 
 ## Tech Stack
 
@@ -43,6 +49,33 @@ npm run tauri dev
 
 # Build for release
 npm run tauri build
+```
+
+### Build Notes (Updater Signing Keys)
+
+This app uses the Tauri v2 Updater. Building signed update artifacts requires:
+
+- Set `plugins.updater.pubkey` in [src-tauri/tauri.conf.json](src-tauri/tauri.conf.json) to your generated public key.
+- Configure CI secret `TAURI_SIGNING_PRIVATE_KEY` with your private key contents.
+  - If your private key is password-protected, also set `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` (optional).
+
+See [UPDATER_SETUP.md](UPDATER_SETUP.md) for step-by-step setup.
+
+Quick reference:
+
+```powershell
+# Generate signing key pair (prints public key)
+npm run tauri signer generate -- -w .tauri\guitar-tuner.key
+
+# Copy private key to clipboard (Windows)
+Get-Content $env:USERPROFILE\.tauri\guitar-tuner.key | Set-Clipboard
+```
+
+After setting the public key in `tauri.conf.json` and the private key in GitHub Secrets, tag and push to trigger a signed release:
+
+```bash
+git tag v0.2.4
+git push origin v0.2.4
 ```
 
 ## CI/CD with GitHub Actions

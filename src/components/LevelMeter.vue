@@ -33,30 +33,35 @@ const levelPercent = computed(() => props.level * 100);
   padding: var(--space-md, 16px);
   background: var(--dads-gray-420);
   border-radius: var(--radius-md, 8px);
+
+  label {
+    display: block;
+    text-align: center;
+    font-size: var(--font-size-md);
+    color: var(--dads-gray-640);
+    margin-bottom: var(--space-sm, 8px);
+  }
 }
-.input-level label {
-  display: block;
-  text-align: center;
-  font-size: var(--font-size-md);
-  color: var(--dads-gray-640);
-  margin-bottom: var(--space-sm, 8px);
-}
+
 .level-bar {
   width: 100%;
   height: 12px;
   background: var(--dads-white);
   border-radius: 6px;
   overflow: hidden;
+
+  .level-fill {
+    height: 100%;
+    background: var(--semantic-success-main);
+    transition: width 0.05s ease-out;
+    border-radius: 6px;
+
+    &.hot {
+      background: var(--semantic-error-main);
+    }
+  }
 }
-.level-fill {
-  height: 100%;
-  background: var(--semantic-success-main);
-  transition: width 0.05s ease-out;
-  border-radius: 6px;
-}
-.level-fill.hot {
-  background: var(--semantic-error-main);
-}
+
 .level-labels {
   display: flex;
   justify-content: space-between;

@@ -149,8 +149,7 @@ const statusClass = computed(() => {
 <template>
   <div class="app">
     <UpdateNotification />
-    <div v-if="loading" class="loading">Loading...</div>
-    <div v-else class="content">
+    <div class="content">
       <div v-if="error" class="error">
         {{ error }}
       </div>
@@ -230,6 +229,7 @@ const statusClass = computed(() => {
             </label>
           </div>
         </fieldset>
+        <div class="version-label">Version 0.2.4</div>
       </details>
     </div>
   </div>
@@ -243,6 +243,7 @@ const statusClass = computed(() => {
   color: var(--color-text-secondary);
   margin-top: 4px;
 }
+
 .container {
   min-height: 100vh;
   background-color: var(--color-background);
@@ -251,17 +252,12 @@ const statusClass = computed(() => {
   box-sizing: border-box;
 }
 
-.loading,
 .error {
   text-align: center;
-  padding: var(--space-lg);
-}
-
-.error {
+  padding: var(--space-md);
   color: var(--color-error);
   background-color: var(--color-error-light);
   border-radius: var(--radius-md);
-  padding: var(--space-md);
 }
 
 .settings-panel {
@@ -272,20 +268,20 @@ const statusClass = computed(() => {
   padding: var(--space-md);
   width: 100%;
   box-sizing: border-box;
-}
 
-.settings-panel summary {
-  font-size: var(--font-size-base);
-  font-weight: 700;
-  color: var(--color-primary);
-  cursor: pointer;
-  line-height: 1.5;
-}
+  summary {
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--color-primary);
+    cursor: pointer;
+    line-height: 1.5;
+  }
 
-.settings-panel[open] summary {
-  margin-bottom: var(--space-md);
-  padding-bottom: var(--space-sm);
-  border-bottom: 1px solid var(--color-divider);
+  &[open] summary {
+    margin-bottom: var(--space-md);
+    padding-bottom: var(--space-sm);
+    border-bottom: 1px solid var(--color-divider);
+  }
 }
 
 .status {
@@ -293,32 +289,28 @@ const statusClass = computed(() => {
   align-items: center;
   justify-content: center;
   gap: var(--space-sm);
-  font-size: var(--font-size-md);
-  padding: var(--space-sm) var(--space-md);
-  border-radius: var(--radius-md);
-  margin-top: var(--space-md);
-}
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-sm);
+  font-weight: 600;
 
-.status-indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: currentColor;
-}
+  .status-indicator {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: currentColor;
+  }
 
-.status-success {
-  color: var(--color-success);
-  background-color: var(--color-success-light);
-}
+  &.status-success {
+    color: var(--color-success);
+  }
 
-.status-pending {
-  color: var(--color-warning);
-  background-color: var(--color-warning-light);
-}
+  &.status-pending {
+    color: var(--color-warning);
+  }
 
-.status-error {
-  color: var(--color-error);
-  background-color: var(--color-error-light);
+  &.status-error {
+    color: var(--color-error);
+  }
 }
 
 /* トレイアイコンモード選択 */
@@ -350,6 +342,13 @@ const statusClass = computed(() => {
   padding: var(--space-md);
   box-sizing: border-box;
   min-height: 100vh;
+}
+
+.version-label {
+  text-align: right;
+  margin-top: var(--space-xl);
+  color: var(--color-text-light);
+  font-size: var(--font-size-sm);
 }
 
 @keyframes fadeIn {

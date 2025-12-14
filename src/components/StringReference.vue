@@ -28,24 +28,26 @@ defineProps<{
   padding: 15px;
   background: var(--dads-gray-420);
   border-radius: 10px;
-}
-.string-note {
-  width: 45px;
-  height: 45px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--dads-white);
-  border-radius: 50%;
-  font-weight: bold;
-  font-size: var(--font-size-md);
-  color: var(--dads-gray-640);
-  transition: all 0.2s;
-}
-.string-note.active {
-  background: var(--dads-blue-500);
-  color: var(--dads-white);
-  transform: scale(1.1);
-  box-shadow: 0 0 15px var(--dads-blue-500);
+
+  .string-note {
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--dads-white);
+    border-radius: 50%;
+    font-weight: bold;
+    font-size: var(--font-size-md);
+    color: var(--dads-gray-640);
+    transition: all 0.2s;
+
+    &.active {
+      background: var(--dads-blue-500);
+      color: var(--dads-white);
+      transform: scale(1.1);
+      box-shadow: 0 0 15px var(--dads-blue-500);
+    }
+  }
 }
 </style>

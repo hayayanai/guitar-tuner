@@ -139,6 +139,33 @@ onMounted(() => {
   max-width: 400px;
   z-index: 1000;
   animation: slideInUp 0.2s ease-out;
+
+  &.checking {
+    background: var(--color-background-secondary);
+    border-color: var(--color-border);
+    padding: var(--space-sm) var(--space-md);
+
+    p {
+      margin: 0;
+      color: #666;
+      font-size: 14px;
+    }
+  }
+
+  &.error {
+    background: var(--color-error-light);
+    border: 1px solid var(--color-error);
+
+    p {
+      margin: 0 0 8px 0;
+      color: #c33;
+    }
+  }
+
+  &.available {
+    background: var(--color-background-secondary);
+    border: 1px solid var(--color-divider);
+  }
 }
 
 @keyframes slideInUp {
@@ -152,45 +179,18 @@ onMounted(() => {
   }
 }
 
-.update-notification.checking {
-  background: var(--color-background-secondary);
-  border-color: var(--color-border);
-  padding: var(--space-sm) var(--space-md);
-}
-
-.update-notification.checking p {
-  margin: 0;
-  color: #666;
-  font-size: 14px;
-}
-
-.update-notification.error {
-  background: var(--color-error-light);
-  border: 1px solid var(--color-error);
-}
-
-.update-notification.error p {
-  margin: 0 0 8px 0;
-  color: #c33;
-}
-
-.update-notification.available {
-  background: var(--color-background-secondary);
-  border: 1px solid var(--color-divider);
-}
-
 .update-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 12px;
-}
 
-.update-header h3 {
-  margin: 0;
-  font-size: var(--font-size-base);
-  font-weight: 700;
-  color: var(--color-primary);
+  h3 {
+    margin: 0;
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--color-primary);
+  }
 }
 
 .close-btn {
@@ -203,15 +203,15 @@ onMounted(() => {
   padding: 0;
   width: 24px;
   height: 24px;
-}
 
-.close-btn:hover:not(:disabled) {
-  color: #333;
-}
+  &:hover:not(:disabled) {
+    color: #333;
+  }
 
-.close-btn:disabled {
-  cursor: not-allowed;
-  opacity: 0.5;
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
 }
 
 .update-content {
@@ -252,12 +252,12 @@ onMounted(() => {
   border-radius: var(--radius-sm);
   overflow: hidden;
   margin-bottom: var(--space-xs);
-}
 
-.progress-fill {
-  height: 100%;
-  background: var(--color-primary);
-  transition: width 0.3s ease;
+  .progress-fill {
+    height: 100%;
+    background: var(--color-primary);
+    transition: width 0.3s ease;
+  }
 }
 
 .progress-text {
@@ -281,28 +281,28 @@ button {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
+
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
 .install-btn {
   background: var(--color-primary);
   color: white;
   border-color: transparent;
-}
 
-.install-btn:hover {
-  filter: brightness(0.95);
+  &:hover {
+    filter: brightness(0.95);
+  }
 }
 
 .later-btn {
   background: var(--color-background);
   color: var(--color-text-secondary);
-}
 
-.later-btn:hover {
-  background: var(--color-background-secondary);
-}
-
-button:active {
-  transform: scale(0.98);
+  &:hover {
+    background: var(--color-background-secondary);
+  }
 }
 </style>
