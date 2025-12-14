@@ -149,8 +149,7 @@ const statusClass = computed(() => {
 <template>
   <div class="app">
     <UpdateNotification />
-    <div v-if="loading" class="loading">Loading...</div>
-    <div v-else class="content">
+    <div class="content">
       <div v-if="error" class="error">
         {{ error }}
       </div>
@@ -251,11 +250,6 @@ const statusClass = computed(() => {
   color: var(--color-text);
   padding: var(--space-lg);
   box-sizing: border-box;
-}
-
-.loading {
-  text-align: center;
-  padding: var(--space-lg);
 }
 
 .error {
