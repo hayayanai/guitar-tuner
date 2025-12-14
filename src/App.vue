@@ -229,7 +229,7 @@ const statusClass = computed(() => {
             </label>
           </div>
         </fieldset>
-        <div class="version-label">Version 0.2.3</div>
+        <div class="version-label">Version 0.2.4</div>
       </details>
     </div>
   </div>
