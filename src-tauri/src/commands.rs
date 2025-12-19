@@ -74,10 +74,10 @@ pub fn set_drop_tuning(enabled: bool, note: u32) {
     );
 }
 
-/// トレイアイコン表示モードを設定（0=インジケーターのみ, 1=インジケーター+音名）
+/// トレイアイコン表示モードを設定（0=インジケーターのみ, 1=インジケーター+音名, 2=インジケーター+セント値）
 #[command]
 pub fn set_tray_icon_mode(app: tauri::AppHandle, mode: u32) -> Result<(), String> {
-    TRAY_ICON_MODE.store(mode.min(1), Ordering::SeqCst);
+    TRAY_ICON_MODE.store(mode.min(2), Ordering::SeqCst);
     println!("Tray icon mode set to: {}", mode);
 
     // 最後のチューニング情報を取得して即座にアイコンを再描画
