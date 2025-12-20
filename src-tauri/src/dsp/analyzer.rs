@@ -208,6 +208,114 @@ fn get_char_bitmap_large(c: char) -> Option<[[bool; 5]; 7]> {
             [false, true, false, true, false],
             [false, true, false, true, false],
         ]),
+        '0' => Some([
+            [false, true, true, true, false],
+            [true, false, false, false, true],
+            [true, false, false, false, true],
+            [true, false, false, false, true],
+            [true, false, false, false, true],
+            [true, false, false, false, true],
+            [false, true, true, true, false],
+        ]),
+        '1' => Some([
+            [false, false, true, false, false],
+            [false, true, true, false, false],
+            [false, false, true, false, false],
+            [false, false, true, false, false],
+            [false, false, true, false, false],
+            [false, false, true, false, false],
+            [false, true, true, true, false],
+        ]),
+        '2' => Some([
+            [false, true, true, true, false],
+            [true, false, false, false, true],
+            [false, false, false, false, true],
+            [false, false, false, true, false],
+            [false, false, true, false, false],
+            [false, true, false, false, false],
+            [true, true, true, true, true],
+        ]),
+        '3' => Some([
+            [false, true, true, true, false],
+            [true, false, false, false, true],
+            [false, false, false, false, true],
+            [false, false, true, true, false],
+            [false, false, false, false, true],
+            [true, false, false, false, true],
+            [false, true, true, true, false],
+        ]),
+        '4' => Some([
+            [false, false, false, true, false],
+            [false, false, true, true, false],
+            [false, true, false, true, false],
+            [true, false, false, true, false],
+            [true, true, true, true, true],
+            [false, false, false, true, false],
+            [false, false, false, true, false],
+        ]),
+        '5' => Some([
+            [true, true, true, true, true],
+            [true, false, false, false, false],
+            [true, false, false, false, false],
+            [true, true, true, true, false],
+            [false, false, false, false, true],
+            [false, false, false, false, true],
+            [true, true, true, true, false],
+        ]),
+        '6' => Some([
+            [false, true, true, true, false],
+            [true, false, false, false, false],
+            [true, false, false, false, false],
+            [true, true, true, true, false],
+            [true, false, false, false, true],
+            [true, false, false, false, true],
+            [false, true, true, true, false],
+        ]),
+        '7' => Some([
+            [true, true, true, true, true],
+            [false, false, false, false, true],
+            [false, false, false, true, false],
+            [false, false, true, false, false],
+            [false, true, false, false, false],
+            [false, true, false, false, false],
+            [false, true, false, false, false],
+        ]),
+        '8' => Some([
+            [false, true, true, true, false],
+            [true, false, false, false, true],
+            [true, false, false, false, true],
+            [false, true, true, true, false],
+            [true, false, false, false, true],
+            [true, false, false, false, true],
+            [false, true, true, true, false],
+        ]),
+        '9' => Some([
+            [false, true, true, true, false],
+            [true, false, false, false, true],
+            [true, false, false, false, true],
+            [false, true, true, true, true],
+            [false, false, false, false, true],
+            [false, false, false, false, true],
+            [false, true, true, true, false],
+        ]),
+        '+' => Some([
+            [false, false, false, false, false],
+            [false, false, true, false, false],
+            [false, false, true, false, false],
+            [true, true, true, true, true],
+            [false, false, true, false, false],
+            [false, false, true, false, false],
+            [false, false, false, false, false],
+        ]),
+        '-' => Some([
+            [false, false, false, false, false],
+            [false, false, false, false, false],
+            [false, false, false, false, false],
+            [true, true, true, true, true],
+            [false, false, false, false, false],
+            [false, false, false, false, false],
+            [false, false, false, false, false],
+        ]),
         _ => None,
     }
 }
@@ -250,11 +358,12 @@ fn draw_text_large(
 /// セント値に応じてチューニング状態を示すアイコンを生成（32x32 RGBA）
 /// モード0: インジケーターのみ（全画面メーター）
 /// モード1: 音名を大きく上部に、チューニングバーを下部に表示
+/// モード2: セント値を大きく上部に、チューニングバーを下部に表示
 fn generate_tuning_icon(cents: f32, color: TuningColor, note_name: &str) -> Vec<u8> {
     const SIZE: usize = 32;
     let mut rgba = vec![0u8; SIZE * SIZE * 4];
 
-    // 表示モードを取得（0=インジケーターのみ, 1=インジケーター+音名）
+    // 表示モードを取得（0=インジケーターのみ, 1=インジケーター+音名, 2=インジケーター+セント値）
     let icon_mode = TRAY_ICON_MODE.load(Ordering::SeqCst);
 
     // 背景色（濃いグレー）
@@ -316,6 +425,40 @@ fn generate_tuning_icon(cents: f32, color: TuningColor, note_name: &str) -> Vec<
         );
 
         // メーター領域（音名の下に配置）- 音名が14px高さなので、17pxから開始
+        meter_top = 17;
+    } else if icon_mode == 2 {
+        // モード2: セント値+インジケーター
+        // セント値を整数に丸めて表示（例: "+3" または "-5" または "0"）
+        let cents_int = cents.round() as i32;
+        let cents_text = if cents_int > 0 {
+            format!("+{}", cents_int)
+        } else if cents_int < 0 {
+            format!("{}", cents_int) // 負の数は自動で-がつく
+        } else {
+            "0".to_string()
+        };
+
+        // 大きなフォントで描画（5x7ピクセル、スケール2 = 10x14ピクセル）
+        let scale = 2;
+        let char_count = cents_text.len();
+        // 文字幅: 5*scale + 間隔1*scale = 6*scale per char、最後の間隔除く
+        let text_width = if char_count > 0 {
+            char_count * 6 * scale - scale
+        } else {
+            0
+        };
+        let text_start_x = (SIZE.saturating_sub(text_width)) / 2;
+        draw_text_large(
+            &mut rgba,
+            SIZE,
+            &cents_text,
+            text_start_x,
+            1,
+            text_color,
+            scale,
+        );
+
+        // メーター領域（セント値の下に配置）- セント値が14px高さなので、17pxから開始
         meter_top = 17;
     } else {
         // モード0: インジケーターのみ（全画面メーター）
@@ -639,15 +782,19 @@ pub fn run_analysis_thread(
                                 sorted.sort_by(|a, b| a.partial_cmp(b).unwrap());
                                 let median_freq = sorted[sorted.len() / 2];
 
+                                // チューニング情報を計算
+                                let (note_name, target_freq, cents) =
+                                    calculate_note_info(median_freq);
+
+                                // frequencyイベントemit
                                 let _ = app_handle.emit("frequency", median_freq);
+
+                                // トレイアイコンも必ず同期して更新
+                                update_tray_icon(&app_handle, cents, &note_name);
 
                                 // 有効な音を検出したので時刻を更新
                                 last_valid_sound_time = Some(Instant::now());
                                 is_reset = false;
-
-                                // チューニング情報を計算してトレイのツールチップを更新
-                                let (note_name, target_freq, cents) =
-                                    calculate_note_info(median_freq);
 
                                 // グローバル変数を更新
                                 if let Ok(mut info) = LAST_TUNING_INFO.lock() {
@@ -656,9 +803,8 @@ pub fn run_analysis_thread(
                                     info.cents = cents;
                                 }
 
-                                // トレイのツールチップとアイコンを更新
+                                // トレイのツールチップも更新
                                 update_tray_tooltip(&app_handle, &note_name, median_freq, cents);
-                                update_tray_icon(&app_handle, cents, &note_name);
 
                                 let payload = NoteInfoEventPayload {
                                     name: note_name.clone(),

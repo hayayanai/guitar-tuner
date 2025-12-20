@@ -95,7 +95,7 @@ function handleChannelChange(mode: ChannelMode) {
   updateChannelMode(mode);
 }
 
-// トレイアイコン表示モード（0=インジケーターのみ, 1=インジケーター+音名）
+// トレイアイコン表示モード（0=インジケーターのみ, 1=インジケーター+音名, 2=インジケーター+セント値）
 const trayIconMode = ref<string>("1");
 const trayIconModeInitialized = ref(false);
 
@@ -103,7 +103,7 @@ const trayIconModeInitialized = ref(false);
 onMounted(async () => {
   try {
     const settings = await invoke<Settings>("get_settings");
-    if (settings.tray_icon_mode !== undefined && [0, 1].includes(settings.tray_icon_mode)) {
+    if (settings.tray_icon_mode !== undefined && [0, 1, 2].includes(settings.tray_icon_mode)) {
       trayIconMode.value = String(settings.tray_icon_mode);
       await invoke("set_tray_icon_mode", { mode: settings.tray_icon_mode });
     }
@@ -207,6 +207,10 @@ const statusClass = computed(() => {
             <label class="radio-label">
               <input type="radio" name="trayMode" value="1" v-model="trayIconMode" />
               <span>Indicator + Note name</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="trayMode" value="2" v-model="trayIconMode" />
+              <span>Indicator + cents</span>
             </label>
           </div>
         </fieldset>

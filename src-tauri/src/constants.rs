@@ -13,8 +13,8 @@ pub static THRESHOLD_RATIO: Lazy<Mutex<f32>> = Lazy::new(|| Mutex::new(2.0));
 /// チャンネル選択（0=左, 1=右, 2=両方の平均）
 pub static CHANNEL_MODE: AtomicU32 = AtomicU32::new(1); // デフォルトは右チャンネル
 
-/// トレイアイコン表示モード（0=インジケーターのみ, 1=インジケーター+音名）
-pub static TRAY_ICON_MODE: AtomicU32 = AtomicU32::new(1); // デフォルトは両方表示
+/// トレイアイコン表示モード（0=インジケーターのみ, 1=インジケーター+音名, 2=インジケーター+セント値）
+pub static TRAY_ICON_MODE: AtomicU32 = AtomicU32::new(1); // デフォルトは音名表示
 
 /// 基準ピッチモード (0=standard, 1=custom, 2=shift)
 pub static PITCH_MODE: AtomicU32 = AtomicU32::new(0);
