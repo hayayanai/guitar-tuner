@@ -782,15 +782,18 @@ pub fn run_analysis_thread(
                                 sorted.sort_by(|a, b| a.partial_cmp(b).unwrap());
                                 let median_freq = sorted[sorted.len() / 2];
 
+                                // チューニング情報を計算
+                                let (note_name, target_freq, cents) = calculate_note_info(median_freq);
+
+                                // frequencyイベントemit
                                 let _ = app_handle.emit("frequency", median_freq);
+
+                                // トレイアイコンも必ず同期して更新
+                                update_tray_icon(&app_handle, cents, &note_name);
 
                                 // 有効な音を検出したので時刻を更新
                                 last_valid_sound_time = Some(Instant::now());
                                 is_reset = false;
-
-                                // チューニング情報を計算してトレイのツールチップを更新
-                                let (note_name, target_freq, cents) =
-                                    calculate_note_info(median_freq);
 
                                 // グローバル変数を更新
                                 if let Ok(mut info) = LAST_TUNING_INFO.lock() {
@@ -799,9 +802,8 @@ pub fn run_analysis_thread(
                                     info.cents = cents;
                                 }
 
-                                // トレイのツールチップとアイコンを更新
+                                // トレイのツールチップも更新
                                 update_tray_tooltip(&app_handle, &note_name, median_freq, cents);
-                                update_tray_icon(&app_handle, cents, &note_name);
 
                                 let payload = NoteInfoEventPayload {
                                     name: note_name.clone(),
