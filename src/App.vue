@@ -358,22 +358,6 @@ const statusClass = computed(() => {
   gap: var(--space-sm);
 }
 
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  cursor: pointer;
-  font-size: var(--font-size-base);
-
-  input[type="checkbox"] {
-    cursor: pointer;
-  }
-
-  span {
-    user-select: none;
-  }
-}
-
 .tuner {
   width: 100%;
   box-sizing: border-box;
