@@ -53,27 +53,7 @@ import type { ChannelMode, DropTuningNote } from "./types";
 
 // Always on top state
 const alwaysOnTop = ref(false);
-
-onMounted(async () => {
-  try {
-    const settings = await invoke<Settings>("get_settings");
-    if (typeof settings.always_on_top === "boolean") {
-      alwaysOnTop.value = settings.always_on_top;
-      await invoke("set_always_on_top", { enabled: settings.always_on_top });
-    }
-  } catch (e) {
-    console.error("Failed to load always on top setting:", e);
-  }
-});
-
-watch(alwaysOnTop, async (enabled) => {
-  try {
-    await invoke("set_always_on_top", { enabled });
-    await saveSettings({ always_on_top: enabled });
-  } catch (e) {
-    console.error("Failed to set always on top:", e);
-  }
-});
+const alwaysOnTopInitialized = ref(false);
 
 const {
   devices,
@@ -131,10 +111,17 @@ onMounted(async () => {
       trayIconMode.value = String(settings.tray_icon_mode);
       await invoke("set_tray_icon_mode", { mode: settings.tray_icon_mode });
     }
+    
+    // Always on top setting restoration
+    if (typeof settings.always_on_top === "boolean") {
+      alwaysOnTop.value = settings.always_on_top;
+      await invoke("set_always_on_top", { enabled: settings.always_on_top });
+    }
   } catch (e) {
     console.error("Failed to load tray icon mode:", e);
   } finally {
     trayIconModeInitialized.value = true;
+    alwaysOnTopInitialized.value = true;
   }
 });
 
@@ -149,6 +136,19 @@ watch(trayIconMode, async (newMode) => {
     await saveSettings({ tray_icon_mode: mode });
   } catch (e) {
     console.error("Failed to set tray icon mode:", e);
+  }
+});
+
+// Always on top変更時にバックエンドに通知して保存
+watch(alwaysOnTop, async (enabled) => {
+  // 初期化前の変更は無視（設定復元時のトリガーを防ぐ）
+  if (!alwaysOnTopInitialized.value) return;
+
+  try {
+    await invoke("set_always_on_top", { enabled });
+    await saveSettings({ always_on_top: enabled });
+  } catch (e) {
+    console.error("Failed to set always on top:", e);
   }
 });
 
@@ -258,7 +258,7 @@ const statusClass = computed(() => {
           </div>
         </fieldset>
 
-        <!-- Always on top設定グループ -->
+        <!-- Always on top settings group -->
         <fieldset class="settings-group">
           <legend>Window</legend>
           <label class="checkbox-label">
