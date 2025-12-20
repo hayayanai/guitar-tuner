@@ -783,7 +783,8 @@ pub fn run_analysis_thread(
                                 let median_freq = sorted[sorted.len() / 2];
 
                                 // チューニング情報を計算
-                                let (note_name, target_freq, cents) = calculate_note_info(median_freq);
+                                let (note_name, target_freq, cents) =
+                                    calculate_note_info(median_freq);
 
                                 // frequencyイベントemit
                                 let _ = app_handle.emit("frequency", median_freq);
