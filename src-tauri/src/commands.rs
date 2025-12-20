@@ -74,7 +74,7 @@ pub fn set_drop_tuning(enabled: bool, note: u32) {
     );
 }
 
-/// ウィンドウを常に最前面に表示するかどうかを設定
+/// Set whether the window should always be on top
 #[command]
 pub fn set_always_on_top(app: tauri::AppHandle, enabled: bool) -> Result<(), String> {
     if let Some(window) = app.get_webview_window("main") {
@@ -158,14 +158,14 @@ pub struct Settings {
     pub threshold: Option<f32>,
     pub channel_mode: Option<u32>,
     pub tray_icon_mode: Option<u32>,
-    // 新規追加
+    // Settings for pitch reference and tuning
     pub pitch_mode: Option<String>, // "standard" | "custom" | "shift"
     pub custom_pitch: Option<f32>,  // 438.0-445.0
     pub tuning_shift: Option<i32>,  // -1〜-5
-    pub drop_tuning_enabled: Option<bool>, // ドロップチューニング有効/無効
+    pub drop_tuning_enabled: Option<bool>, // Drop tuning enabled/disabled
     pub drop_tuning_note: Option<String>, // "D" | "C#" | "C" | "B"
     pub theme_mode: Option<String>, // "system" | "light" | "dark"
-    pub always_on_top: Option<bool>, // ウィンドウを常に最前面に表示
+    pub always_on_top: Option<bool>, // Always display window on top
 }
 
 fn settings_path() -> PathBuf {

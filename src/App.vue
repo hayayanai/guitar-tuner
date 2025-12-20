@@ -118,7 +118,7 @@ onMounted(async () => {
       await invoke("set_always_on_top", { enabled: settings.always_on_top });
     }
   } catch (e) {
-    console.error("Failed to load tray icon mode:", e);
+    console.error("Failed to load settings:", e);
   } finally {
     trayIconModeInitialized.value = true;
     alwaysOnTopInitialized.value = true;
@@ -139,9 +139,9 @@ watch(trayIconMode, async (newMode) => {
   }
 });
 
-// Always on top変更時にバックエンドに通知して保存
+// Notify backend and save settings when always on top changes
 watch(alwaysOnTop, async (enabled) => {
-  // 初期化前の変更は無視（設定復元時のトリガーを防ぐ）
+  // Ignore changes before initialization (prevent triggering during settings restoration)
   if (!alwaysOnTopInitialized.value) return;
 
   try {
