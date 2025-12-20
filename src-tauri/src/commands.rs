@@ -84,13 +84,13 @@ pub fn set_always_on_top(app: tauri::AppHandle, enabled: bool) -> Result<(), Str
     Ok(())
 }
 
-/// トレイアイコン表示モードを設定（0=インジケーターのみ, 1=インジケーター+音名, 2=インジケーター+セント値）
+/// Set tray icon display mode (0=indicator only, 1=indicator+note name, 2=indicator+cents)
 #[command]
 pub fn set_tray_icon_mode(app: tauri::AppHandle, mode: u32) -> Result<(), String> {
     TRAY_ICON_MODE.store(mode.min(2), Ordering::SeqCst);
     println!("Tray icon mode set to: {}", mode);
 
-    // 最後のチューニング情報を取得して即座にアイコンを再描画
+    // Get last tuning info and immediately redraw icon
     if let Ok(info) = LAST_TUNING_INFO.lock() {
         if !info.note_name.is_empty() {
             refresh_tray_icon(&app, info.cents, &info.note_name);
@@ -106,7 +106,7 @@ pub fn get_tray_icon_mode() -> u32 {
     TRAY_ICON_MODE.load(Ordering::SeqCst)
 }
 
-/// 閾値を設定（1.1〜10.0の範囲）
+/// Set threshold ratio (range: 1.1 to 10.0)
 #[command]
 pub fn set_threshold(ratio: f32) -> Result<(), String> {
     let mut threshold = THRESHOLD_RATIO.lock().map_err(|e| e.to_string())?;
@@ -115,38 +115,38 @@ pub fn set_threshold(ratio: f32) -> Result<(), String> {
     Ok(())
 }
 
-/// 現在の閾値を取得
+/// Get current threshold value
 #[command]
 pub fn get_threshold() -> Result<f32, String> {
     let threshold = THRESHOLD_RATIO.lock().map_err(|e| e.to_string())?;
     Ok(*threshold)
 }
 
-/// オーディオデバイスリストを取得
+/// Get audio device list
 #[command]
 pub fn get_audio_devices() -> Result<Vec<String>, String> {
     get_input_device_names()
 }
 
-/// 指定されたデバイスでオーディオ入力の監視を開始
+/// Start monitoring audio input on the specified device
 #[command]
 pub fn start_listening(app: tauri::AppHandle, device_name: String) -> Result<(), String> {
-    // 既存の解析スレッドを停止
+    // Stop existing analysis thread
     STOP_FLAG.store(true, Ordering::SeqCst);
-    thread::sleep(Duration::from_millis(150)); // スレッド終了を待つ
+    thread::sleep(Duration::from_millis(150)); // Wait for thread to exit
     STOP_FLAG.store(false, Ordering::SeqCst);
 
-    // 新しいストリームIDを発行（古いスレッドを停止させる）
+    // Issue a new stream ID (to stop old threads)
     let current_stream_id = STREAM_ID.fetch_add(1, Ordering::SeqCst) + 1;
     println!("Starting stream ID: {}", current_stream_id);
 
-    // デバイスを検索
+    // Find device
     let device = find_device_by_name(&device_name)?;
 
-    // オーディオストリームを開始
+    // Start audio stream
     let (buffer, sample_rate, channels) = start_audio_stream(&device)?;
 
-    // 解析スレッドを起動
+    // Launch analysis thread
     run_analysis_thread(app, buffer, sample_rate, channels);
 
     Ok(())
@@ -161,7 +161,7 @@ pub struct Settings {
     // Settings for pitch reference and tuning
     pub pitch_mode: Option<String>, // "standard" | "custom" | "shift"
     pub custom_pitch: Option<f32>,  // 438.0-445.0
-    pub tuning_shift: Option<i32>,  // -1〜-5
+    pub tuning_shift: Option<i32>,  // -1 to -5
     pub drop_tuning_enabled: Option<bool>, // Drop tuning enabled/disabled
     pub drop_tuning_note: Option<String>, // "D" | "C#" | "C" | "B"
     pub theme_mode: Option<String>, // "system" | "light" | "dark"
@@ -169,7 +169,7 @@ pub struct Settings {
 }
 
 fn settings_path() -> PathBuf {
-    // exeと同じディレクトリ
+    // Same directory as exe
     std::env::current_exe()
         .map(|mut p| {
             p.pop();
