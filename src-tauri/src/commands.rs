@@ -74,6 +74,16 @@ pub fn set_drop_tuning(enabled: bool, note: u32) {
     );
 }
 
+/// ウィンドウを常に最前面に表示するかどうかを設定
+#[command]
+pub fn set_always_on_top(app: tauri::AppHandle, enabled: bool) -> Result<(), String> {
+    if let Some(window) = app.get_webview_window("main") {
+        window.set_always_on_top(enabled).map_err(|e| e.to_string())?;
+        println!("Always on top set to: {}", enabled);
+    }
+    Ok(())
+}
+
 /// トレイアイコン表示モードを設定（0=インジケーターのみ, 1=インジケーター+音名, 2=インジケーター+セント値）
 #[command]
 pub fn set_tray_icon_mode(app: tauri::AppHandle, mode: u32) -> Result<(), String> {
@@ -155,6 +165,7 @@ pub struct Settings {
     pub drop_tuning_enabled: Option<bool>, // ドロップチューニング有効/無効
     pub drop_tuning_note: Option<String>, // "D" | "C#" | "C" | "B"
     pub theme_mode: Option<String>, // "system" | "light" | "dark"
+    pub always_on_top: Option<bool>, // ウィンドウを常に最前面に表示
 }
 
 fn settings_path() -> PathBuf {
@@ -183,6 +194,7 @@ pub fn get_settings() -> Result<Settings, String> {
             drop_tuning_enabled: None,
             drop_tuning_note: None,
             theme_mode: None,
+            always_on_top: None,
         });
     }
     let content = fs::read_to_string(&path).map_err(|e| e.to_string())?;

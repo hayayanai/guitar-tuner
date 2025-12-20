@@ -51,6 +51,30 @@ import UpdateNotification from "./components/UpdateNotification.vue";
 import { useAudioDevice, getEffectiveA4, getGuitarNotes, type Settings } from "./composables";
 import type { ChannelMode, DropTuningNote } from "./types";
 
+// Always on top state
+const alwaysOnTop = ref(false);
+
+onMounted(async () => {
+  try {
+    const settings = await invoke<Settings>("get_settings");
+    if (typeof settings.always_on_top === "boolean") {
+      alwaysOnTop.value = settings.always_on_top;
+      await invoke("set_always_on_top", { enabled: settings.always_on_top });
+    }
+  } catch (e) {
+    console.error("Failed to load always on top setting:", e);
+  }
+});
+
+watch(alwaysOnTop, async (enabled) => {
+  try {
+    await invoke("set_always_on_top", { enabled });
+    await saveSettings({ always_on_top: enabled });
+  } catch (e) {
+    console.error("Failed to set always on top:", e);
+  }
+});
+
 const {
   devices,
   selectedDevice,
@@ -233,6 +257,16 @@ const statusClass = computed(() => {
             </label>
           </div>
         </fieldset>
+
+        <!-- Always on top設定グループ -->
+        <fieldset class="settings-group">
+          <legend>Window</legend>
+          <label class="checkbox-label">
+            <input v-model="alwaysOnTop" type="checkbox" />
+            <span>Always on top</span>
+          </label>
+        </fieldset>
+
         <div class="version-label">Version 0.2.4</div>
       </details>
     </div>
@@ -322,6 +356,22 @@ const statusClass = computed(() => {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  cursor: pointer;
+  font-size: var(--font-size-base);
+
+  input[type="checkbox"] {
+    cursor: pointer;
+  }
+
+  span {
+    user-select: none;
+  }
 }
 
 .tuner {
