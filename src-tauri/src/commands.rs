@@ -9,7 +9,7 @@ use tauri::Manager;
 
 use crate::audio::{find_device_by_name, get_input_device_names, start_audio_stream};
 use crate::constants::{
-    CHANNEL_MODE, CUSTOM_PITCH, DROP_TUNING_ENABLED, DROP_TUNING_NOTE, LAST_TUNING_INFO,
+    CHANNEL_MODE, CUSTOM_PITCH, DROP_TUNING_ENABLED, DROP_TUNING_NOTE, LAST_TUNING_INFO, LOCALE,
     PITCH_MODE, STOP_FLAG, STREAM_ID, THRESHOLD_RATIO, TRAY_ICON_MODE, TUNING_SHIFT,
 };
 use crate::dsp::{refresh_tray_icon, run_analysis_thread};
@@ -84,6 +84,49 @@ pub fn set_always_on_top(app: tauri::AppHandle, enabled: bool) -> Result<(), Str
             .map_err(|e| e.to_string())?;
         println!("Always on top set to: {}", enabled);
     }
+    Ok(())
+}
+
+/// Set locale (en/ja)
+#[command]
+pub fn set_locale(app: tauri::AppHandle, locale: String) -> Result<(), String> {
+    if locale != "en" && locale != "ja" {
+        return Err("Invalid locale. Must be 'en' or 'ja'".to_string());
+    }
+    *LOCALE.write().unwrap() = locale.clone();
+    println!("Locale set to: {}", locale);
+
+    // Update tray menu with new locale
+    update_tray_menu(&app, &locale)?;
+    Ok(())
+}
+
+/// Get current locale
+#[command]
+pub fn get_locale() -> String {
+    LOCALE.read().unwrap().clone()
+}
+
+/// Update tray menu with localized text
+fn update_tray_menu(app: &tauri::AppHandle, locale: &str) -> Result<(), String> {
+    use tauri::menu::{Menu, MenuItem};
+    use tauri::Manager;
+
+    let (show_text, quit_text) = match locale {
+        "ja" => ("ウィンドウを表示", "終了"),
+        _ => ("Show Window", "Quit"),
+    };
+
+    let show_item = MenuItem::with_id(app, "show", show_text, true, None::<&str>)
+        .map_err(|e| e.to_string())?;
+    let quit_item = MenuItem::with_id(app, "quit", quit_text, true, None::<&str>)
+        .map_err(|e| e.to_string())?;
+    let menu = Menu::with_items(app, &[&show_item, &quit_item]).map_err(|e| e.to_string())?;
+
+    if let Some(tray) = app.tray_by_id("main") {
+        tray.set_menu(Some(menu)).map_err(|e| e.to_string())?;
+    }
+
     Ok(())
 }
 
@@ -169,6 +212,7 @@ pub struct Settings {
     pub drop_tuning_note: Option<String>, // "D" | "C#" | "C" | "B"
     pub theme_mode: Option<String>, // "system" | "light" | "dark"
     pub always_on_top: Option<bool>, // Always display window on top
+    pub locale: Option<String>,     // "en" | "ja"
 }
 
 fn settings_path() -> PathBuf {
@@ -198,6 +242,7 @@ pub fn get_settings() -> Result<Settings, String> {
             drop_tuning_note: None,
             theme_mode: None,
             always_on_top: None,
+            locale: None,
         });
     }
     let content = fs::read_to_string(&path).map_err(|e| e.to_string())?;

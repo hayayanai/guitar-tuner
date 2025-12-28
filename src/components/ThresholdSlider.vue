@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 const model = defineModel<number>({ required: true });
 
 function handleInput(event: Event) {
@@ -21,9 +24,9 @@ function handleInput(event: Event) {
       />
     </div>
     <div class="threshold-labels">
-      <span>High</span>
+      <span>{{ t("settings.sensitivityHigh") }}</span>
       <span class="threshold-value">{{ model.toFixed(1) }}</span>
-      <span>Low</span>
+      <span>{{ t("settings.sensitivityLow") }}</span>
     </div>
   </div>
 </template>

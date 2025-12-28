@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { computed } from "vue";
+import { useI18n } from "vue-i18n";
 import { TUNING_SHIFTS, DROP_TUNINGS } from "../composables/constants";
 import type { PitchMode } from "../types";
+
+const { t } = useI18n();
 
 const pitchMode = defineModel<PitchMode>("pitchMode", { required: true });
 const customPitch = defineModel<number>("customPitch", { required: true });
@@ -12,7 +15,7 @@ const dropNote = defineModel<string>("dropNote", { required: true });
 const pitchError = computed(() => {
   if (pitchMode.value === "custom") {
     if (customPitch.value < 438 || customPitch.value > 445) {
-      return "Must be 438-445 Hz";
+      return t("pitch.errorRange");
     }
   }
   return "";
@@ -21,7 +24,7 @@ const pitchError = computed(() => {
 
 <template>
   <fieldset class="settings-group">
-    <legend>Reference Pitch</legend>
+    <legend>{{ t("settings.referencePitch") }}</legend>
 
     <!-- Standard -->
     <label class="radio-label">
@@ -31,7 +34,7 @@ const pitchError = computed(() => {
         :checked="pitchMode === 'standard'"
         @change="pitchMode = 'standard'"
       />
-      <span>A4 = 440 Hz</span>
+      <span>{{ t("pitch.standard") }}</span>
     </label>
 
     <!-- Custom Pitch -->
@@ -42,19 +45,19 @@ const pitchError = computed(() => {
         :checked="pitchMode === 'custom'"
         @change="pitchMode = 'custom'"
       />
-      <span>Custom:</span>
+      <span>{{ t("pitch.custom") }}</span>
       <input
         type="number"
         :value="customPitch"
-        @input="customPitch = Number(($event.target as HTMLInputElement).value)"
         :disabled="pitchMode !== 'custom'"
         min="438"
         max="445"
         step="1"
         class="pitch-input"
+        @input="customPitch = Number(($event.target as HTMLInputElement).value)"
       />
-      <span>Hz</span>
-      <span class="range-hint">(438-445)</span>
+      <span>{{ t("pitch.hz") }}</span>
+      <span class="range-hint">{{ t("pitch.customHint") }}</span>
       <span v-if="pitchError" class="error-text">{{ pitchError }}</span>
     </label>
 
@@ -66,11 +69,11 @@ const pitchError = computed(() => {
         :checked="pitchMode === 'shift'"
         @change="pitchMode = 'shift'"
       />
-      <span>Shift:</span>
+      <span>{{ t("pitch.shift") }}</span>
       <select
         :value="tuningShift"
-        @change="tuningShift = Number(($event.target as HTMLSelectElement).value)"
         :disabled="pitchMode !== 'shift'"
+        @change="tuningShift = Number(($event.target as HTMLSelectElement).value)"
       >
         <option v-for="opt in TUNING_SHIFTS" :key="opt.value" :value="opt.value">
           {{ opt.label }}
@@ -80,18 +83,18 @@ const pitchError = computed(() => {
   </fieldset>
 
   <fieldset class="settings-group">
-    <legend>6th String Drop Tuning</legend>
+    <legend>{{ t("settings.dropTuning") }}</legend>
     <label class="checkbox-label">
       <input
         type="checkbox"
         :checked="dropEnabled"
         @change="dropEnabled = ($event.target as HTMLInputElement).checked"
       />
-      <span>Enable:</span>
+      <span>{{ t("dropTuning.enable") }}</span>
       <select
         :value="dropNote"
-        @change="dropNote = ($event.target as HTMLSelectElement).value"
         :disabled="!dropEnabled"
+        @change="dropNote = ($event.target as HTMLSelectElement).value"
       >
         <option v-for="opt in DROP_TUNINGS" :key="opt.value" :value="opt.value">
           {{ opt.label }}
@@ -99,8 +102,8 @@ const pitchError = computed(() => {
       </select>
     </label>
     <p class="help-text">
-      Combined with Tuning Shift, the 6th string drops relative to the shifted tuning.<br />
-      (e.g. Half step down + Drop D = Drop C#)
+      {{ t("dropTuning.helpText") }}<br />
+      {{ t("dropTuning.helpTextExample") }}
     </p>
   </fieldset>
 </template>

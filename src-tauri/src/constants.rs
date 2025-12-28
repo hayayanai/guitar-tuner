@@ -16,6 +16,9 @@ pub static CHANNEL_MODE: AtomicU32 = AtomicU32::new(1); // デフォルトは右
 /// トレイアイコン表示モード（0=インジケーターのみ, 1=インジケーター+音名, 2=インジケーター+セント値）
 pub static TRAY_ICON_MODE: AtomicU32 = AtomicU32::new(1); // デフォルトは音名表示
 
+/// ロケール設定（en/ja）
+pub static LOCALE: Lazy<RwLock<String>> = Lazy::new(|| RwLock::new("en".to_string()));
+
 /// 基準ピッチモード (0=standard, 1=custom, 2=shift)
 pub static PITCH_MODE: AtomicU32 = AtomicU32::new(0);
 

@@ -2,6 +2,9 @@
 import { ref, onMounted } from "vue";
 import { check } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const updateAvailable = ref(false);
 const updateInfo = ref<Awaited<ReturnType<typeof check>> | null>(null);
@@ -80,24 +83,24 @@ onMounted(() => {
 
 <template>
   <div v-if="checkingUpdate" class="update-notification checking">
-    <p>Checking for updates...</p>
+    <p>{{ t("update.checking") }}</p>
   </div>
 
   <div v-else-if="error" class="update-notification error">
     <p>{{ error }}</p>
-    <button @click="dismissUpdate">Close</button>
+    <button @click="dismissUpdate">{{ t("update.close") }}</button>
   </div>
 
   <div v-else-if="updateAvailable && updateInfo" class="update-notification available">
     <div class="update-header">
-      <h3>New version available</h3>
-      <button class="close-btn" @click="dismissUpdate" :disabled="downloading">×</button>
+      <h3>{{ t("update.available") }}</h3>
+      <button class="close-btn" :disabled="downloading" @click="dismissUpdate">×</button>
     </div>
 
     <div class="update-content">
-      <p class="version">Version {{ updateInfo.version }}</p>
+      <p class="version">{{ t("update.version") }} {{ updateInfo.version }}</p>
       <p v-if="updateInfo.date" class="date">
-        {{ new Date(updateInfo.date).toLocaleDateString("en-US") }}
+        {{ new Date(updateInfo.date).toLocaleDateString() }}
       </p>
       <p v-if="updateInfo.body" class="notes">{{ updateInfo.body }}</p>
     </div>
@@ -112,13 +115,15 @@ onMounted(() => {
         ></div>
       </div>
       <p class="progress-text">
-        Downloading... {{ Math.round((downloadProgress / downloadTotal) * 100) }}%
+        {{ t("update.downloading") }} {{ Math.round((downloadProgress / downloadTotal) * 100) }}%
       </p>
     </div>
 
     <div v-else class="update-actions">
-      <button @click="downloadAndInstall" class="install-btn">Update & Install</button>
-      <button @click="dismissUpdate" class="later-btn">Later</button>
+      <button class="install-btn" @click="downloadAndInstall">
+        {{ t("update.updateAndInstall") }}
+      </button>
+      <button class="later-btn" @click="dismissUpdate">{{ t("update.later") }}</button>
     </div>
   </div>
 </template>

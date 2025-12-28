@@ -1,0 +1,63 @@
+{
+  "app": {
+    "title": "ギターチューナー"
+  },
+  "settings": {
+    "title": "設定",
+    "input": "入力",
+    "sensitivity": "感度",
+    "sensitivityHigh": "高",
+    "sensitivityLow": "低",
+    "referencePitch": "基準ピッチ",
+    "dropTuning": "6弦ドロップチューニング",
+    "trayIcon": "トレイアイコン",
+    "theme": "テーマ",
+    "window": "ウィンドウ",
+    "language": "言語"
+  },
+  "status": {
+    "listening": "リスニング中",
+    "starting": "起動中...",
+    "failed": "失敗"
+  },
+  "pitch": {
+    "standard": "A4 = 440 Hz",
+    "custom": "カスタム：",
+    "customHint": "(438-445)",
+    "shift": "シフト：",
+    "hz": "Hz",
+    "errorRange": "438-445 Hzの範囲で指定してください"
+  },
+  "dropTuning": {
+    "enable": "有効：",
+    "helpText": "チューニングシフトと組み合わせると、6弦はシフトされたチューニングを基準にドロップします。",
+    "helpTextExample": "（例：半音下げ + Drop D = Drop C#）"
+  },
+  "trayIcon": {
+    "indicatorOnly": "インジケーターのみ",
+    "indicatorNote": "インジケーター + 音名",
+    "indicatorCents": "インジケーター + セント値"
+  },
+  "theme": {
+    "system": "システム",
+    "light": "ライト",
+    "dark": "ダーク"
+  },
+  "window": {
+    "alwaysOnTop": "常に最前面に表示"
+  },
+  "language": {
+    "en": "English",
+    "ja": "日本語"
+  },
+  "update": {
+    "checking": "アップデートを確認中...",
+    "available": "新しいバージョンが利用可能です",
+    "version": "バージョン",
+    "downloading": "ダウンロード中...",
+    "updateAndInstall": "更新してインストール",
+    "later": "後で",
+    "close": "閉じる",
+    "error": "アップデート確認エラー："
+  }
+}

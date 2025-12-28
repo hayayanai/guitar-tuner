@@ -1,0 +1,63 @@
+{
+  "app": {
+    "title": "Guitar Tuner"
+  },
+  "settings": {
+    "title": "Settings",
+    "input": "Input",
+    "sensitivity": "Sensitivity",
+    "sensitivityHigh": "High",
+    "sensitivityLow": "Low",
+    "referencePitch": "Reference Pitch",
+    "dropTuning": "6th String Drop Tuning",
+    "trayIcon": "Tray Icon",
+    "theme": "Theme",
+    "window": "Window",
+    "language": "Language"
+  },
+  "status": {
+    "listening": "Listening",
+    "starting": "Starting...",
+    "failed": "Failed"
+  },
+  "pitch": {
+    "standard": "A4 = 440 Hz",
+    "custom": "Custom:",
+    "customHint": "(438-445)",
+    "shift": "Shift:",
+    "hz": "Hz",
+    "errorRange": "Must be 438-445 Hz"
+  },
+  "dropTuning": {
+    "enable": "Enable:",
+    "helpText": "Combined with Tuning Shift, the 6th string drops relative to the shifted tuning.",
+    "helpTextExample": "(e.g. Half step down + Drop D = Drop C#)"
+  },
+  "trayIcon": {
+    "indicatorOnly": "Indicator only",
+    "indicatorNote": "Indicator + Note name",
+    "indicatorCents": "Indicator + cents"
+  },
+  "theme": {
+    "system": "System",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "window": {
+    "alwaysOnTop": "Always on top"
+  },
+  "language": {
+    "en": "English",
+    "ja": "日本語"
+  },
+  "update": {
+    "checking": "Checking for updates...",
+    "available": "New version available",
+    "version": "Version",
+    "downloading": "Downloading...",
+    "updateAndInstall": "Update & Install",
+    "later": "Later",
+    "close": "Close",
+    "error": "Update check error:"
+  }
+}

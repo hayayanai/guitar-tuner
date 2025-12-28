@@ -4,9 +4,10 @@ mod constants;
 mod dsp;
 
 use commands::{
-    get_audio_devices, get_channel_mode, get_settings, get_threshold, get_tray_icon_mode,
-    set_always_on_top, set_channel_mode, set_custom_pitch, set_drop_tuning, set_pitch_mode,
-    set_settings, set_threshold, set_tray_icon_mode, set_tuning_shift, start_listening,
+    get_audio_devices, get_channel_mode, get_locale, get_settings, get_threshold,
+    get_tray_icon_mode, set_always_on_top, set_channel_mode, set_custom_pitch, set_drop_tuning,
+    set_locale, set_pitch_mode, set_settings, set_threshold, set_tray_icon_mode, set_tuning_shift,
+    start_listening,
 };
 
 pub fn run() {
@@ -33,14 +34,28 @@ pub fn run() {
             set_custom_pitch,
             set_tuning_shift,
             set_drop_tuning,
-            set_always_on_top
+            set_always_on_top,
+            set_locale,
+            get_locale
         ])
         .setup(|app| {
             let app_handle = app.handle().clone();
 
+            // Load locale from settings
+            use crate::commands::get_settings;
+            let locale = match get_settings() {
+                Ok(settings) => settings.locale.unwrap_or_else(|| "en".to_string()),
+                Err(_) => "en".to_string(),
+            };
+            *commands::LOCALE.write().unwrap() = locale.clone();
+
             // トレイメニュー作成
-            let show_item = MenuItem::with_id(app, "show", "ウィンドウを表示", true, None::<&str>)?;
-            let quit_item = MenuItem::with_id(app, "quit", "終了", true, None::<&str>)?;
+            let (show_text, quit_text) = match locale.as_str() {
+                "ja" => ("ウィンドウを表示", "終了"),
+                _ => ("Show Window", "Quit"),
+            };
+            let show_item = MenuItem::with_id(app, "show", show_text, true, None::<&str>)?;
+            let quit_item = MenuItem::with_id(app, "quit", quit_text, true, None::<&str>)?;
             let menu = Menu::with_items(app, &[&show_item, &quit_item])?;
 
             // トレイアイコン作成（アイコンファイル読み込み）
