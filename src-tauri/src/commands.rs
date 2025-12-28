@@ -5,6 +5,7 @@ use std::sync::atomic::Ordering;
 use std::thread;
 use std::time::Duration;
 use tauri::command;
+use tauri::Manager;
 
 use crate::audio::{find_device_by_name, get_input_device_names, start_audio_stream};
 use crate::constants::{
