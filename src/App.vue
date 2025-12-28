@@ -111,7 +111,7 @@ onMounted(async () => {
       trayIconMode.value = String(settings.tray_icon_mode);
       await invoke("set_tray_icon_mode", { mode: settings.tray_icon_mode });
     }
-    
+
     // Always on top setting restoration
     if (typeof settings.always_on_top === "boolean") {
       alwaysOnTop.value = settings.always_on_top;

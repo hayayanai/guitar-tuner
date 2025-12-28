@@ -78,7 +78,9 @@ pub fn set_drop_tuning(enabled: bool, note: u32) {
 #[command]
 pub fn set_always_on_top(app: tauri::AppHandle, enabled: bool) -> Result<(), String> {
     if let Some(window) = app.get_webview_window("main") {
-        window.set_always_on_top(enabled).map_err(|e| e.to_string())?;
+        window
+            .set_always_on_top(enabled)
+            .map_err(|e| e.to_string())?;
         println!("Always on top set to: {}", enabled);
     }
     Ok(())
