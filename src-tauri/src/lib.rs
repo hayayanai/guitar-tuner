@@ -5,8 +5,8 @@ mod dsp;
 
 use commands::{
     get_audio_devices, get_channel_mode, get_settings, get_threshold, get_tray_icon_mode,
-    set_channel_mode, set_custom_pitch, set_drop_tuning, set_pitch_mode, set_settings,
-    set_threshold, set_tray_icon_mode, set_tuning_shift, start_listening,
+    set_always_on_top, set_channel_mode, set_custom_pitch, set_drop_tuning, set_pitch_mode,
+    set_settings, set_threshold, set_tray_icon_mode, set_tuning_shift, start_listening,
 };
 
 pub fn run() {
@@ -32,7 +32,8 @@ pub fn run() {
             set_pitch_mode,
             set_custom_pitch,
             set_tuning_shift,
-            set_drop_tuning
+            set_drop_tuning,
+            set_always_on_top
         ])
         .setup(|app| {
             let app_handle = app.handle().clone();

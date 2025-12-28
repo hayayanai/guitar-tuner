@@ -51,6 +51,10 @@ import UpdateNotification from "./components/UpdateNotification.vue";
 import { useAudioDevice, getEffectiveA4, getGuitarNotes, type Settings } from "./composables";
 import type { ChannelMode, DropTuningNote } from "./types";
 
+// Always on top state
+const alwaysOnTop = ref(false);
+const alwaysOnTopInitialized = ref(false);
+
 const {
   devices,
   selectedDevice,
@@ -107,10 +111,17 @@ onMounted(async () => {
       trayIconMode.value = String(settings.tray_icon_mode);
       await invoke("set_tray_icon_mode", { mode: settings.tray_icon_mode });
     }
+
+    // Always on top setting restoration
+    if (typeof settings.always_on_top === "boolean") {
+      alwaysOnTop.value = settings.always_on_top;
+      await invoke("set_always_on_top", { enabled: settings.always_on_top });
+    }
   } catch (e) {
-    console.error("Failed to load tray icon mode:", e);
+    console.error("Failed to load settings:", e);
   } finally {
     trayIconModeInitialized.value = true;
+    alwaysOnTopInitialized.value = true;
   }
 });
 
@@ -125,6 +136,19 @@ watch(trayIconMode, async (newMode) => {
     await saveSettings({ tray_icon_mode: mode });
   } catch (e) {
     console.error("Failed to set tray icon mode:", e);
+  }
+});
+
+// Notify backend and save settings when always on top changes
+watch(alwaysOnTop, async (enabled) => {
+  // Ignore changes before initialization (prevent triggering during settings restoration)
+  if (!alwaysOnTopInitialized.value) return;
+
+  try {
+    await invoke("set_always_on_top", { enabled });
+    await saveSettings({ always_on_top: enabled });
+  } catch (e) {
+    console.error("Failed to set always on top:", e);
   }
 });
 
@@ -233,6 +257,16 @@ const statusClass = computed(() => {
             </label>
           </div>
         </fieldset>
+
+        <!-- Always on top settings group -->
+        <fieldset class="settings-group">
+          <legend>Window</legend>
+          <label class="checkbox-label">
+            <input v-model="alwaysOnTop" type="checkbox" />
+            <span>Always on top</span>
+          </label>
+        </fieldset>
+
         <div class="version-label">Version 0.2.4</div>
       </details>
     </div>
