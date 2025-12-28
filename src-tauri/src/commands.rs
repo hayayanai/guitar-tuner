@@ -14,6 +14,17 @@ use crate::constants::{
 };
 use crate::dsp::{refresh_tray_icon, run_analysis_thread};
 
+/// Supported locales
+const SUPPORTED_LOCALES: [&str; 2] = ["en", "ja"];
+
+/// Get localized tray menu text
+pub fn get_tray_menu_text(locale: &str) -> (&'static str, &'static str) {
+    match locale {
+        "ja" => ("ウィンドウを表示", "終了"),
+        _ => ("Show Window", "Quit"),
+    }
+}
+
 /// チャンネルモードを設定（0=左, 1=右, 2=両方の平均）
 #[command]
 pub fn set_channel_mode(mode: u32) -> Result<(), String> {
@@ -90,8 +101,11 @@ pub fn set_always_on_top(app: tauri::AppHandle, enabled: bool) -> Result<(), Str
 /// Set locale (en/ja)
 #[command]
 pub fn set_locale(app: tauri::AppHandle, locale: String) -> Result<(), String> {
-    if locale != "en" && locale != "ja" {
-        return Err("Invalid locale. Must be 'en' or 'ja'".to_string());
+    if !SUPPORTED_LOCALES.contains(&locale.as_str()) {
+        return Err(format!(
+            "Invalid locale. Must be one of: {}",
+            SUPPORTED_LOCALES.join(", ")
+        ));
     }
     *LOCALE.write().unwrap() = locale.clone();
     println!("Locale set to: {}", locale);
@@ -112,10 +126,7 @@ fn update_tray_menu(app: &tauri::AppHandle, locale: &str) -> Result<(), String> 
     use tauri::menu::{Menu, MenuItem};
     use tauri::Manager;
 
-    let (show_text, quit_text) = match locale {
-        "ja" => ("ウィンドウを表示", "終了"),
-        _ => ("Show Window", "Quit"),
-    };
+    let (show_text, quit_text) = get_tray_menu_text(locale);
 
     let show_item = MenuItem::with_id(app, "show", show_text, true, None::<&str>)
         .map_err(|e| e.to_string())?;

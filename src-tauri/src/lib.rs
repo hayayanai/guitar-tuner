@@ -42,7 +42,7 @@ pub fn run() {
             let app_handle = app.handle().clone();
 
             // Load locale from settings
-            use crate::commands::get_settings;
+            use crate::commands::{get_settings, get_tray_menu_text};
             let locale = match get_settings() {
                 Ok(settings) => settings.locale.unwrap_or_else(|| "en".to_string()),
                 Err(_) => "en".to_string(),
@@ -50,10 +50,7 @@ pub fn run() {
             *commands::LOCALE.write().unwrap() = locale.clone();
 
             // トレイメニュー作成
-            let (show_text, quit_text) = match locale.as_str() {
-                "ja" => ("ウィンドウを表示", "終了"),
-                _ => ("Show Window", "Quit"),
-            };
+            let (show_text, quit_text) = get_tray_menu_text(&locale);
             let show_item = MenuItem::with_id(app, "show", show_text, true, None::<&str>)?;
             let quit_item = MenuItem::with_id(app, "quit", quit_text, true, None::<&str>)?;
             let menu = Menu::with_items(app, &[&show_item, &quit_item])?;
