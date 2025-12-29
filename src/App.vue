@@ -2,6 +2,7 @@
 import { computed, ref, watch, onMounted } from "vue";
 import { invoke } from "@tauri-apps/api/core";
 import { useI18n } from "vue-i18n";
+import packageJson from "../package.json";
 
 type ThemeMode = "system" | "light" | "dark";
 const themeMode = ref<ThemeMode>("system");
@@ -295,7 +296,7 @@ const statusClass = computed(() => {
           </label>
         </fieldset>
 
-        <div class="version-label">Version 0.2.4</div>
+        <div class="version-label">v.{{ packageJson.version }}</div>
       </details>
     </div>
   </div>
