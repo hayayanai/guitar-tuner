@@ -127,10 +127,10 @@ fn update_tray_menu(app: &tauri::AppHandle, locale: &str) -> Result<(), String> 
 
     let (show_text, quit_text) = get_tray_menu_text(locale);
 
-    let show_item = MenuItem::with_id(app, "show", show_text, true, None::<&str>)
-        .map_err(|e| e.to_string())?;
-    let quit_item = MenuItem::with_id(app, "quit", quit_text, true, None::<&str>)
-        .map_err(|e| e.to_string())?;
+    let show_item =
+        MenuItem::with_id(app, "show", show_text, true, None::<&str>).map_err(|e| e.to_string())?;
+    let quit_item =
+        MenuItem::with_id(app, "quit", quit_text, true, None::<&str>).map_err(|e| e.to_string())?;
     let menu = Menu::with_items(app, &[&show_item, &quit_item]).map_err(|e| e.to_string())?;
 
     if let Some(tray) = app.tray_by_id("main") {
