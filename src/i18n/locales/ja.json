@@ -1,4 +1,22 @@
 {
+  "tuningShift": {
+    "halfStepDown": "半音下げ（D#）",
+    "wholeStepDown": "全音下げ（D）",
+    "oneHalfStepDown": "1.5音下げ（C#）",
+    "twoStepsDown": "2音下げ（C）",
+    "twoHalfStepsDown": "2.5音下げ（B）"
+  },
+  "dropTuning": {
+    "dropDSharp": "ドロップD#",
+    "dropD": "ドロップD",
+    "dropCSharp": "ドロップC#",
+    "dropC": "ドロップC",
+    "dropB": "ドロップB",
+    "enableLabel": "ドロップチューニングを有効にする",
+    "enable": "有効：",
+    "helpText": "チューニングシフトと組み合わせると、6弦はシフトされたチューニングを基準にドロップします。",
+    "helpTextExample": "（例：半音下げ + Drop D = Drop C#）"
+  },
   "app": {
     "title": "ギターチューナー"
   },
@@ -16,7 +34,7 @@
     "language": "言語"
   },
   "status": {
-    "listening": "リスニング中",
+    "listening": "Listening",
     "starting": "起動中...",
     "failed": "失敗"
   },
@@ -27,11 +45,6 @@
     "shift": "シフト：",
     "hz": "Hz",
     "errorRange": "438-445 Hzの範囲で指定してください"
-  },
-  "dropTuning": {
-    "enable": "有効：",
-    "helpText": "チューニングシフトと組み合わせると、6弦はシフトされたチューニングを基準にドロップします。",
-    "helpTextExample": "（例：半音下げ + Drop D = Drop C#）"
   },
   "trayIcon": {
     "indicatorOnly": "インジケーターのみ",

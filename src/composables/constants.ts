@@ -27,19 +27,19 @@ export const NOTE_NAMES = [
 ] as const;
 
 export const TUNING_SHIFTS = [
-  { value: -1, label: "Half step down (D#)" },
-  { value: -2, label: "Whole step down (D)" },
-  { value: -3, label: "1.5 steps down (C#)" },
-  { value: -4, label: "2 steps down (C)" },
-  { value: -5, label: "2.5 steps down (B)" },
+  { value: -1, labelKey: "tuningShift.halfStepDown" },
+  { value: -2, labelKey: "tuningShift.wholeStepDown" },
+  { value: -3, labelKey: "tuningShift.oneHalfStepDown" },
+  { value: -4, labelKey: "tuningShift.twoStepsDown" },
+  { value: -5, labelKey: "tuningShift.twoHalfStepsDown" },
 ] as const;
 
 export const DROP_TUNINGS = [
-  { value: "D#", label: "Drop D#", freq: 77.78 },
-  { value: "D", label: "Drop D", freq: 73.42 },
-  { value: "C#", label: "Drop C#", freq: 69.3 },
-  { value: "C", label: "Drop C", freq: 65.41 },
-  { value: "B", label: "Drop B", freq: 61.74 },
+  { value: "D#", labelKey: "dropTuning.dropDSharp", freq: 77.78 },
+  { value: "D", labelKey: "dropTuning.dropD", freq: 73.42 },
+  { value: "C#", labelKey: "dropTuning.dropCSharp", freq: 69.3 },
+  { value: "C", labelKey: "dropTuning.dropC", freq: 65.41 },
+  { value: "B", labelKey: "dropTuning.dropB", freq: 61.74 },
 ] as const;
 
 /**

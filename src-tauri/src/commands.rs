@@ -124,7 +124,6 @@ pub fn get_locale() -> String {
 /// Update tray menu with localized text
 fn update_tray_menu(app: &tauri::AppHandle, locale: &str) -> Result<(), String> {
     use tauri::menu::{Menu, MenuItem};
-    use tauri::Manager;
 
     let (show_text, quit_text) = get_tray_menu_text(locale);
 

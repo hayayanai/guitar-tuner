@@ -1,4 +1,22 @@
 {
+  "tuningShift": {
+    "halfStepDown": "Half step down (D#)",
+    "wholeStepDown": "Whole step down (D)",
+    "oneHalfStepDown": "1.5 steps down (C#)",
+    "twoStepsDown": "2 steps down (C)",
+    "twoHalfStepsDown": "2.5 steps down (B)"
+  },
+  "dropTuning": {
+    "dropDSharp": "Drop D#",
+    "dropD": "Drop D",
+    "dropCSharp": "Drop C#",
+    "dropC": "Drop C",
+    "dropB": "Drop B",
+    "enableLabel": "Enable drop tuning",
+    "enable": "Enable:",
+    "helpText": "Combined with Tuning Shift, the 6th string drops relative to the shifted tuning.",
+    "helpTextExample": "(e.g. Half step down + Drop D = Drop C#)"
+  },
   "app": {
     "title": "Guitar Tuner"
   },
@@ -27,11 +45,6 @@
     "shift": "Shift:",
     "hz": "Hz",
     "errorRange": "Must be 438-445 Hz"
-  },
-  "dropTuning": {
-    "enable": "Enable:",
-    "helpText": "Combined with Tuning Shift, the 6th string drops relative to the shifted tuning.",
-    "helpTextExample": "(e.g. Half step down + Drop D = Drop C#)"
   },
   "trayIcon": {
     "indicatorOnly": "Indicator only",

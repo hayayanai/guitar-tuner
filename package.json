@@ -11,8 +11,8 @@
     "format": "prettier --experimental-cli --write .",
     "format:check": "prettier --experimental-cli --check .",
     "lint": "npm run lint:oxlint && npm run lint:eslint",
-    "lint:eslint": "eslint . --ext .js,.ts,.vue --config eslint.config.mjs",
-    "lint:oxlint": "oxlint . --config .oxlintrc.json",
+    "lint:eslint": "eslint .",
+    "lint:oxlint": "oxlint .",
     "lint:fix": "npm run lint:oxlint -- --fix && npm run lint:eslint -- --fix",
     "type-check": "vue-tsc --noEmit"
   },

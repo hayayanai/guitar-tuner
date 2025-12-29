@@ -47,7 +47,7 @@ pub fn run() {
                 Ok(settings) => settings.locale.unwrap_or_else(|| "en".to_string()),
                 Err(_) => "en".to_string(),
             };
-            *commands::LOCALE.write().unwrap() = locale.clone();
+            *constants::LOCALE.write().unwrap() = locale.clone();
 
             // トレイメニュー作成
             let (show_text, quit_text) = get_tray_menu_text(&locale);

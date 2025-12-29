@@ -76,7 +76,7 @@ const pitchError = computed(() => {
         @change="tuningShift = Number(($event.target as HTMLSelectElement).value)"
       >
         <option v-for="opt in TUNING_SHIFTS" :key="opt.value" :value="opt.value">
-          {{ opt.label }}
+          {{ t(opt.labelKey) }}
         </option>
       </select>
     </label>
@@ -90,14 +90,14 @@ const pitchError = computed(() => {
         :checked="dropEnabled"
         @change="dropEnabled = ($event.target as HTMLInputElement).checked"
       />
-      <span>{{ t("dropTuning.enable") }}</span>
+      {{ t("dropTuning.enableLabel") }}
       <select
         :value="dropNote"
         :disabled="!dropEnabled"
         @change="dropNote = ($event.target as HTMLSelectElement).value"
       >
         <option v-for="opt in DROP_TUNINGS" :key="opt.value" :value="opt.value">
-          {{ opt.label }}
+          {{ t(String(opt.labelKey)) }}
         </option>
       </select>
     </label>
