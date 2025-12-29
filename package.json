@@ -14,7 +14,8 @@
     "lint:eslint": "eslint .",
     "lint:oxlint": "oxlint .",
     "lint:fix": "npm run lint:oxlint -- --fix && npm run lint:eslint -- --fix",
-    "type-check": "vue-tsc --noEmit"
+    "type-check": "vue-tsc --noEmit",
+    "bump": "node scripts/bump-version.mjs"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.9.1",
