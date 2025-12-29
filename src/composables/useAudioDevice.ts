@@ -16,6 +16,7 @@ export type Settings = {
   drop_tuning_note?: string;
   theme_mode?: ThemeMode;
   always_on_top?: boolean;
+  locale?: string;
 };
 
 /**

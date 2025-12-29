@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted } from "vue";
 import { invoke } from "@tauri-apps/api/core";
+import { useI18n } from "vue-i18n";
+
 type ThemeMode = "system" | "light" | "dark";
 const themeMode = ref<ThemeMode>("system");
+const { locale, t } = useI18n();
 
 function applyTheme(mode: ThemeMode) {
   const html = document.documentElement;
@@ -26,6 +29,10 @@ onMounted(async () => {
     ) {
       themeMode.value = settings.theme_mode;
     }
+    // Load locale from settings
+    if (settings.locale && (settings.locale === "en" || settings.locale === "ja")) {
+      locale.value = settings.locale;
+    }
   } catch {}
   applyTheme(themeMode.value);
 });
@@ -34,6 +41,12 @@ onMounted(async () => {
 watch(themeMode, async (val) => {
   applyTheme(val);
   await saveSettings({ theme_mode: val });
+});
+
+// Locale change handler
+watch(locale, async (val) => {
+  await invoke("set_locale", { locale: val });
+  await saveSettings({ locale: val });
 });
 import {
   DeviceSelector,
@@ -155,9 +168,9 @@ watch(alwaysOnTop, async (enabled) => {
 // ステータス表示の改善
 const statusText = computed(() => {
   if (!listenStatus.value) return "";
-  if (listenStatus.value.startsWith("Listening:")) return "Listening";
-  if (listenStatus.value.startsWith("Starting")) return "Starting...";
-  if (listenStatus.value.startsWith("Failed")) return "Failed";
+  if (listenStatus.value.startsWith("Listening:")) return t("status.listening");
+  if (listenStatus.value.startsWith("Starting")) return t("status.starting");
+  if (listenStatus.value.startsWith("Failed")) return t("status.failed");
   return listenStatus.value;
 });
 
@@ -192,11 +205,11 @@ const statusClass = computed(() => {
       <LevelMeter :level="inputLevel" />
 
       <details class="settings-panel">
-        <summary>Settings</summary>
+        <summary>{{ t("settings.title") }}</summary>
 
         <!-- 入力設定グループ -->
         <fieldset class="settings-group">
-          <legend>Input</legend>
+          <legend>{{ t("settings.input") }}</legend>
           <DeviceSelector v-model="selectedDevice" :devices="devices" />
           <ChannelSelector :model-value="channelMode" @update:model-value="handleChannelChange" />
           <div v-if="listenStatus" class="status" :class="statusClass">
@@ -207,7 +220,7 @@ const statusClass = computed(() => {
 
         <!-- 感度設定グループ -->
         <fieldset class="settings-group">
-          <legend>Sensitivity</legend>
+          <legend>{{ t("settings.sensitivity") }}</legend>
           <ThresholdSlider :model-value="threshold" @update:model-value="updateThreshold" />
         </fieldset>
 
@@ -222,48 +235,63 @@ const statusClass = computed(() => {
 
         <!-- トレイアイコン設定グループ -->
         <fieldset class="settings-group">
-          <legend>Tray Icon</legend>
+          <legend>{{ t("settings.trayIcon") }}</legend>
           <div class="tray-mode-selector">
             <label class="radio-label">
-              <input type="radio" name="trayMode" value="0" v-model="trayIconMode" />
-              <span>Indicator only</span>
+              <input v-model="trayIconMode" type="radio" name="trayMode" value="0" />
+              <span>{{ t("trayIcon.indicatorOnly") }}</span>
             </label>
             <label class="radio-label">
-              <input type="radio" name="trayMode" value="1" v-model="trayIconMode" />
-              <span>Indicator + Note name</span>
+              <input v-model="trayIconMode" type="radio" name="trayMode" value="1" />
+              <span>{{ t("trayIcon.indicatorNote") }}</span>
             </label>
             <label class="radio-label">
-              <input type="radio" name="trayMode" value="2" v-model="trayIconMode" />
-              <span>Indicator + cents</span>
+              <input v-model="trayIconMode" type="radio" name="trayMode" value="2" />
+              <span>{{ t("trayIcon.indicatorCents") }}</span>
             </label>
           </div>
         </fieldset>
 
         <!-- テーマ設定グループ -->
         <fieldset class="settings-group">
-          <legend>Theme</legend>
+          <legend>{{ t("settings.theme") }}</legend>
           <div class="tray-mode-selector">
             <label class="radio-label">
-              <input type="radio" name="themeMode" value="system" v-model="themeMode" />
-              <span>System</span>
+              <input v-model="themeMode" type="radio" name="themeMode" value="system" />
+              <span>{{ t("theme.system") }}</span>
             </label>
             <label class="radio-label">
-              <input type="radio" name="themeMode" value="light" v-model="themeMode" />
-              <span>Light</span>
+              <input v-model="themeMode" type="radio" name="themeMode" value="light" />
+              <span>{{ t("theme.light") }}</span>
             </label>
             <label class="radio-label">
-              <input type="radio" name="themeMode" value="dark" v-model="themeMode" />
-              <span>Dark</span>
+              <input v-model="themeMode" type="radio" name="themeMode" value="dark" />
+              <span>{{ t("theme.dark") }}</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <!-- Language settings group -->
+        <fieldset class="settings-group">
+          <legend>{{ t("settings.language") }}</legend>
+          <div class="tray-mode-selector">
+            <label class="radio-label">
+              <input v-model="locale" type="radio" name="locale" value="en" />
+              <span>{{ t("language.en") }}</span>
+            </label>
+            <label class="radio-label">
+              <input v-model="locale" type="radio" name="locale" value="ja" />
+              <span>{{ t("language.ja") }}</span>
             </label>
           </div>
         </fieldset>
 
         <!-- Always on top settings group -->
         <fieldset class="settings-group">
-          <legend>Window</legend>
+          <legend>{{ t("settings.window") }}</legend>
           <label class="checkbox-label">
             <input v-model="alwaysOnTop" type="checkbox" />
-            <span>Always on top</span>
+            <span>{{ t("window.alwaysOnTop") }}</span>
           </label>
         </fieldset>
 

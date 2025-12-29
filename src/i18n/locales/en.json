@@ -1,0 +1,76 @@
+{
+  "tuningShift": {
+    "halfStepDown": "Half step down (D#)",
+    "wholeStepDown": "Whole step down (D)",
+    "oneHalfStepDown": "1.5 steps down (C#)",
+    "twoStepsDown": "2 steps down (C)",
+    "twoHalfStepsDown": "2.5 steps down (B)"
+  },
+  "dropTuning": {
+    "dropDSharp": "Drop D#",
+    "dropD": "Drop D",
+    "dropCSharp": "Drop C#",
+    "dropC": "Drop C",
+    "dropB": "Drop B",
+    "enableLabel": "Enable drop tuning",
+    "enable": "Enable:",
+    "helpText": "Combined with Tuning Shift, the 6th string drops relative to the shifted tuning.",
+    "helpTextExample": "(e.g. Half step down + Drop D = Drop C#)"
+  },
+  "app": {
+    "title": "Guitar Tuner"
+  },
+  "settings": {
+    "title": "Settings",
+    "input": "Input",
+    "sensitivity": "Sensitivity",
+    "sensitivityHigh": "High",
+    "sensitivityLow": "Low",
+    "referencePitch": "Reference Pitch",
+    "dropTuning": "6th String Drop Tuning",
+    "trayIcon": "Tray Icon",
+    "theme": "Theme",
+    "window": "Window",
+    "language": "Language"
+  },
+  "status": {
+    "listening": "Listening",
+    "starting": "Starting...",
+    "failed": "Failed"
+  },
+  "pitch": {
+    "standard": "A4 = 440 Hz",
+    "custom": "Custom:",
+    "customHint": "(438-445)",
+    "shift": "Shift:",
+    "hz": "Hz",
+    "errorRange": "Must be 438-445 Hz"
+  },
+  "trayIcon": {
+    "indicatorOnly": "Indicator only",
+    "indicatorNote": "Indicator + Note name",
+    "indicatorCents": "Indicator + cents"
+  },
+  "theme": {
+    "system": "System",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "window": {
+    "alwaysOnTop": "Always on top"
+  },
+  "language": {
+    "en": "English",
+    "ja": "日本語"
+  },
+  "update": {
+    "checking": "Checking for updates...",
+    "available": "New version available",
+    "version": "Version",
+    "downloading": "Downloading...",
+    "updateAndInstall": "Update & Install",
+    "later": "Later",
+    "close": "Close",
+    "error": "Update check error:"
+  }
+}
