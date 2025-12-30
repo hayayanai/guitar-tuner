@@ -11,6 +11,27 @@ The auto-updater is configured to work differently in development and production
 
 ## Testing Auto-Update in Development
 
+### Quick Start with Example Files
+
+The fastest way to test the updater is using the provided example files:
+
+1. Start the example HTTP server:
+   ```bash
+   # Using Python
+   cd examples/updater-test
+   python -m http.server 8080
+   ```
+
+2. In a new terminal, set the environment variable and run the app:
+   ```bash
+   $env:TAURI_DEV_UPDATER_ENDPOINT="http://localhost:8080/latest.json"
+   npm run tauri dev
+   ```
+
+3. The app will check for updates on startup using the example `latest.json` file.
+
+See [examples/updater-test/README.md](examples/updater-test/README.md) for more details.
+
 ### Option 1: Using a Local Update Server
 
 1. Create a test update manifest file (`latest.json`):

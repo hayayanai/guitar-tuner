@@ -1,0 +1,11 @@
+{
+  "version": "0.2.7",
+  "notes": "Test update for development - This is a sample update to test the updater functionality in development mode.",
+  "pub_date": "2024-12-30T00:00:00Z",
+  "platforms": {
+    "windows-x86_64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUldSWFpxNzhOR3FSWmtpVEJoSnJPU055N3QvTjE1VWJLbmdmOHcyekZkOEFxMHNUN1AzblpxMFcK",
+      "url": "http://localhost:8080/guitar-tuner_0.2.7_x64-setup.nsis.zip"
+    }
+  }
+}
