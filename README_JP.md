@@ -63,9 +63,107 @@ npm run tauri build
 
 ### 開発環境での自動更新のテスト
 
-開発者は、リリースを公開せずに開発モードで自動更新機能をテストできます。`TAURI_DEV_UPDATER_ENDPOINT` 環境変数を設定して、ローカルまたはステージングサーバーを指定します。
+開発者は、リリースを公開せずに開発モードで自動更新機能をテストできます。自動更新は開発環境と本番環境で異なる設定を使用します：
 
-完全なセットアップ手順と例については、[docs/UPDATER_DEV_GUIDE.md](docs/UPDATER_DEV_GUIDE.md) を参照してください。
+- **本番環境**: `tauri.conf.json` で設定された GitHub Releases エンドポイントを使用
+- **開発環境**: 環境変数でカスタムエンドポイントを使用可能
+
+#### サンプルファイルを使ったクイックスタート
+
+`examples/updater-test/` にあるサンプルファイルを使用するのが最も簡単です：
+
+1. サンプル用の HTTP サーバーを起動：
+   ```bash
+   npx http-server -p 8080 examples/updater-test
+   ```
+
+2. 別のターミナルで環境変数を設定してアプリを実行：
+   ```bash
+   # Windows PowerShell
+   $env:TAURI_DEV_UPDATER_ENDPOINT="http://localhost:8080/latest.json"
+   
+   # Windows CMD
+   set TAURI_DEV_UPDATER_ENDPOINT=http://localhost:8080/latest.json
+   
+   # Linux/macOS
+   export TAURI_DEV_UPDATER_ENDPOINT=http://localhost:8080/latest.json
+   
+   # アプリを実行
+   npm run tauri dev
+   ```
+
+3. 起動時にサンプル `latest.json` ファイルを使用して更新チェックが実行されます。
+
+**注意**: `examples/updater-test/latest.json` のサンプル署名は `INVALID_DEV_SIGNATURE_DO_NOT_USE_IN_PRODUCTION` で、UI テスト用です。完全な署名検証テストには、適切な署名鍵でリリースビルドを作成してください。
+
+#### 独自のテスト更新を作成
+
+署名検証付きの適切なテスト更新を作成するには：
+
+1. 次のバージョン番号でアプリをビルド：
+   ```bash
+   npm run bump
+   npm run tauri build
+   ```
+
+2. アップデート用の成果物は `src-tauri/target/release/bundle/` に生成されます：
+   - `*.nsis.zip` - Windows 用署名済みインストーラー
+   - `*.nsis.zip.sig` - 署名ファイル
+
+3. 独自の `latest.json` マニフェストを作成：
+   ```json
+   {
+     "version": "0.2.7",
+     "notes": "開発用テストアップデート",
+     "pub_date": "2024-01-01T00:00:00Z",
+     "platforms": {
+       "windows-x86_64": {
+         "signature": "実際の署名をここに貼り付け",
+         "url": "http://localhost:8080/guitar-tuner_0.2.7_x64-setup.nsis.zip"
+       }
+     }
+   }
+   ```
+
+4. ローカル HTTP サーバーを起動して更新ファイルを配信：
+   ```bash
+   npx http-server -p 8080 /path/to/update/files
+   ```
+
+#### ステージングサーバーを使用
+
+ステージングサーバーがある場合は、直接指定できます：
+
+```bash
+export TAURI_DEV_UPDATER_ENDPOINT=https://staging.example.com/updates/latest.json
+npm run tauri dev
+```
+
+#### トラブルシューティング
+
+**更新チェックが失敗する場合:**
+- ブラウザコンソール（F12）でエラーメッセージを確認
+- エンドポイントにアクセス可能か確認: `curl http://localhost:8080/latest.json`
+- リモートサーバーを使用する場合は CORS が有効か確認
+
+**更新が検出されない場合:**
+- `latest.json` のバージョンが現在のバージョンより高いことを確認
+- `TAURI_DEV_UPDATER_ENDPOINT` 環境変数が設定されているか確認
+- エンドポイントが使用されていることを示すログメッセージを確認
+
+**署名検証が失敗する場合:**
+- 開発環境で適切な署名なしでテストする場合は、新しいキーペアを作成：
+  ```bash
+  npm run tauri signer generate -- -w ~/.tauri/dev.key
+  ```
+
+#### 本番環境での動作
+
+本番環境（リリースビルド）では、アプリは：
+- `TAURI_DEV_UPDATER_ENDPOINT` 環境変数を無視
+- `tauri.conf.json` の本番エンドポイントを使用: `https://github.com/hayayanai/guitar-tuner/releases/latest/download/latest.json`
+
+これにより、エンドユーザーは常に GitHub Releases から公式アップデートを受け取ることが保証されます。
 
 クイックリファレンス:
 

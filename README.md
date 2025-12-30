@@ -63,9 +63,107 @@ See [UPDATER_SETUP.md](UPDATER_SETUP.md) for step-by-step setup.
 
 ### Testing Auto-Update in Development
 
-Developers can test the auto-updater in development mode without publishing releases. Set the `TAURI_DEV_UPDATER_ENDPOINT` environment variable to point to a local or staging server.
+Developers can test the auto-updater in development mode without publishing releases. The auto-updater is configured to work differently in development and production:
 
-See [docs/UPDATER_DEV_GUIDE.md](docs/UPDATER_DEV_GUIDE.md) for complete setup instructions and examples.
+- **Production**: Uses GitHub Releases endpoint configured in `tauri.conf.json`
+- **Development**: Can use a custom endpoint via environment variable
+
+#### Quick Start with Example Files
+
+The fastest way to test the updater is using the provided example files in `examples/updater-test/`:
+
+1. Start the example HTTP server:
+   ```bash
+   npx http-server -p 8080 examples/updater-test
+   ```
+
+2. In a new terminal, set the environment variable and run the app:
+   ```bash
+   # Windows PowerShell
+   $env:TAURI_DEV_UPDATER_ENDPOINT="http://localhost:8080/latest.json"
+   
+   # Windows CMD
+   set TAURI_DEV_UPDATER_ENDPOINT=http://localhost:8080/latest.json
+   
+   # Linux/macOS
+   export TAURI_DEV_UPDATER_ENDPOINT=http://localhost:8080/latest.json
+   
+   # Run the app
+   npm run tauri dev
+   ```
+
+3. The app will check for updates on startup using the example `latest.json` file.
+
+**Note**: The example signature in `examples/updater-test/latest.json` is `INVALID_DEV_SIGNATURE_DO_NOT_USE_IN_PRODUCTION` for testing the UI only. For full signature verification testing, build a release with proper signing keys.
+
+#### Creating Your Own Test Update
+
+To create a proper test update with signature verification:
+
+1. Build the app with the next version number:
+   ```bash
+   npm run bump
+   npm run tauri build
+   ```
+
+2. The updater artifacts will be in `src-tauri/target/release/bundle/`:
+   - `*.nsis.zip` - Signed installer for Windows
+   - `*.nsis.zip.sig` - Signature file
+
+3. Create your own `latest.json` manifest:
+   ```json
+   {
+     "version": "0.2.7",
+     "notes": "Test update for development",
+     "pub_date": "2024-01-01T00:00:00Z",
+     "platforms": {
+       "windows-x86_64": {
+         "signature": "PASTE_ACTUAL_SIGNATURE_HERE",
+         "url": "http://localhost:8080/guitar-tuner_0.2.7_x64-setup.nsis.zip"
+       }
+     }
+   }
+   ```
+
+4. Start a local HTTP server and serve your update files:
+   ```bash
+   npx http-server -p 8080 /path/to/update/files
+   ```
+
+#### Using a Staging Server
+
+If you have a staging server, point to it directly:
+
+```bash
+export TAURI_DEV_UPDATER_ENDPOINT=https://staging.example.com/updates/latest.json
+npm run tauri dev
+```
+
+#### Troubleshooting
+
+**Update Check Fails:**
+- Check the browser console (F12) for error messages
+- Verify the endpoint is accessible: `curl http://localhost:8080/latest.json`
+- Ensure CORS is enabled if using a remote server
+
+**Update Not Detected:**
+- Ensure version in `latest.json` is higher than the current version
+- Check that `TAURI_DEV_UPDATER_ENDPOINT` environment variable is set
+- Look for log messages indicating the endpoint is being used
+
+**Signature Verification Failed:**
+- For development testing without proper signatures, create a new keypair:
+  ```bash
+  npm run tauri signer generate -- -w ~/.tauri/dev.key
+  ```
+
+#### Production Behavior
+
+In production (release builds), the app will:
+- Ignore the `TAURI_DEV_UPDATER_ENDPOINT` environment variable
+- Use the production endpoint from `tauri.conf.json`: `https://github.com/hayayanai/guitar-tuner/releases/latest/download/latest.json`
+
+This ensures that end users always receive official updates from GitHub Releases.
 
 Quick reference:
 
