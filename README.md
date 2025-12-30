@@ -63,17 +63,9 @@ See [UPDATER_SETUP.md](UPDATER_SETUP.md) for step-by-step setup.
 
 ### Testing Auto-Update in Development
 
-The auto-updater can now be tested in development mode by setting a custom endpoint:
+Developers can test the auto-updater in development mode without publishing releases. Set the `TAURI_DEV_UPDATER_ENDPOINT` environment variable to point to a local or staging server.
 
-```bash
-# Set development updater endpoint
-$env:TAURI_DEV_UPDATER_ENDPOINT="http://localhost:8080/latest.json"
-
-# Run in development mode
-npm run tauri dev
-```
-
-See [docs/UPDATER_DEV_GUIDE.md](docs/UPDATER_DEV_GUIDE.md) for detailed instructions on setting up a local update server for testing.
+See [docs/UPDATER_DEV_GUIDE.md](docs/UPDATER_DEV_GUIDE.md) for complete setup instructions and examples.
 
 Quick reference:
 
