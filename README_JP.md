@@ -61,6 +61,20 @@ npm run tauri build
 
 手順は [UPDATER_SETUP.md](UPDATER_SETUP.md) を参照してください。
 
+### 開発環境での自動更新のテスト
+
+開発環境でも自動更新機能をテストできるようになりました。カスタムエンドポイントを設定することで、ローカルサーバーから更新をテストできます:
+
+```bash
+# 開発用アップデートエンドポイントを設定
+$env:TAURI_DEV_UPDATER_ENDPOINT="http://localhost:8080/latest.json"
+
+# 開発モードで実行
+npm run tauri dev
+```
+
+詳細な手順については [UPDATER_DEV_GUIDE.md](UPDATER_DEV_GUIDE.md) を参照してください。
+
 クイックリファレンス:
 
 ```powershell

@@ -61,6 +61,20 @@ This app uses the Tauri v2 Updater. Building signed update artifacts requires:
 
 See [UPDATER_SETUP.md](UPDATER_SETUP.md) for step-by-step setup.
 
+### Testing Auto-Update in Development
+
+The auto-updater can now be tested in development mode by setting a custom endpoint:
+
+```bash
+# Set development updater endpoint
+$env:TAURI_DEV_UPDATER_ENDPOINT="http://localhost:8080/latest.json"
+
+# Run in development mode
+npm run tauri dev
+```
+
+See [UPDATER_DEV_GUIDE.md](UPDATER_DEV_GUIDE.md) for detailed instructions on setting up a local update server for testing.
+
 Quick reference:
 
 ```powershell

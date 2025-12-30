@@ -16,8 +16,28 @@ pub fn run() {
     use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
     use tauri::{Manager, WindowEvent};
 
+    // Configure updater plugin with conditional endpoints for development
+    let updater_plugin = {
+        let mut builder = tauri_plugin_updater::Builder::new();
+
+        // In debug mode, use a development endpoint for testing
+        // Developers can set TAURI_DEV_UPDATER_ENDPOINT environment variable
+        // or run a local update server at http://localhost:8080/latest.json
+        #[cfg(debug_assertions)]
+        {
+            if let Ok(dev_endpoint) = std::env::var("TAURI_DEV_UPDATER_ENDPOINT") {
+                if let Ok(url) = dev_endpoint.parse() {
+                    builder = builder.endpoints(vec![url]);
+                    log::info!("Using development updater endpoint: {}", dev_endpoint);
+                }
+            }
+        }
+
+        builder.build()
+    };
+
     tauri::Builder::default()
-        .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(updater_plugin)
         .plugin(tauri_plugin_process::init())
         .invoke_handler(tauri::generate_handler![
             get_audio_devices,
