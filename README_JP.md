@@ -73,7 +73,7 @@ $env:TAURI_DEV_UPDATER_ENDPOINT="http://localhost:8080/latest.json"
 npm run tauri dev
 ```
 
-詳細な手順については [UPDATER_DEV_GUIDE.md](UPDATER_DEV_GUIDE.md) を参照してください。
+詳細な手順については [docs/UPDATER_DEV_GUIDE.md](docs/UPDATER_DEV_GUIDE.md) を参照してください。
 
 クイックリファレンス:
 

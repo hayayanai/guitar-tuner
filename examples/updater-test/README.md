@@ -11,13 +11,7 @@ This directory contains example files for testing the auto-updater in developmen
 
 2. **Start a local HTTP server**:
 
-   Using Python:
-   ```bash
-   cd examples/updater-test
-   python -m http.server 8080
-   ```
-
-   Or using Node.js:
+   Using Node.js:
    ```bash
    npx http-server -p 8080 examples/updater-test
    ```
@@ -50,7 +44,7 @@ This directory contains example files for testing the auto-updater in developmen
     1. Build a release version with a higher version number using your signing keys
     2. Copy the actual signature from the generated `.sig` file
     3. Replace the invalid signature in `latest.json` with the real signature
-  - See the main [UPDATER_DEV_GUIDE.md](../../UPDATER_DEV_GUIDE.md) for details on generating signing keys
+  - See [docs/UPDATER_DEV_GUIDE.md](../../docs/UPDATER_DEV_GUIDE.md) for details on generating signing keys
 - `README.md` - This file
 
 ## Notes
@@ -64,4 +58,4 @@ This directory contains example files for testing the auto-updater in developmen
 
 - The example assumes port 8080. You can use any port, just update the URL accordingly.
 
-For more detailed information, see [UPDATER_DEV_GUIDE.md](../../UPDATER_DEV_GUIDE.md) in the root directory.
+For more detailed information, see [docs/UPDATER_DEV_GUIDE.md](../../docs/UPDATER_DEV_GUIDE.md).

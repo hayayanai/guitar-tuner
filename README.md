@@ -73,7 +73,7 @@ $env:TAURI_DEV_UPDATER_ENDPOINT="http://localhost:8080/latest.json"
 npm run tauri dev
 ```
 
-See [UPDATER_DEV_GUIDE.md](UPDATER_DEV_GUIDE.md) for detailed instructions on setting up a local update server for testing.
+See [docs/UPDATER_DEV_GUIDE.md](docs/UPDATER_DEV_GUIDE.md) for detailed instructions on setting up a local update server for testing.
 
 Quick reference:
 

@@ -17,9 +17,8 @@ The fastest way to test the updater is using the provided example files:
 
 1. Start the example HTTP server:
    ```bash
-   # Using Python
-   cd examples/updater-test
-   python -m http.server 8080
+   # Using Node.js http-server
+   npx http-server -p 8080 examples/updater-test
    ```
 
 2. In a new terminal, set the environment variable and run the app:
@@ -30,7 +29,7 @@ The fastest way to test the updater is using the provided example files:
 
 3. The app will check for updates on startup using the example `latest.json` file.
 
-See [examples/updater-test/README.md](examples/updater-test/README.md) for more details.
+See [examples/updater-test/README.md](../examples/updater-test/README.md) for more details.
 
 ### Option 1: Using a Local Update Server
 
@@ -53,12 +52,8 @@ See [examples/updater-test/README.md](examples/updater-test/README.md) for more 
 2. Start a local HTTP server to serve the update files:
 
 ```bash
-# Using Python
-cd /path/to/update/files
-python -m http.server 8080
-
-# Or using Node.js http-server
-npx http-server -p 8080
+# Using Node.js http-server
+npx http-server -p 8080 /path/to/update/files
 ```
 
 3. Set the development updater endpoint environment variable:
