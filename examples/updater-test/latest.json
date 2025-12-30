@@ -4,7 +4,7 @@
   "pub_date": "2024-12-30T00:00:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "PLACEHOLDER_SIGNATURE_FOR_TESTING_ONLY",
+      "signature": "INVALID_DEV_SIGNATURE_DO_NOT_USE_IN_PRODUCTION",
       "url": "http://localhost:8080/guitar-tuner_0.2.7_x64-setup.nsis.zip"
     }
   }
