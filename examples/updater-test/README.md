@@ -44,6 +44,12 @@ This directory contains example files for testing the auto-updater in developmen
 ## Files
 
 - `latest.json` - Sample update manifest with example data
+  - **IMPORTANT**: The signature field contains `PLACEHOLDER_SIGNATURE_FOR_TESTING_ONLY` which is NOT a valid signature
+  - For actual testing with signature verification, you need to:
+    1. Build a release version with a higher version number using your signing keys
+    2. Copy the actual signature from the generated `.sig` file
+    3. Replace the placeholder signature in `latest.json` with the real signature
+  - See the main [UPDATER_DEV_GUIDE.md](../../UPDATER_DEV_GUIDE.md) for details on generating signing keys
 - `README.md` - This file
 
 ## Notes
