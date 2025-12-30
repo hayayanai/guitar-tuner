@@ -26,9 +26,18 @@ pub fn run() {
         #[cfg(debug_assertions)]
         {
             if let Ok(dev_endpoint) = std::env::var("TAURI_DEV_UPDATER_ENDPOINT") {
-                if let Ok(url) = dev_endpoint.parse() {
-                    builder = builder.endpoints(vec![url]);
-                    log::info!("Using development updater endpoint: {}", dev_endpoint);
+                match dev_endpoint.parse() {
+                    Ok(url) => {
+                        builder = builder.endpoints(vec![url]);
+                        log::info!("Using development updater endpoint: {}", dev_endpoint);
+                    }
+                    Err(e) => {
+                        log::warn!(
+                            "Invalid TAURI_DEV_UPDATER_ENDPOINT URL '{}': {}",
+                            dev_endpoint,
+                            e
+                        );
+                    }
                 }
             }
         }

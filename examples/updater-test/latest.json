@@ -4,6 +4,7 @@
   "pub_date": "2024-12-30T00:00:00Z",
   "platforms": {
     "windows-x86_64": {
+      "__comment": "PLACEHOLDER SIGNATURE - This is a test signature for demonstration purposes only. For actual testing with signature verification, you need to: 1) Build a release with your signing keys, 2) Copy the actual signature from the .sig file, 3) Update this signature field with the real value. See UPDATER_DEV_GUIDE.md for details on generating signing keys.",
       "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUldSWFpxNzhOR3FSWmtpVEJoSnJPU055N3QvTjE1VWJLbmdmOHcyekZkOEFxMHNUN1AzblpxMFcK",
       "url": "http://localhost:8080/guitar-tuner_0.2.7_x64-setup.nsis.zip"
     }
