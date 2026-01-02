@@ -60,5 +60,3 @@ jobs:
             - src-tauri/Cargo.lock
           labels: version-bump
           assignees: ${{ github.actor }}
-          auto-merge: true
-          auto-merge-method: squash
