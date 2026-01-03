@@ -86,6 +86,15 @@ CI uses `.mise.toml` to set up Node.js/Rust versions.
 
 You can also trigger builds manually from the Actions tab.
 
+### Bump Version Workflow Setup
+
+The `bump-version.yml` workflow requires a Personal Access Token (PAT) to create pull requests:
+
+1. Create a PAT with `pull_requests: write` and `contents: write` permissions at https://github.com/settings/tokens
+2. Add it as a repository secret named `PAT_TOKEN` in Settings → Secrets and variables → Actions
+
+Without this token, the workflow will fail with "GitHub Actions is not permitted to create or approve pull requests".
+
 ## Project Structure
 
 | File                        | Description                                     |
