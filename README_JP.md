@@ -86,6 +86,15 @@ CIは `.mise.toml` のバージョンを参照して Node.js/Rust をセット�
 
 手動実行もActionsタブから可能です。
 
+### バージョンバンプワークフローの設定
+
+`bump-version.yml` ワークフローがプルリクエストを作成するには、Personal Access Token (PAT) が必要です：
+
+1. https://github.com/settings/tokens で `pull_requests: write` と `contents: write` 権限を持つPATを作成
+2. Settings → Secrets and variables → Actions で `PAT_TOKEN` という名前のリポジトリシークレットとして追加
+
+このトークンがない場合、ワークフローは「GitHub Actions is not permitted to create or approve pull requests」というエラーで失敗します。
+
 ## 主要ファイル
 
 | ファイル                    | 説明                                            |
