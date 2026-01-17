@@ -28,7 +28,7 @@ async function updateTomlFile(filePath) {
 
   let oldVersion = null;
   const newLines = lines.map((line) => {
-    const match = line.match(/^\s*version\s*=\s*"(.+)"$/);
+    const match = line.match(/^\s*version\s*=\s*"(.+)"\s*$/);
     if (match) {
       oldVersion = match[1];
       return `version = "${newVersion}"`;
