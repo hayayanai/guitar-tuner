@@ -372,9 +372,9 @@ fn generate_tuning_icon(cents: f32, color: TuningColor, note_name: &str) -> Vec<
     // メーターの色を決定（ヒステリシス付きの色を使用）
     // 高コントラストな色に調整（黒背景上で視認性を向上）
     let meter_color: [u8; 4] = match color {
-        TuningColor::Green => [0, 255, 140, 255],  // 緑: より明るく鮮やか
-        TuningColor::Yellow => [255, 235, 0, 255],  // 黄: より明るい黄色
-        TuningColor::Red => [255, 100, 100, 255],   // 赤: 明るくして目立たせる
+        TuningColor::Green => [0, 255, 140, 255], // 緑: より明るく鮮やか
+        TuningColor::Yellow => [255, 235, 0, 255], // 黄: より明るい黄色
+        TuningColor::Red => [255, 100, 100, 255], // 赤: 明るくして目立たせる
     };
 
     // 中央線の色
