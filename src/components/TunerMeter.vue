@@ -101,8 +101,8 @@ defineProps<{
     }
 
     &.good {
-      background: var(--semantic-warning-low);
-      box-shadow: 0 0 10px color-mix(in srgb, var(--semantic-warning-low) 50%, transparent 50%);
+      background: var(--semantic-warning-main);
+      box-shadow: 0 0 10px color-mix(in srgb, var(--semantic-warning-main) 50%, transparent 50%);
     }
   }
 }

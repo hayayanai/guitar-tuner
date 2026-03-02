@@ -366,14 +366,15 @@ fn generate_tuning_icon(cents: f32, color: TuningColor, note_name: &str) -> Vec<
     // 表示モードを取得（0=インジケーターのみ, 1=インジケーター+音名, 2=インジケーター+セント値）
     let icon_mode = TRAY_ICON_MODE.load(Ordering::SeqCst);
 
-    // 背景色（濃いグレー）
-    let bg_color: [u8; 4] = [40, 40, 40, 255];
+    // 背景色（真っ黒に変更、コントラスト向上のため）
+    let bg_color: [u8; 4] = [0, 0, 0, 255];
 
     // メーターの色を決定（ヒステリシス付きの色を使用）
+    // 高コントラストな色に調整（黒背景上で視認性を向上）
     let meter_color: [u8; 4] = match color {
-        TuningColor::Green => [0, 255, 100, 255], // 緑: チューニング良好
-        TuningColor::Yellow => [255, 200, 0, 255], // 黄: 少しずれ
-        TuningColor::Red => [255, 60, 60, 255],   // 赤: 大きくずれ
+        TuningColor::Green => [0, 255, 140, 255],  // 緑: より明るく鮮やか
+        TuningColor::Yellow => [255, 235, 0, 255],  // 黄: より明るい黄色
+        TuningColor::Red => [255, 100, 100, 255],   // 赤: 明るくして目立たせる
     };
 
     // 中央線の色
