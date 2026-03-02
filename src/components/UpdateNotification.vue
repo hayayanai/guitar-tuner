@@ -44,24 +44,50 @@ async function downloadAndInstall() {
     downloadTotal.value = 0;
     error.value = null;
 
-    await updateInfo.value.downloadAndInstall((event) => {
-      switch (event.event) {
-        case "Started":
-          downloadTotal.value = event.data.contentLength ?? 0;
-          console.log(`Download started: ${downloadTotal.value} bytes`);
-          break;
-        case "Progress":
-          downloadProgress.value += event.data.chunkLength;
-          console.log(`Downloaded: ${downloadProgress.value} / ${downloadTotal.value}`);
-          break;
-        case "Finished":
-          console.log("Download finished");
-          break;
-      }
-    });
+    // Some environments can throw when calling the instance method directly
+    // (private class fields / cross-realm issues). Call the function via
+    // `.call(...)` if it's available, and fallback gracefully if it fails.
+    const updaterFn = (updateInfo.value as any)?.downloadAndInstall;
+    if (typeof updaterFn === "function") {
+      try {
+        await updaterFn.call(updateInfo.value, (event: any) => {
+          switch (event.event) {
+            case "Started":
+              downloadTotal.value = event.data.contentLength ?? 0;
+              console.log(`Download started: ${downloadTotal.value} bytes`);
+              break;
+            case "Progress":
+              // some events provide chunkLength, others provide progress
+              if (typeof event.data.chunkLength === "number") {
+                downloadProgress.value += event.data.chunkLength;
+              } else if (typeof event.data.progress === "number") {
+                downloadProgress.value = Math.round(
+                  event.data.progress * (downloadTotal.value || 1),
+                );
+              }
+              console.log(`Downloaded: ${downloadProgress.value} / ${downloadTotal.value}`);
+              break;
+            case "Finished":
+              console.log("Download finished");
+              break;
+          }
+        });
 
-    console.log("Update installed, relaunching...");
-    await relaunch();
+        console.log("Update installed, relaunching...");
+        await relaunch();
+      } catch (err) {
+        // If calling the instance method fails due to private field / realm
+        // mismatch, surface a clearer error and avoid crashing the UI.
+        error.value = `Installation error: ${err}`;
+        console.error("Update installation failed (instance call):", err);
+        downloading.value = false;
+      }
+    } else {
+      // Method not present — fail gracefully
+      error.value = `Installation error: updater function not available`;
+      console.error("Update installation failed: updater function not available on Update object");
+      downloading.value = false;
+    }
   } catch (err) {
     error.value = `Installation error: ${err}`;
     console.error("Update installation failed:", err);
