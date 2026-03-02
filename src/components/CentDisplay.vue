@@ -27,7 +27,7 @@ defineProps<{
   }
 
   &.good {
-    color: var(--semantic-warning-low);
+    color: var(--semantic-warning-main);
   }
 
   &.off {

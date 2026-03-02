@@ -51,7 +51,7 @@ defineProps<{
   }
 
   &.good .note-name {
-    color: var(--semantic-warning-low);
+    color: var(--semantic-warning-main);
   }
 
   &.off .note-name {

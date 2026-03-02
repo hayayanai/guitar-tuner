@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { ChannelMode } from "../types";
 
-import { defineModel } from "vue";
 const model = defineModel<ChannelMode>({ required: true });
 </script>
 
