@@ -33,9 +33,7 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "resources": [
-      "icons/*"
-    ]
+    "resources": ["icons/*"]
   },
   "plugins": {
     "updater": {
