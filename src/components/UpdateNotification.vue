@@ -1,18 +1,28 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { check } from "@tauri-apps/plugin-updater";
+import { ref, shallowRef, onMounted } from "vue";
+import { check, type DownloadEvent, type Update } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
 
 const updateAvailable = ref(false);
-const updateInfo = ref<Awaited<ReturnType<typeof check>> | null>(null);
+const updateInfo = shallowRef<Update | null>(null);
 const downloading = ref(false);
 const downloadProgress = ref(0);
 const downloadTotal = ref(0);
 const error = ref<string | null>(null);
 const checkingUpdate = ref(false);
+
+async function closeUpdateResource(update: Update | null) {
+  if (!update) return;
+
+  try {
+    await update.close();
+  } catch (err) {
+    console.warn("Failed to close updater resource:", err);
+  }
+}
 
 async function checkForUpdates() {
   try {
@@ -36,7 +46,8 @@ async function checkForUpdates() {
 }
 
 async function downloadAndInstall() {
-  if (!updateInfo.value) return;
+  const update = updateInfo.value;
+  if (!update) return;
 
   try {
     downloading.value = true;
@@ -44,61 +55,38 @@ async function downloadAndInstall() {
     downloadTotal.value = 0;
     error.value = null;
 
-    // Some environments can throw when calling the instance method directly
-    // (private class fields / cross-realm issues). Call the function via
-    // `.call(...)` if it's available, and fallback gracefully if it fails.
-    const updaterFn = (updateInfo.value as any)?.downloadAndInstall;
-    if (typeof updaterFn === "function") {
-      try {
-        await updaterFn.call(updateInfo.value, (event: any) => {
-          switch (event.event) {
-            case "Started":
-              downloadTotal.value = event.data.contentLength ?? 0;
-              console.log(`Download started: ${downloadTotal.value} bytes`);
-              break;
-            case "Progress":
-              // some events provide chunkLength, others provide progress
-              if (typeof event.data.chunkLength === "number") {
-                downloadProgress.value += event.data.chunkLength;
-              } else if (typeof event.data.progress === "number") {
-                downloadProgress.value = Math.round(
-                  event.data.progress * (downloadTotal.value || 1),
-                );
-              }
-              console.log(`Downloaded: ${downloadProgress.value} / ${downloadTotal.value}`);
-              break;
-            case "Finished":
-              console.log("Download finished");
-              break;
-          }
-        });
-
-        console.log("Update installed, relaunching...");
-        await relaunch();
-      } catch (err) {
-        // If calling the instance method fails due to private field / realm
-        // mismatch, surface a clearer error and avoid crashing the UI.
-        error.value = `Installation error: ${err}`;
-        console.error("Update installation failed (instance call):", err);
-        downloading.value = false;
+    await update.downloadAndInstall((event: DownloadEvent) => {
+      switch (event.event) {
+        case "Started":
+          downloadTotal.value = event.data.contentLength ?? 0;
+          console.log(`Download started: ${downloadTotal.value} bytes`);
+          break;
+        case "Progress":
+          downloadProgress.value += event.data.chunkLength;
+          console.log(`Downloaded: ${downloadProgress.value} / ${downloadTotal.value}`);
+          break;
+        case "Finished":
+          console.log("Download finished");
+          break;
       }
-    } else {
-      // Method not present — fail gracefully
-      error.value = `Installation error: updater function not available`;
-      console.error("Update installation failed: updater function not available on Update object");
-      downloading.value = false;
-    }
+    });
+
+    console.log("Update installed, relaunching...");
+    await relaunch();
   } catch (err) {
     error.value = `Installation error: ${err}`;
     console.error("Update installation failed:", err);
+  } finally {
     downloading.value = false;
   }
 }
 
-function dismissUpdate() {
+async function dismissUpdate() {
+  const update = updateInfo.value;
   updateAvailable.value = false;
   updateInfo.value = null;
   error.value = null;
+  await closeUpdateResource(update);
 }
 
 onMounted(() => {
@@ -141,7 +129,9 @@ onMounted(() => {
         ></div>
       </div>
       <p class="progress-text">
-        {{ t("update.downloading") }} {{ Math.round((downloadProgress / downloadTotal) * 100) }}%
+        {{ t("update.downloading") }} {{
+          downloadTotal > 0 ? Math.round((downloadProgress / downloadTotal) * 100) : 0
+        }}%
       </p>
     </div>
 
