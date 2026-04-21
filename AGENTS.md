@@ -122,9 +122,9 @@ static STREAM: Lazy<Mutex<Option<Stream>>> = Lazy::new(|| Mutex::new(None));
 
 ```bash
 mise install        # Node.js/Rust version management
-npm install         # Install dependencies
-npm run tauri dev   # Development mode
-npm run tauri build # Release build
+pnpm install        # Install dependencies
+pnpm tauri dev      # Development mode
+pnpm tauri build    # Release build
 ```
 
 ### Checking Rust Warnings & Errors

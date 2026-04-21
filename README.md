@@ -42,13 +42,13 @@ A cross-platform guitar tuner app built with Tauri v2 + Vue 3 + Rust (cpal/rustf
 mise install
 
 # Install dependencies
-npm install
+pnpm install
 
 # Run in development mode
-npm run tauri dev
+pnpm tauri dev
 
 # Build for release
-npm run tauri build
+pnpm tauri build
 ```
 
 ### Build Notes (Updater Signing Keys)
@@ -65,7 +65,7 @@ Quick reference:
 
 ```powershell
 # Generate signing key pair (prints public key)
-npm run tauri signer generate -- -w .tauri\guitar-tuner.key
+pnpm tauri signer generate -- -w .tauri\guitar-tuner.key
 
 # Copy private key to clipboard (Windows)
 Get-Content $env:USERPROFILE\.tauri\guitar-tuner.key | Set-Clipboard
@@ -110,7 +110,7 @@ Without this token, the workflow will fail with "GitHub Actions is not permitted
 TypeScript/Vue code static analysis:
 
 ```bash
-npm run lint
+pnpm lint
 ```
 
 ### Formatter
@@ -118,7 +118,7 @@ npm run lint
 Code formatting:
 
 ```bash
-npm run format
+pnpm format
 ```
 
 **prettier**: Code formatter

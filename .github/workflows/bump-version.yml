@@ -27,8 +27,11 @@ jobs:
       - name: Install tool versions from .mise.toml
         run: mise install
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Validate version format
         shell: bash
@@ -39,10 +42,10 @@ jobs:
           fi
 
       - name: Bump version
-        run: npm run bump ${{ inputs.version }}
+        run: pnpm bump ${{ inputs.version }}
 
       - name: Format files (Node.js)
-        run: npm run format
+        run: pnpm format
 
       - name: Format files (Rust)
         working-directory: src-tauri
@@ -63,7 +66,7 @@ jobs:
 
             Updated files:
             - package.json
-            - package-lock.json
+            - pnpm-lock.yaml
             - src-tauri/tauri.conf.json
             - src-tauri/Cargo.toml
             - src-tauri/Cargo.lock

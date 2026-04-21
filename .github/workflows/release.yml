@@ -24,13 +24,16 @@ jobs:
       - name: Setup mise
         uses: jdx/mise-action@146a28175021df8ca24f8ee1828cc2a60f980bd5 # v3.5.1
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Rust cache
         uses: swatinem/rust-cache@779680da715d629ac1d338a641029a2f4372abb5 # v2.8.2
         with:
           workspaces: "./src-tauri -> target"
 
       - name: Install frontend dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Build the app
         uses: tauri-apps/tauri-action@51a9f1156b33df106d827c3a78f8f894946c5faa # v0.5.25

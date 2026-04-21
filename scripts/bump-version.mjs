@@ -43,8 +43,8 @@ async function updateTomlFile(filePath) {
 // Parse arguments
 const args = process.argv.slice(2);
 if (args.length !== 1 || !VERSION_REGEX.test(args[0])) {
-  console.error("Usage: npm run bump <version>");
-  console.error("Example: npm run bump 0.3.0");
+  console.error("Usage: pnpm bump <version>");
+  console.error("Example: pnpm bump 0.3.0");
   process.exit(1);
 }
 
@@ -54,13 +54,13 @@ try {
   // Update package.json
   await updateJsonFile(resolve(process.cwd(), "package.json"), "version");
 
-  // Update package-lock.json
-  console.log("\n⏳ Updating package-lock.json...");
-  execSync("npm install --package-lock-only", {
+  // Update pnpm-lock.yaml
+  console.log("\n⏳ Updating pnpm-lock.yaml...");
+  execSync("pnpm install --lockfile-only", {
     cwd: process.cwd(),
     stdio: "inherit",
   });
-  console.log("✓ package-lock.json updated");
+  console.log("✓ pnpm-lock.yaml updated");
 
   // Update tauri.conf.json
   await updateJsonFile(resolve(process.cwd(), "src-tauri/tauri.conf.json"), "version");
