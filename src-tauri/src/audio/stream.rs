@@ -8,7 +8,7 @@ pub fn start_audio_stream(
     device: &cpal::Device,
 ) -> Result<(Arc<Mutex<Vec<f32>>>, usize, usize), String> {
     let config = device.default_input_config().map_err(|e| e.to_string())?;
-    let sample_rate = config.sample_rate().0 as usize;
+    let sample_rate = config.sample_rate() as usize;
     let channels = config.channels() as usize;
     let buffer_size = FFT_SIZE * channels;
     let buffer = Arc::new(Mutex::new(Vec::<f32>::with_capacity(buffer_size)));
