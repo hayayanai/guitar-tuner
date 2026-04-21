@@ -24,6 +24,9 @@ jobs:
       - name: Setup mise
         uses: jdx/mise-action@146a28175021df8ca24f8ee1828cc2a60f980bd5 # v3.5.1
 
+      - name: Install tool versions from .mise.toml
+        run: mise install
+
       - name: Enable Corepack
         run: corepack enable
 

@@ -1,13 +1,13 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "guitar-tuner",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "identifier": "com.example.guitartuner",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:1420",
-    "beforeDevCommand": "npm run dev",
-    "beforeBuildCommand": "npm run build"
+    "beforeDevCommand": "pnpm dev",
+    "beforeBuildCommand": "pnpm build"
   },
   "app": {
     "withGlobalTauri": true,
@@ -33,7 +33,9 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "resources": ["icons/*"]
+    "resources": [
+      "icons/*"
+    ]
   },
   "plugins": {
     "updater": {
